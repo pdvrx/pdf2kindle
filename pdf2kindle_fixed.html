@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PDF2Kindle Web — OCR e Separação de Páginas</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>pdf2kindle</h1>
+    <div class="subtitle">Faça upload do seu PDF e gere uma versão pesquisável para Kindle — tudo no navegador.</div>
+
+    <div class="card">
+      <label>
+        <span>PDF</span>
+        <input id="file" type="file" accept="application/pdf" />
+      </label>
+
+      <label>
+        <span>Páginas (ex.: <em>1,3-5,-8</em>)</span>
+        <input id="pages" type="text" placeholder="vazio = todas" />
+      </label>
+
+      <label>
+        <span>Escala
+          <span class="tooltip">?
+            <span class="tooltiptext">Amplia as páginas antes do OCR para melhorar precisão e legibilidade no Kindle. Recomendo ≥ 1.5.</span>
+          </span>
+        </span>
+        <input id="scale" type="number" step="0.1" min="0.5" value="1.8" />
+      </label>
+
+      <label style="display:flex; align-items:center; gap:10px; margin-top:12px;">
+        <input id="split" type="checkbox" />
+        <span style="flex:1;">Separar páginas duplas</span>
+      </label>
+
+      <label style="display:flex; align-items:center; gap:10px;">
+        <input id="forceSplit" type="checkbox" />
+        <span>Forçar separação
+          <span class="tooltip">?
+            <span class="tooltiptext">Força a divisão de cada página em duas metades — útil para scans que sempre mostram duas páginas juntas.</span>
+          </span>
+        </span>
+      </label>
+
+      <label>
+        <span>Língua OCR</span>
+        <select id="lang">
+          <option value="por" selected>Português</option>
+          <option value="eng">Inglês</option>
+          <option value="spa">Espanhol</option>
+        </select>
+      </label>
+
+      <button id="go">Processar</button>
+      <a id="dl" download style="display:none; margin-top:10px;"></a>
+    </div> <!-- card -->
+
+    <div class="card" style="text-align:left;">
+      <div id="status">Aguardando arquivo…</div>
+      <progress id="prog" max="100" value="0"></progress>
+      <div id="log"></div>
+    </div>
+
+  </div> <!-- container -->
+
+  <!-- libs -->
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+  <script>pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";</script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+
+  <script>
+  const $ = id => document.getElementById(id);
+  const statusEl = $("status");
+  const progEl = $("prog");
+  const logEl = $("log");
+  const dlEl = $("dl");
+
+  function log(msg) {
+    logEl.textContent += msg + "\n";
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  function interpretarPaginas(str, total) {
+    if (!str || !str.trim()) return Array.from({length: total}, (_, i) => i);
+    const paginas = new Set();
+    str = str.replace(/\s+/g, "");
+    for (const parte of str.split(",")) {
+      if (!parte) continue;
+      if (parte.includes("-")) {
+        if (parte.startsWith("-")) {
+          const fim = parseInt(parte.slice(1), 10);
+          const inicio = paginas.size ? (Math.max(...paginas) + 1) : 1;
+          for (let p = inicio; p <= fim; p++) paginas.add(p-1);
+        } else {
+          const [ini, fim] = parte.split("-").map(n => parseInt(n, 10));
+          for (let p = ini; p <= fim; p++) paginas.add(p-1);
+        }
+      } else {
+        paginas.add(parseInt(parte, 10) - 1);
+      }
+    }
+    return Array.from(paginas).filter(p => p >= 0 && p < total).sort((a,b)=>a-b);
+  }
+
+  function temPaginasDuplas(width, height, limiar=1.25) {
+    const proporcao = width / height;
+    return proporcao > limiar;
+  }
+
+  function cropBordasPretas(imgData, w, h, limiar=30) {
+    const linhaMedia = (y) => {
+      let s=0;
+      for (let x=0; x<w; x++) s += imgData[(y*w + x)*4];
+      return s / w;
+    };
+    const colunaMedia = (x, top, bottom) => {
+      let s=0, n=0;
+      for (let y=top; y<=bottom; y++) { s += imgData[(y*w + x)*4]; n++; }
+      return s / n;
+    };
+    let topo=0, base=h-1, esq=0, dir=w-1;
+    for (let y=0; y<Math.floor(h/4); y++){ if (linhaMedia(y)>limiar){ topo=y; break; } }
+    for (let y=h-1; y>h-Math.floor(h/4); y--){ if (linhaMedia(y)>limiar){ base=y; break; } }
+    for (let x=0; x<Math.floor(w/4); x++){ if (colunaMedia(x, topo, base)>limiar){ esq=x; break; } }
+    for (let x=w-1; x>w-Math.floor(w/4); x--){ if (colunaMedia(x, topo, base)>limiar){ dir=x; break; } }
+    return {esq, topo, dir, base};
+  }
+
+  async function rasterizarPagina(pdf, index, scaleFactor) {
+    const page = await pdf.getPage(index + 1);
+    const viewport = page.getViewport({ scale: 2.0 * scaleFactor });
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    canvas.width = Math.floor(viewport.width);
+    canvas.height = Math.floor(viewport.height);
+    await page.render({ canvasContext: ctx, viewport }).promise;
+    return canvas;
+  }
+
+  async function run() {
+    dlEl.style.display = "none";
+    const file = $("file").files?.[0];
+    if (!file) { alert("Selecione um PDF."); return; }
+    const escala = parseFloat($("scale").value) || 1.8;
+    const separar = $("split").checked;
+    const forcar = $("forceSplit").checked;
+    const lang = $("lang").value || "por";
+
+    statusEl.textContent = "Carregando PDF…";
+    logEl.textContent = "";
+    progEl.value = 0;
+
+    const arrayBuf = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuf }).promise;
+    const total = pdf.numPages;
+    log(`Páginas no PDF: ${total}`);
+
+    const selecionadas = interpretarPaginas($("pages").value, total);
+    if (selecionadas.length === 0) { alert("Nenhuma página válida selecionada."); return; }
+    log(`Selecionadas: ${selecionadas.map(p=>p+1).join(", ")}`);
+
+    const outPdf = await PDFLib.PDFDocument.create();
+    statusEl.textContent = "Inicializando OCR…";
+
+    // ✅ Tesseract.js v5: inicializa diretamente
+    const worker = await Tesseract.createWorker(lang);
+
+    let done = 0;
+    const totalSteps = selecionadas.length;
+    progEl.max = totalSteps;
+
+    for (const idx of selecionadas) {
+      statusEl.textContent = `Renderizando página ${idx+1}…`;
+      const canvas = await rasterizarPagina(pdf, idx, escala);
+      const ctx = canvas.getContext("2d");
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const crop = cropBordasPretas(imgData.data, canvas.width, canvas.height);
+      const cw = Math.max(1, crop.dir - crop.esq);
+      const ch = Math.max(1, crop.base - crop.topo);
+      const cropCanvas = document.createElement("canvas");
+      cropCanvas.width = cw; cropCanvas.height = ch;
+      cropCanvas.getContext("2d").drawImage(canvas, crop.esq, crop.topo, cw, ch, 0, 0, cw, ch);
+
+      const toSplit = separar && (forcar || temPaginasDuplas(cw, ch));
+      const parts = [];
+      if (toSplit) {
+        const overlap = Math.floor(cw * 0.08);
+        const mid = Math.floor(cw/2);
+        const left = document.createElement("canvas");
+        left.width = mid + overlap; left.height = ch + Math.floor(ch*0.10);
+        left.getContext("2d").fillStyle = "#fff";
+        left.getContext("2d").fillRect(0,0,left.width,left.height);
+        left.getContext("2d").drawImage(cropCanvas, 0, 0, mid+overlap, ch, 0, Math.floor(ch*0.05), mid+overlap, ch);
+        const right = document.createElement("canvas");
+        right.width = cw - mid + overlap; right.height = ch + Math.floor(ch*0.10);
+        right.getContext("2d").fillStyle = "#fff";
+        right.getContext("2d").fillRect(0,0,right.width,right.height);
+        right.getContext("2d").drawImage(cropCanvas, mid-overlap, 0, cw-(mid-overlap), ch, 0, Math.floor(ch*0.05), cw-(mid-overlap), ch);
+        parts.push(left, right);
+      } else {
+        parts.push(cropCanvas);
+      }
+
+      for (const part of parts) {
+        statusEl.textContent = `OCR página ${idx+1}${parts.length>1?" (metade)":""}…`;
+        const { data } = await worker.recognize(part, { rectangle: { left:0, top:0, width: part.width, height: part.height }});
+        const page = outPdf.addPage([part.width, part.height]);
+        const pngBytes = await (await fetch(part.toDataURL("image/png"))).arrayBuffer();
+        const png = await outPdf.embedPng(pngBytes);
+        page.drawImage(png, { x: 0, y: 0, width: part.width, height: part.height });
+
+        const font = await outPdf.embedFont(PDFLib.StandardFonts.Helvetica);
+        if (data && Array.isArray(data.words)) {
+          for (const w of data.words) {
+            const bb = w.bbox;
+            const text = w.text || (w.symbols ? w.symbols.map(s=>s.text).join("") : "");
+            if (!text || !bb) continue;
+            const x = bb.x0;
+            const y = part.height - bb.y1;
+            const height = bb.y1 - bb.y0;
+            const fontSize = Math.max(6, height * 0.9);
+            try {
+              page.drawText(text, {
+                x, y,
+                size: fontSize,
+                font,
+                color: PDFLib.rgb(1,1,1),
+                opacity: 0.0,
+              });
+            } catch(e) {
+              // ignora erro pontual
+            }
+          }
+        }
+      }
+
+      done++; progEl.value = done;
+      log(`Página ${idx+1} concluída.`);
+    }
+
+    await worker.terminate();
+    statusEl.textContent = "Finalizando PDF…";
+    const bytes = await outPdf.save();
+    const blob = new Blob([bytes], {type: "application/pdf"});
+    const url = URL.createObjectURL(blob);
+    const baseName = (file.name.replace(/\.pdf$/i, "")) || "saida";
+    dlEl.href = url;
+    dlEl.download = baseName + "-OCR.pdf";
+    dlEl.style.display = "inline-block";
+    dlEl.textContent = "⬇️ Baixar " + baseName + "-OCR.pdf";
+    statusEl.textContent = "Pronto!";
+    log("Concluído.");
+  }
+
+  $("go").addEventListener("click", () => {
+    run().catch(err => {
+      console.error(err);
+      statusEl.textContent = "Erro.";
+      log("Erro: " + (err?.message || err));
+      alert("Ocorreu um erro. Veja o log.");
+    });
+  });
+  $("file").addEventListener("change", () => {
+    statusEl.textContent = $("file").files?.[0] ? "PDF carregado." : "Aguardando arquivo…";
+  });
+  </script>
+</body>
+</html>
