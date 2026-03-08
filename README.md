@@ -1,11 +1,11 @@
-[README.md](https://github.com/user-attachments/files/25829052/README.md)
-# Fólio
+[README (1).md](https://github.com/user-attachments/files/25829139/README.1.md)
+# Epubly
 
 **Converta PDFs escaneados em EPUBs limpos, direto no navegador.**
 
 Envie um PDF escaneado — torto, manchado, antigo, em página dupla. A IA extrai o texto e entrega ele limpo para o seu e-reader.
 
-![Fólio](https://img.shields.io/badge/OCR-Google%20Gemini-orange?style=flat-square) ![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
+![Epubly](https://img.shields.io/badge/OCR-Google%20Gemini-orange?style=flat-square) ![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
 
 ---
 
@@ -17,7 +17,7 @@ Envie um PDF escaneado — torto, manchado, antigo, em página dupla. A IA extra
 4. Clique em **Converter para EPUB**
 5. Baixe o `.epub` pronto para Kindle, Kobo ou Apple Books
 
-O processamento acontece inteiramente no seu navegador. Nenhum arquivo é enviado a servidores do Fólio.
+O processamento acontece inteiramente no seu navegador. Nenhum arquivo é enviado a servidores do Epubly.
 
 ---
 
@@ -39,7 +39,7 @@ O processamento acontece inteiramente no seu navegador. Nenhum arquivo é enviad
 1. Acesse [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
 2. Clique em **Create API key**
 3. Copie a chave (começa com `AIza...`)
-4. Cole no campo da chave no Fólio e clique em **Salvar**
+4. Cole no campo da chave no Epubly e clique em **Salvar**
 
 O plano gratuito permite ~1.500 requisições/dia — suficiente para dezenas de livros.
 
@@ -47,7 +47,7 @@ O plano gratuito permite ~1.500 requisições/dia — suficiente para dezenas de
 
 ## Uso local
 
-O Fólio é um único arquivo HTML. Para rodar localmente sem problemas de CORS:
+O Epubly é um único arquivo HTML. Para rodar localmente sem problemas de CORS:
 
 ```bash
 python3 iniciar_servidor.py
@@ -56,3 +56,9 @@ python3 iniciar_servidor.py
 Acesse `http://localhost:8000` no navegador.
 
 > **Não abra o `index.html` diretamente via `file://`** — o PDF.js exige um servidor HTTP para funcionar corretamente.
+
+---
+
+## Licença
+
+MIT — use, modifique e distribua livremente.
