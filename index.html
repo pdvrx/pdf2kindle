@@ -1,0 +1,1897 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Epubly — PDF para EPUB</title>
+<script src="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0e0e11;
+  --surface: #16161a;
+  --surface2: #1e1e24;
+  --border: #2a2a32;
+  --border-lit: #3d3d4d;
+  --accent: #c9855a;
+  --accent-dim: rgba(201,133,90,.15);
+  --accent-glow: rgba(201,133,90,.25);
+  --text: #e8e6e1;
+  --text-muted: #7a7888;
+  --text-dim: #4a4857;
+  --green: #5a9e6f;
+  --red: #c05a5a;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* Subtle noise texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: .4;
+}
+
+/* ── Layout ── */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid var(--border);
+  background: rgba(14,14,17,.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 0 2.5rem;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.9rem;
+  letter-spacing: -.02em;
+  color: var(--text);
+}
+.logo em { color: var(--accent); font-style: italic; }
+
+.header-right { display: flex; align-items: center; gap: .6rem; }
+.btn-change-key {
+  font-size: .78rem;
+  font-weight: 500;
+  letter-spacing: .04em;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid rgba(201,133,90,.3);
+  padding: .35rem 1rem;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+  font-family: 'DM Sans', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+}
+.btn-change-key:hover {
+  background: rgba(201,133,90,.25);
+  border-color: var(--accent);
+}
+.btn-donate {
+  font-size: .78rem;
+  font-weight: 500;
+  letter-spacing: .04em;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid rgba(201,133,90,.3);
+  padding: .35rem 1rem;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-donate:hover {
+  background: rgba(201,133,90,.25);
+  border-color: var(--accent);
+}
+
+main {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 4rem 2rem 6rem;
+}
+
+/* ── Hero ── */
+.hero {
+  text-align: center;
+  margin-bottom: 3.5rem;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  font-size: .72rem;
+  font-weight: 500;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid var(--accent-dim);
+  background: var(--accent-dim);
+  padding: .35rem .9rem;
+  border-radius: 100px;
+  margin-bottom: 1.5rem;
+}
+.hero-badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
+}
+
+.hero h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -.02em;
+  margin-bottom: 1.2rem;
+  color: var(--text);
+}
+.hero h1 em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.hero p {
+  font-size: 1rem;
+  color: var(--text-muted);
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+/* ── Card ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.75rem;
+  margin-bottom: 1rem;
+  transition: border-color .2s;
+}
+.card:hover { border-color: var(--border-lit); }
+
+.card-label {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 1rem;
+}
+.card-label::before {
+  content: '';
+  display: block;
+  width: 3px; height: 12px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* ── API key section ── */
+.api-desc {
+  font-size: .875rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  line-height: 1.65;
+}
+
+.key-input-row {
+  display: flex;
+  gap: .5rem;
+  align-items: stretch;
+}
+
+.key-input-row input {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .65rem 1rem;
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: .8rem;
+  color: var(--text);
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+  min-width: 0;
+}
+.key-input-row input::placeholder { color: var(--text-dim); }
+.key-input-row input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: .65rem 1.3rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .85rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity .15s, transform .1s;
+}
+.btn-primary:hover { opacity: .88; }
+.btn-primary:active { transform: scale(.97); }
+
+.key-help-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  font-size: .78rem;
+  font-weight: 500;
+  color: var(--accent);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background .15s, border-color .15s, color .15s;
+  background: var(--accent-dim);
+  border: 1px solid rgba(201,133,90,.3);
+  padding: .4rem .9rem;
+  border-radius: 8px;
+  font-family: inherit;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.key-help-link:hover {
+  background: rgba(201,133,90,.25);
+  border-color: var(--accent);
+}
+.key-help-link svg { opacity: .7; flex-shrink: 0; }
+
+#apiKeyStatus {
+  display: block;
+  margin-top: .6rem;
+  font-size: .78rem;
+  min-height: 1.2em;
+}
+
+/* ── Upload zone ── */
+#uploadZone {
+  border: 1.5px dashed var(--border-lit);
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+  background: transparent;
+  margin-bottom: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+#uploadZone::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, var(--accent-dim) 0%, transparent 65%);
+  opacity: 0;
+  transition: opacity .3s;
+  pointer-events: none;
+}
+#uploadZone:hover::before,
+#uploadZone.drag-over::before { opacity: 1; }
+#uploadZone:hover,
+#uploadZone.drag-over {
+  border-color: var(--accent);
+  background: rgba(201,133,90,.03);
+}
+
+.upload-icon {
+  width: 52px; height: 52px;
+  background: var(--surface2);
+  border: 1px solid var(--border-lit);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.2rem;
+  font-size: 1.5rem;
+  transition: transform .2s;
+}
+#uploadZone:hover .upload-icon { transform: translateY(-2px); }
+/* Children must not intercept drag events — zone handles everything */
+#uploadZone .upload-icon,
+#uploadZone h3,
+#uploadZone p,
+#uploadZone #selectFileBtn { pointer-events: none; }
+
+#uploadZone h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.2rem;
+  font-weight: 400;
+  margin-bottom: .4rem;
+}
+#uploadZone p {
+  font-size: .85rem;
+  color: var(--text-muted);
+  margin-bottom: 1.4rem;
+}
+
+.btn-ghost {
+  display: inline-block;
+  background: transparent;
+  border: 1px solid var(--border-lit);
+  border-radius: 8px;
+  padding: .55rem 1.4rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .85rem;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.btn-ghost:hover {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+/* ── File info ── */
+.file-info {
+  display: none;
+  align-items: center;
+  gap: 1rem;
+  padding: .9rem 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  font-size: .875rem;
+}
+.file-info.show { display: flex; }
+.file-icon {
+  width: 36px; height: 36px;
+  background: var(--accent-dim);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.file-meta strong { display: block; color: var(--text); font-weight: 500; }
+.file-meta span { color: var(--text-muted); font-size: .8rem; }
+
+/* ── Settings ── */
+.settings-panel {
+  display: none;
+  margin-bottom: 1rem;
+}
+.settings-panel.show { display: block; }
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .75rem;
+  margin-bottom: .75rem;
+}
+
+.setting-item label {
+  display: block;
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: .4rem;
+}
+
+.setting-item input,
+.setting-item select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .6rem .9rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .875rem;
+  color: var(--text);
+  outline: none;
+  transition: border-color .15s;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.setting-item input:focus,
+.setting-item select:focus { border-color: var(--accent); }
+.setting-item select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a7888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right .8rem center;
+  padding-right: 2rem;
+}
+
+.toggles {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .55rem 1rem;
+  cursor: pointer;
+  transition: border-color .15s;
+  flex: 1;
+  min-width: 180px;
+}
+.toggle-row:hover { border-color: var(--border-lit); }
+.toggle-hint { font-size: .7rem; color: var(--text-dim); margin-top: .15rem; line-height: 1.4; }
+
+.toggle {
+  position: relative;
+  width: 36px; height: 20px;
+  flex-shrink: 0;
+}
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--border-lit);
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background .2s;
+}
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  height: 14px; width: 14px;
+  left: 3px; top: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: transform .2s;
+}
+.toggle input:checked + .toggle-slider { background: var(--accent); }
+.toggle input:checked + .toggle-slider::before { transform: translateX(16px); }
+.toggle-label { font-size: .82rem; color: var(--text-muted); font-weight: 400; }
+
+/* ── Process button ── */
+.process-btn {
+  display: none;
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: .95rem;
+  background: var(--accent);
+  color: white;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  letter-spacing: .01em;
+  transition: opacity .15s, transform .1s, box-shadow .2s;
+  box-shadow: 0 4px 24px var(--accent-glow);
+}
+.process-btn:hover { opacity: .9; box-shadow: 0 6px 32px rgba(201,133,90,.35); }
+.process-btn:active { transform: scale(.99); }
+.process-btn:disabled { background: var(--surface2); color: var(--text-dim); cursor: not-allowed; box-shadow: none; }
+.process-btn.show { display: block; }
+
+/* ── Page thumbs ── */
+.pages-preview { display: none; margin-bottom: 1rem; }
+.pages-preview.show { display: block; }
+.pages-toolbar { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: .75rem; }
+.pages-preview-header {
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: .2rem;
+}
+.page-range-hint { font-size: .72rem; color: var(--text-dim); line-height: 1.5; }
+.page-range-hint code { background: var(--surface2); border: 1px solid var(--border); border-radius: 3px; padding: 1px 5px; font-family: 'Courier New',monospace; font-size: .7rem; color: var(--accent); }
+.page-range-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: .25rem; flex-shrink: 0; }
+.page-range-input { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: .45rem .85rem; font-family: 'Courier New',monospace; font-size: .8rem; color: var(--text); outline: none; width: 210px; transition: border-color .15s, box-shadow .15s; }
+.page-range-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+.page-range-input.invalid { border-color: var(--red); }
+.page-range-status { font-size: .7rem; color: var(--text-muted); min-height: 1em; }
+.page-range-status.ok { color: var(--green); }
+.page-range-status.err { color: var(--red); }
+.page-thumb.dimmed { opacity: .22; }
+.pages-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: .5rem;
+}
+.page-thumb {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  aspect-ratio: 3/4;
+  overflow: hidden;
+}
+.page-thumb canvas { width: 100%; height: 100%; display: block; }
+.page-thumb .badge {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(14,14,17,.85);
+  color: var(--text-muted);
+  font-size: .55rem;
+  text-align: center;
+  padding: 2px 4px;
+  font-family: monospace;
+}
+.page-thumb.double-page { border-color: rgba(201,133,90,.4); }
+.page-thumb.double-page .badge { background: rgba(201,133,90,.8); color: white; }
+
+/* ── Progress ── */
+.progress-section { display: none; margin-bottom: 1rem; }
+.progress-section.show { display: block; }
+
+.progress-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 1rem;
+}
+.progress-label {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.05rem;
+}
+.progress-pct {
+  font-size: .8rem;
+  color: var(--accent);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.progress-track {
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #e8a87c);
+  width: 0%;
+  transition: width .4s cubic-bezier(.4,0,.2,1);
+  border-radius: 2px;
+}
+
+.status-line {
+  font-size: .78rem;
+  color: var(--text-muted);
+  margin-top: .65rem;
+  min-height: 1.2em;
+  transition: color .2s;
+}
+.status-line.ok { color: var(--green); }
+.status-line.warn { color: #c9a84c; }
+.status-line.err { color: var(--red); }
+.log-errors {
+  margin-top: .4rem;
+  font-size: .72rem;
+  color: var(--red);
+  font-family: 'Courier New', monospace;
+}
+
+/* ── Result ── */
+.result-inline {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: .85rem;
+  padding-top: 1.1rem;
+  margin-top: .75rem;
+  border-top: 1px solid var(--border);
+}
+.result-ok-text {
+  font-size: .85rem;
+  color: var(--green);
+  font-weight: 500;
+  margin: 0;
+}
+
+.btn-download {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: .75rem 1.75rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity .15s;
+  box-shadow: 0 4px 16px var(--accent-glow);
+}
+.btn-download:hover { opacity: .88; }
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border-lit);
+  border-radius: 10px;
+  padding: .75rem 1.5rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .9rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── Footer ── */
+footer {
+  border-top: 1px solid var(--border);
+  position: relative;
+  z-index: 1;
+}
+.footer-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: .75rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--text-dim);
+  font-size: .78rem;
+}
+.footer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .72rem;
+  font-weight: 500;
+  letter-spacing: .05em;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid rgba(201,133,90,.2);
+  padding: .3rem .75rem;
+  border-radius: 100px;
+}
+
+/* ── Modal ── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.7);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border-lit);
+  border-radius: 20px;
+  max-width: 560px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: modal-in .2s cubic-bezier(.34,1.4,.64,1);
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) var(--surface2);
+}
+.modal::-webkit-scrollbar { width: 5px; }
+.modal::-webkit-scrollbar-track { background: var(--surface2); border-radius: 0 20px 20px 0; }
+.modal::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+.modal::-webkit-scrollbar-thumb:hover { background: #d99a72; }
+
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(.94) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-close {
+  position: absolute;
+  top: 1.1rem; right: 1.1rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  transition: background .15s, color .15s;
+}
+.modal-close:hover { background: var(--border); color: var(--text); }
+
+.modal-header {
+  padding: 2rem 2rem 0;
+}
+.modal-tag {
+  display: inline-block;
+  font-size: .68rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border-radius: 6px;
+  padding: .25rem .65rem;
+  margin-bottom: 1rem;
+}
+.modal-header h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+  line-height: 1.3;
+  margin-bottom: .6rem;
+}
+.modal-header p {
+  font-size: .875rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+.modal-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 1.5rem 0;
+}
+
+.modal-body { padding: 0 2rem 2rem; }
+
+.modal-section-title {
+  font-size: .68rem;
+  font-weight: 600;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 1rem;
+}
+
+.steps-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  margin-bottom: 1.5rem;
+}
+.steps-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: .85rem;
+  font-size: .875rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.step-num {
+  flex-shrink: 0;
+  width: 22px; height: 22px;
+  background: var(--accent-dim);
+  border: 1px solid rgba(201,133,90,.3);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .68rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-top: .1rem;
+}
+.steps-list a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+.steps-list a:hover { text-decoration: underline; }
+.steps-list code {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-family: 'Courier New', monospace;
+  font-size: .8rem;
+  color: var(--text);
+}
+
+.security-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .6rem;
+}
+
+.security-item {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: .9rem;
+}
+.security-item-icon { font-size: 1.1rem; margin-bottom: .4rem; }
+.security-item-title {
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: .25rem;
+}
+.security-item-text {
+  font-size: .75rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.modal-cta {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: .6rem;
+}
+.modal-cta a {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  background: var(--accent);
+  color: white;
+  text-decoration: none;
+  border-radius: 10px;
+  padding: .7rem 1rem;
+  font-size: .875rem;
+  font-weight: 500;
+  transition: opacity .15s;
+}
+.modal-cta a:hover { opacity: .88; }
+
+.api-compact {
+  display: flex;
+  flex-direction: column;
+  gap: .65rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1rem;
+}
+.api-compact-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.api-compact-info { flex: 1; min-width: 0; }
+.api-compact-label {
+  display: block;
+  font-size: .68rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: .3rem;
+}
+.api-compact-desc {
+  font-size: .78rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+.api-compact .key-input-row { margin: 0; }
+.api-compact #apiKeyStatus { margin-top: .1rem; }
+
+.pix-key-box {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  background: var(--surface2);
+  border: 1px solid var(--border-lit);
+  border-radius: 10px;
+  padding: .65rem 1rem;
+  text-align: left;
+}
+.pix-key-label {
+  font-size: .65rem;
+  font-weight: 600;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+.pix-key-value {
+  flex: 1;
+  font-family: 'Courier New', monospace;
+  font-size: .78rem;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pix-copy-btn {
+  flex-shrink: 0;
+  background: var(--accent-dim);
+  border: 1px solid rgba(201,133,90,.3);
+  border-radius: 6px;
+  padding: .25rem .65rem;
+  font-size: .72rem;
+  font-weight: 500;
+  color: var(--accent);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background .15s;
+}
+.pix-copy-btn:hover { background: rgba(201,133,90,.25); }
+
+@media (max-width: 640px) {
+  /* Header */
+  header { padding: 0 1rem; height: 52px; }
+  .logo { font-size: 1.25rem; }
+  .btn-donate { font-size: .72rem; padding: .28rem .75rem; }
+
+  /* Main */
+  main { padding: 2rem 1rem 5rem; }
+
+  /* Hero */
+  .hero { margin-bottom: 2rem; }
+  .hero h1 { font-size: 1.75rem; }
+  .hero p { font-size: .9rem; }
+  .hero-badge { font-size: .68rem; }
+
+  /* Upload */
+  #uploadZone { padding: 2rem 1.25rem; margin-bottom: .75rem; }
+  .upload-icon { width: 44px; height: 44px; border-radius: 12px; font-size: 1.3rem; }
+  #uploadZone h3 { font-size: 1.05rem; }
+  #uploadZone p { font-size: .8rem; margin-bottom: 1rem; }
+
+  /* API compact */
+  .api-compact { padding: .85rem 1rem; }
+  .api-compact-top { flex-direction: column; align-items: flex-start; gap: .5rem; }
+  .key-help-link { align-self: flex-start; }
+  .api-compact-desc { font-size: .75rem; }
+  .key-input-row input { font-size: .75rem; }
+  .btn-primary { padding: .65rem 1rem; font-size: .8rem; }
+
+  /* Settings */
+  .settings-grid { grid-template-columns: 1fr; }
+  .card { padding: 1.25rem 1rem; }
+  .toggles { flex-direction: column; }
+  .toggle-row { min-width: unset; }
+
+  /* Process btn */
+  .process-btn { font-size: .95rem; padding: .85rem; }
+
+  /* Pages grid */
+  .pages-grid { grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); gap: .4rem; }
+
+  /* Progress */
+  .progress-card { padding: 1.1rem; }
+
+
+  /* Result */
+
+  .result-buttons { flex-direction: column; align-items: center; }
+  .btn-download, .btn-secondary { width: 100%; justify-content: center; }
+
+  /* Modal */
+  .modal { border-radius: 16px; }
+  .modal-header { padding: 1.5rem 1.25rem 0; }
+  .modal-body { padding: 0 1.25rem 1.5rem; }
+  .modal-header h2 { font-size: 1.25rem; }
+  .security-grid { grid-template-columns: 1fr; }
+  .modal-cta { flex-direction: column; }
+
+  /* Footer */
+  .footer-inner { flex-direction: column; gap: .6rem; text-align: center; padding: 1.25rem 1rem; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">E<em>pub</em>ly</div>
+  <div class="header-right">
+  <a class="btn-change-key" href="https://github.com/pdvrx/epubly" target="_blank" rel="noopener" title="Repositório no GitHub"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.341-3.369-1.341-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg></a>
+  <button class="btn-change-key" id="changeKeyBtn" type="button" style="display:none;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Trocar chave</button>
+  <button class="btn-donate" id="donateBtn" type="button" onclick="
+  var m=document.getElementById('donateModal');
+  m.style.display='flex';
+  if(!document.getElementById('qrcode').hasChildNodes()){
+    new QRCode(document.getElementById('qrcode'),{
+      text:'00020126410014br.gov.bcb.pix0119pedro06bf@gmail.com5204000053039865802BR5909Epubly App6006Brasil62070503***6304185E',
+      width:200,height:200,colorDark:'#1a1410',colorLight:'#ffffff',
+      correctLevel:QRCode.CorrectLevel.M
+    });
+  }
+  return false;
+">♡ Apoie-nos</button>
+</header>
+
+<main>
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>Dê nova vida aos<br><em>livros esquecidos</em></h1>
+    <p>Envie um PDF escaneado: torto, manchado, antigo e em página dupla. A IA extrai o texto e entrega ele limpo para o seu e-reader.</p>
+  </div>
+
+  <!-- Upload — em destaque -->
+  <div id="uploadZone">
+    <div class="upload-icon">📖</div>
+    <h3>Arraste seu PDF aqui</h3>
+    <p>Suporte a PDFs escaneados, páginas duplas e baixa qualidade</p>
+    <button class="btn-ghost" id="selectFileBtn">Selecionar arquivo</button>
+  </div>
+  <input type="file" id="fileInput" accept=".pdf" style="display:none">
+
+  <!-- API Key — compacto -->
+  <div id="apiKeyBlock">
+  <div class="api-compact">
+    <div class="api-compact-top">
+      <div class="api-compact-info">
+        <span class="api-compact-label">Chave de API — Google Gemini</span>
+        <p class="api-compact-desc">O Epubly processa tudo no seu navegador e usa o Gemini para ler o texto das páginas. A chave identifica você junto ao Google — é gratuita e nenhum servidor do Epubly a recebe.</p>
+      </div>
+      <button class="key-help-link" id="helpKeyBtn" type="button" onclick="document.getElementById('helpModal').style.display='flex';return false;">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Como pegar minha chave
+      </button>
+    </div>
+    <div class="key-input-row">
+      <input type="password" id="apiKeyInput" placeholder="AIzaSy..." autocomplete="off">
+      <button class="btn-primary" id="saveKeyBtn" type="button">Salvar</button>
+    </div>
+    <small id="apiKeyStatus"></small>
+  </div>
+  </div><!-- /apiKeyBlock -->
+
+  <!-- File info -->
+  <div class="file-info" id="fileInfo">
+    <div class="file-icon">📄</div>
+    <div class="file-meta">
+      <strong id="fileName"></strong>
+      <span id="fileDetails"></span>
+    </div>
+  </div>
+
+  <!-- Settings -->
+  <div class="settings-panel card" id="settingsPanel">
+    <div class="card-label">Configurações</div>
+    <div class="settings-grid">
+      <div class="setting-item">
+        <label>Título do livro</label>
+        <input type="text" id="bookTitle" placeholder="Ex: Dom Casmurro">
+      </div>
+      <div class="setting-item">
+        <label>Autor</label>
+        <input type="text" id="bookAuthor" placeholder="Ex: Machado de Assis">
+      </div>
+      <div class="setting-item">
+        <label>Idioma</label>
+        <select id="bookLang">
+          <option value="pt">Português</option>
+          <option value="en">Inglês</option>
+          <option value="es">Espanhol</option>
+          <option value="fr">Francês</option>
+          <option value="de">Alemão</option>
+          <option value="it">Italiano</option>
+          <option value="la">Latim</option>
+        </select>
+      </div>
+      <div class="setting-item" id="pageRangeItem" style="display:none;">
+        <label>Páginas <span id="pageRangeTotalLabel" style="font-weight:400;color:var(--text-dim);"></span></label>
+        <input type="text" id="pageRangeInput" class="page-range-input" placeholder="Em branco = todas. Ex: 1-10, 15">
+        <span class="page-range-status" id="pageRangeStatus"></span>
+        <small style="color:var(--text-dim);font-size:.68rem;margin-top:.25rem;display:block;">Use <code style="background:var(--surface2);border-radius:3px;padding:1px 4px;color:var(--accent);">1-5</code>, <code style="background:var(--surface2);border-radius:3px;padding:1px 4px;color:var(--accent);">1,3,7</code> ou combine: <code style="background:var(--surface2);border-radius:3px;padding:1px 4px;color:var(--accent);">1-5,8,12</code></small>
+      </div>
+    </div>
+    <div class="toggles">
+      <label class="toggle-row">
+        <label class="toggle">
+          <input type="checkbox" id="splitDouble" checked>
+          <span class="toggle-slider"></span>
+        </label>
+        <span class="toggle-label">Separar páginas duplas</span>
+      </label>
+      <label class="toggle-row">
+        <label class="toggle">
+          <input type="checkbox" id="cleanText" checked>
+          <span class="toggle-slider"></span>
+        </label>
+        <span class="toggle-label">Corrigir hifenizações</span>
+      </label>
+
+    </div>
+  </div>
+
+  <!-- Convert button -->
+  <button class="process-btn" id="processBtn">Converter para EPUB</button>
+
+  <!-- Page preview (thumbnails only) -->
+  <div class="pages-preview" id="pagesPreview">
+    <div class="pages-preview-header">Páginas detectadas</div>
+    <div class="pages-grid" id="pagesGrid"></div>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-section" id="progressSection">
+    <div class="progress-card">
+      <div class="progress-header">
+        <span class="progress-label" id="progressLabel">Convertendo</span>
+        <span class="progress-pct" id="progressPct">0%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="status-line" id="statusLine"></div>
+      <div class="log-errors" id="logErrors"></div>
+      <div class="result-inline" id="resultSection" style="display:none;">
+        <p class="result-ok-text" id="resultStats"></p>
+        <button class="btn-download" id="downloadBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Baixar EPUB
+        </button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Modal -->
+<div class="modal-overlay" id="helpModal">
+  <div class="modal">
+    <button class="modal-close" id="closeModal" type="button" onclick="document.getElementById('helpModal').style.display='none';return false;">✕</button>
+
+    <div class="modal-header">
+      <div class="modal-tag">Google AI Studio</div>
+      <h2>Como pegar sua chave de API</h2>
+      <p>É gratuito, leva menos de 2 minutos e não exige cartão de crédito.</p>
+    </div>
+
+    <div class="modal-body">
+      <div class="modal-divider"></div>
+
+      <div class="modal-section-title">Passo a passo</div>
+      <ol class="steps-list">
+        <li>
+          <span class="step-num">1</span>
+          Acesse <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com/app/apikey</a>
+        </li>
+        <li>
+          <span class="step-num">2</span>
+          Faça login com a sua conta Google
+        </li>
+        <li>
+          <span class="step-num">3</span>
+          Clique em <strong>"Create API Key"</strong> e selecione ou crie um projeto
+        </li>
+        <li>
+          <span class="step-num">4</span>
+          Copie a chave gerada — ela começa com <code>AIzaSy...</code>
+        </li>
+        <li>
+          <span class="step-num">5</span>
+          Cole no campo do Epubly e clique em <strong>Salvar</strong>
+        </li>
+      </ol>
+
+      <div class="modal-divider"></div>
+
+      <div class="modal-section-title">Por que é necessário?</div>
+      <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:1.25rem;line-height:1.65;">
+        O Epubly usa o modelo de visão do Google Gemini para ler e transcrever o texto das páginas escaneadas. Para fazer isso, ele precisa se identificar à API do Google — e é isso que a chave faz. Sem ela, o Google não sabe quem está fazendo as requisições.
+      </p>
+
+      <div class="modal-divider"></div>
+
+      <div class="modal-section-title">É seguro?</div>
+      <div class="security-grid">
+        <div class="security-item">
+          <div class="security-item-icon">🔒</div>
+          <div class="security-item-title">Fica só no seu dispositivo</div>
+          <div class="security-item-text">A chave é salva apenas no <em>localStorage</em> do seu navegador. Nenhum servidor do Epubly a recebe.</div>
+        </div>
+        <div class="security-item">
+          <div class="security-item-icon">📡</div>
+          <div class="security-item-title">Vai direto ao Google</div>
+          <div class="security-item-text">As imagens e a chave saem do seu navegador direto para a API do Google. Não passam por intermediários.</div>
+        </div>
+        <div class="security-item">
+          <div class="security-item-icon">🎁</div>
+          <div class="security-item-title">Gratuito</div>
+          <div class="security-item-text">1.500 requisições por dia sem custo. Cada página do PDF usa 1 requisição.</div>
+        </div>
+        <div class="security-item">
+          <div class="security-item-icon">🗑️</div>
+          <div class="security-item-title">Pode remover quando quiser</div>
+          <div class="security-item-text">Apague a chave no Google AI Studio a qualquer momento para revogar o acesso.</div>
+        </div>
+      </div>
+
+      <div class="modal-cta">
+        <a href="https://aistudio.google.com/app/apikey" target="_blank">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Abrir Google AI Studio
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <span>Epubly · Kindle, Kobo, Apple Books</span>
+    <span class="footer-badge">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:.6"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      Powered by Google Gemini
+    </span>
+  </div>
+</footer>
+
+<script>
+function openModal() { document.getElementById('helpModal').style.display = 'flex'; }
+function closeModal() { document.getElementById('helpModal').style.display = 'none'; }
+(function () {
+'use strict';
+
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+
+// ── State ─────────────────────────────────────────────────────────────────────
+var apiKey   = localStorage.getItem('epubly_api_key') || '';
+var pdfFile  = null;
+var pdfDoc   = null;
+var epubBlob = null;
+
+// Candidate model names to try in order
+var MODELS = [
+  'gemini-2.0-flash',
+  'gemini-1.5-flash',
+  'gemini-1.5-flash-latest',
+  'gemini-1.5-flash-8b'
+];
+var workingModel = localStorage.getItem('epubly_model') || null;
+
+function $(id) { return document.getElementById(id); }
+
+function setStatus(msg, color) {
+  $('apiKeyStatus').textContent = msg;
+  $('apiKeyStatus').style.color = color === 'green' ? '#5a7a3a' : color === 'red' ? '#8b3a2a' : '#6b5c48';
+}
+
+// ── Restore key ───────────────────────────────────────────────────────────────
+if (apiKey) {
+  $('apiKeyInput').value = apiKey;
+  setStatus('✓ Chave carregada' + (workingModel ? ' · modelo: ' + workingModel : ''), 'green');
+  $('apiKeyBlock').style.display = 'none';
+  $('changeKeyBtn').style.display = 'inline-flex';
+}
+
+// ── Save key ──────────────────────────────────────────────────────────────────
+$('saveKeyBtn').addEventListener('click', function () {
+  var k = $('apiKeyInput').value.trim();
+  if (!k.startsWith('AIza')) {
+    alert('Chave inválida. Deve começar com AIza...\nObtanhe em: https://aistudio.google.com/app/apikey');
+    return;
+  }
+  apiKey = k;
+  localStorage.setItem('epubly_api_key', k);
+  setStatus('✓ Chave salva!', 'green');
+  $('apiKeyBlock').style.display = 'none';
+  $('changeKeyBtn').style.display = 'inline-flex';
+});
+
+// ── Change key button ────────────────────────────────────────────────────────
+$('changeKeyBtn').addEventListener('click', function () {
+  $('apiKeyBlock').style.display = '';
+  $('changeKeyBtn').style.display = 'none';
+  $('apiKeyInput').focus();
+});
+
+// ── Help modal ────────────────────────────────────────────────────────────────
+function openModal() { $('helpModal').style.display = 'flex'; }
+function closeModal() { $('helpModal').style.display = 'none'; }
+
+$('helpKeyBtn').addEventListener('click', function (e) {
+  e.preventDefault();
+  e.stopPropagation();
+  openModal();
+});
+$('closeModal').addEventListener('click', function (e) {
+  e.stopPropagation();
+  closeModal();
+});
+$('helpModal').addEventListener('click', function (e) {
+  if (e.target === $('helpModal')) closeModal();
+});
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') closeModal();
+});
+
+// ── File input ────────────────────────────────────────────────────────────────
+$('fileInput').addEventListener('change', function () {
+  if ($('fileInput').files[0]) handleFile($('fileInput').files[0]);
+});
+
+$('selectFileBtn').addEventListener('click', function (e) {
+  e.stopPropagation();
+  $('fileInput').click();
+});
+
+$('uploadZone').addEventListener('click', function (e) {
+  if (e.target.id === 'selectFileBtn') return;
+  $('fileInput').click();
+});
+
+// ── Drag & drop ───────────────────────────────────────────────────────────────
+window.addEventListener('dragover', function (e) { e.preventDefault(); });
+window.addEventListener('drop',     function (e) { e.preventDefault(); });
+
+$('uploadZone').addEventListener('dragenter', function (e) {
+  e.preventDefault();
+  $('uploadZone').classList.add('drag-over');
+});
+$('uploadZone').addEventListener('dragleave', function () {
+  $('uploadZone').classList.remove('drag-over');
+});
+$('uploadZone').addEventListener('dragover', function (e) {
+  e.preventDefault();
+});
+$('uploadZone').addEventListener('drop', function (e) {
+  e.preventDefault();
+  $('uploadZone').classList.remove('drag-over');
+  var f = e.dataTransfer.files[0];
+  if (!f) return;
+  if (!f.name.toLowerCase().endsWith('.pdf')) { alert('Selecione um arquivo .pdf'); return; }
+  handleFile(f);
+});
+
+// ── Load PDF ──────────────────────────────────────────────────────────────────
+async function handleFile(file) {
+  pdfFile = file;
+  var mb = (file.size / 1048576).toFixed(2);
+  var buf = await file.arrayBuffer();
+  pdfDoc = await pdfjsLib.getDocument({ data: buf }).promise;
+  var n = pdfDoc.numPages;
+  $('fileName').textContent = file.name;
+  $('fileDetails').textContent = n + ' páginas · ' + mb + ' MB';
+  $('fileInfo').classList.add('show');
+  $('settingsPanel').classList.add('show');
+  $('processBtn').classList.add('show');
+  $('bookTitle').value = file.name.replace(/\.pdf$/i, '').replace(/[_-]/g, ' ');
+  $('pageRangeItem').style.display = '';
+  $('pageRangeTotalLabel').textContent = '(de ' + n + ')';
+  // Attach live-validation listener once per load
+  $('pageRangeInput').oninput = function () {
+    var st = $('pageRangeStatus');
+    $('pageRangeInput').classList.remove('invalid');
+    var v = $('pageRangeInput').value.trim();
+    if (!v) { st.textContent = ''; st.className = 'page-range-status'; return; }
+    try {
+      var sel = parsePageRange(v, n);
+      st.textContent = sel ? sel.size + ' de ' + n + ' págs' : n + ' págs';
+      st.className = 'page-range-status ok';
+    } catch (e) {
+      $('pageRangeInput').classList.add('invalid');
+      st.textContent = e;
+      st.className = 'page-range-status err';
+    }
+  };
+  await showThumbnails(pdfDoc, n);
+}
+
+// ── Page range parser ─────────────────────────────────────────────────────────
+function parsePageRange(str, total) {
+  str = str.trim();
+  if (!str) return null; // null = todas
+  var selected = new Set();
+  var parts = str.split(',');
+  for (var p = 0; p < parts.length; p++) {
+    var part = parts[p].trim();
+    if (!part) continue;
+    var range = part.match(/^(\d+)\s*-\s*(\d+)$/);
+    var single = part.match(/^(\d+)$/);
+    if (range) {
+      var a = parseInt(range[1]), b = parseInt(range[2]);
+      if (a < 1 || b > total || a > b)
+        throw 'Intervalo "' + part + '" inválido (PDF tem ' + total + ' págs)';
+      for (var n = a; n <= b; n++) selected.add(n);
+    } else if (single) {
+      var ns = parseInt(single[1]);
+      if (ns < 1 || ns > total)
+        throw 'Página ' + ns + ' não existe (PDF tem ' + total + ' págs)';
+      selected.add(ns);
+    } else {
+      throw 'Formato inválido: "' + part + '"';
+    }
+  }
+  if (selected.size === 0) throw 'Nenhuma página selecionada';
+  return selected;
+}
+
+var totalPages = 0;
+
+async function showThumbnails(doc, total) {
+  totalPages = total;
+  $('pagesGrid').innerHTML = '';
+  $('pagesPreview').classList.add('show');
+
+  for (var i = 1; i <= total; i++) {
+    var page = await doc.getPage(i);
+    var vp = page.getViewport({ scale: 0.28 });
+    var c = document.createElement('canvas');
+    c.width = vp.width; c.height = vp.height;
+    await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
+    var isDouble = (vp.width / vp.height) > 1.4;
+    var wrap = document.createElement('div');
+    wrap.className = 'page-thumb' + (isDouble ? ' double-page' : '');
+    wrap.dataset.page = i;
+    wrap.appendChild(c);
+    var badge = document.createElement('div');
+    badge.className = 'badge';
+    badge.textContent = isDouble ? 'p.' + i + ' dupla' : 'p.' + i;
+    wrap.appendChild(badge);
+    $('pagesGrid').appendChild(wrap);
+  }
+
+
+}
+
+// ── Process ───────────────────────────────────────────────────────────────────
+$('processBtn').addEventListener('click', async function () {
+  if (!apiKey) { alert('Insira sua chave Gemini primeiro.'); return; }
+  if (!workingModel) {
+    // auto-detect: use gemini-2.5-flash as default
+    workingModel = 'gemini-2.5-flash';
+  }
+  if (!pdfFile) return;
+
+  $('processBtn').disabled = true;
+  ['settingsPanel','pagesPreview','processBtn'].forEach(function(id){
+    var el=$(id); el.style.overflow='hidden';
+    el.style.maxHeight=el.scrollHeight+'px';
+    el.style.transition='max-height .4s ease,opacity .3s ease,margin .4s ease';
+    requestAnimationFrame(function(){
+      el.style.maxHeight='0'; el.style.opacity='0'; el.style.marginBottom='0';
+    });
+    setTimeout(function(){ el.style.display='none'; },420);
+  });
+  $('progressSection').classList.add('show');
+  $('statusLine').textContent = '';
+  $('statusLine').className = 'status-line';
+  $('logErrors').innerHTML = '';
+  $('progressFill').style.width = '0';
+  $('progressPct').textContent = '0%';
+
+  var splitDouble = $('splitDouble').checked;
+  var cleanText   = $('cleanText').checked;
+  var lang        = $('bookLang').value;
+  var title       = $('bookTitle').value || 'Livro';
+  var author      = $('bookAuthor').value || 'Desconhecido';
+
+  
+  
+  setProgress(2, 'Extraindo páginas...');
+
+  try {
+    var selectedPages = null;
+    try {
+      selectedPages = parsePageRange($('pageRangeInput').value, pdfDoc.numPages);
+    } catch(e) {
+      alert('Seleção inválida: ' + e);
+      $('processBtn').disabled = false;
+      return;
+    }
+    var pageImages = await extractPages(pdfDoc, splitDouble, function (i, t) {
+      setProgress(2 + (i / t) * 28, 'Extraindo página ' + i + '/' + t + '...');
+    });
+    if (selectedPages !== null) {
+      pageImages = pageImages.filter(function(pi){ return selectedPages.has(pi.originalPage); });
+    }
+    var skipped = pdfDoc.numPages - (selectedPages ? selectedPages.size : pdfDoc.numPages);
+    addLog((selectedPages ? selectedPages.size : pageImages.length) + ' páginas para processar');
+    setProgress(30, 'OCR em andamento...');
+
+    // Batched OCR — 3 pages per call, staggered 4s apart, all running in parallel
+    // e.g. 30 pages = 10 batches fired at t=0,4,8...36s — total wall time ~56s
+    var BATCH = 3;
+    var STAGGER = 4000; // ms between dispatch (stays under 15 req/min)
+    var totalBatches = Math.ceil(pageImages.length / BATCH);
+    var resultsMap = {}; // keyed by batch index
+    var completed = 0;
+
+    await new Promise(function(resolve, reject) {
+      var failed = false;
+
+      function dispatchBatch(b) {
+        var batch = pageImages.slice(b * BATCH, b * BATCH + BATCH);
+        var nums = batch.map(function(p){ return p.originalPage; }).join(', ');
+        addLog('Lendo texto... lote ' + (b + 1) + ' de ' + totalBatches);
+
+        geminiOCRBatch(batch, lang, cleanText).then(function(texts) {
+          if (failed) return;
+          resultsMap[b] = { batch: batch, texts: texts };
+          completed++;
+          setProgress(30 + (completed / totalBatches) * 55, 'OCR: ' + Math.min(completed * BATCH, pageImages.length) + '/' + pageImages.length);
+
+          for (var j = 0; j < batch.length; j++) {
+            var pi = batch[j];
+            var text = texts[j] || '';
+            var preview = text.trim().slice(0, 50).replace(/\n/g, ' ');
+            
+          }
+
+          if (completed === totalBatches) resolve();
+        }).catch(function(err) {
+          if (!failed) { failed = true; reject(err); }
+        });
+      }
+
+      // Fire each batch staggered by STAGGER ms — parallel execution, rate-safe dispatch
+      for (var b = 0; b < totalBatches; b++) {
+        (function(idx) {
+          setTimeout(function() { if (!failed) dispatchBatch(idx); }, idx * STAGGER);
+        })(b);
+      }
+    });
+
+    // Reassemble results in original page order
+    var results = [];
+    for (var b = 0; b < totalBatches; b++) {
+      var entry = resultsMap[b];
+      for (var j = 0; j < entry.batch.length; j++) {
+        results.push({ text: entry.texts[j] || '', pageNum: entry.batch[j].originalPage, side: entry.batch[j].side });
+      }
+    }
+
+    setProgress(88, 'Gerando EPUB...');
+    addLog('Montando EPUB...');
+    epubBlob = buildEPUB(results, title, author, lang);
+    setProgress(100, 'Concluído!');
+
+    var words = results.reduce(function (s, p) {
+      return s + p.text.split(/\s+/).filter(function (w) { return w.length > 2; }).length;
+    }, 0);
+    addLog('✓ ' + results.length + ' páginas · ~' + words.toLocaleString('pt-BR') + ' palavras', 'ok');
+
+    $('resultStats').textContent = '✓ EPUB gerado — ' + results.length + ' páginas · ~' + words.toLocaleString('pt-BR') + ' palavras';
+    $('resultSection').style.display = 'flex';
+
+    $('downloadBtn').onclick = function () {
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(epubBlob);
+      a.download = title.replace(/\s+/g, '_') + '.epub';
+      a.click();
+    };
+
+  } catch (err) {
+    addLog(err.message, 'err');
+    console.error(err);
+    $('processBtn').disabled = false;
+  }
+});
+
+
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function setProgress(pct, label) {
+  $('progressFill').style.width = pct + '%';
+  $('progressPct').textContent = Math.round(pct) + '%';
+  if (label) {
+    var sl = $('statusLine');
+    sl.textContent = label;
+    sl.className = 'status-line';
+  }
+}
+
+function addLog(msg, type) {
+  // Errors shown separately; everything else updates the single status line
+  if (type === 'err') {
+    var d = document.createElement('div');
+    d.textContent = msg;
+    $('logErrors').appendChild(d);
+  } else {
+    var sl = $('statusLine');
+    sl.textContent = msg;
+    sl.className = 'status-line' + (type ? ' ' + type : '');
+  }
+}
+
+function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+// ── Extract pages ─────────────────────────────────────────────────────────────
+async function extractPages(doc, splitDouble, onProgress) {
+  var pages = [];
+  var total = doc.numPages;
+  for (var i = 1; i <= total; i++) {
+    onProgress(i, total);
+    var page = await doc.getPage(i);
+    // Scale 1.2 — sufficient for OCR, ~35% fewer pixels than 1.5
+    var vp = page.getViewport({ scale: 1.2 });
+    var c = document.createElement('canvas');
+    c.width = vp.width; c.height = vp.height;
+    await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
+    var isDouble = splitDouble && (vp.width / vp.height > 1.4);
+    if (isDouble) {
+      var half = Math.floor(c.width / 2);
+      ['esq', 'dir'].forEach(function (side, idx) {
+        var cv = document.createElement('canvas');
+        cv.width = half; cv.height = c.height;
+        cv.getContext('2d').drawImage(c, idx * half, 0, half, c.height, 0, 0, half, c.height);
+        pages.push({ dataUrl: cv.toDataURL('image/jpeg', 0.78), originalPage: i, side: side, wasSplit: true });
+      });
+    } else {
+      pages.push({ dataUrl: c.toDataURL('image/jpeg', 0.78), originalPage: i, side: null, wasSplit: false });
+    }
+  }
+  return pages;
+}
+
+// ── Gemini OCR (batch) ────────────────────────────────────────────────────────
+// Sends up to 3 pages per API call. Prompt uses page markers so the model
+// returns sections clearly delimited for splitting.
+async function geminiOCRBatch(pages, lang, clean) {
+  var langMap = { pt: 'português', en: 'inglês', es: 'espanhol', fr: 'francês', de: 'alemão', it: 'italiano', la: 'latim' };
+  var n = pages.length;
+
+  // Build parts: alternate image + label for each page
+  var parts = [];
+  for (var i = 0; i < n; i++) {
+    parts.push({ inline_data: { mime_type: 'image/jpeg', data: pages[i].dataUrl.split(',')[1] } });
+    parts.push({ text: '--- IMAGEM ' + (i + 1) + ' ---' });
+  }
+
+  var prompt =
+    'Você receberá ' + n + ' imagem(ns) de páginas escaneadas de livro antigo.\n' +
+    'Para CADA imagem, transcreva TODO o texto visível do início ao fim.\n' +
+    'FORMATO DA RESPOSTA — obrigatório:\n' +
+    '=== PAGINA 1 ===\n' +
+    '(texto da página 1)\n' +
+    (n > 1 ? '=== PAGINA 2 ===\n(texto da página 2)\n' : '') +
+    (n > 2 ? '=== PAGINA 3 ===\n(texto da página 3)\n' : '') +
+    'REGRAS:\n' +
+    '- Somente o texto transcrito, sem comentários\n' +
+    '- Idioma: ' + (langMap[lang] || 'português') + '\n' +
+    (clean ? '- Una hifenizações de fim de linha (ex: "ca-\\nsa" → "casa")\n' : '') +
+    '- Parágrafos separados por linha em branco\n' +
+    '- Notas de rodapé incluídas\n' +
+    '- Página ilegível ou em branco: escreva apenas [em branco]';
+
+  parts.push({ text: prompt });
+
+  var backoff = [15, 30, 60, 120];
+  var consecutive429 = 0;
+
+  for (var attempt = 0; attempt <= backoff.length; attempt++) {
+    try {
+      var res = await fetch(
+        'https://generativelanguage.googleapis.com/v1beta/models/' + workingModel + ':generateContent?key=' + apiKey,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: parts }],
+            generationConfig: { temperature: 0.1, maxOutputTokens: 8192 }
+          })
+        }
+      );
+
+      if (!res.ok) {
+        var errBody = await res.json().catch(function () { return {}; });
+        var errMsg = (errBody.error && errBody.error.message) || JSON.stringify(errBody);
+        if (res.status === 429 || res.status === 503 || res.status === 529) {
+          consecutive429++;
+          var retryMatch = errMsg.match(/retry in ([\d.]+)s/i);
+          var waitSec = retryMatch
+            ? Math.ceil(parseFloat(retryMatch[1])) + 3
+            : (attempt < backoff.length ? backoff[attempt] : backoff[backoff.length - 1]);
+          if (consecutive429 >= 2 && waitSec > 45) {
+            throw new Error(
+              'Cota diária da API esgotada. Aguarde até meia-noite (horário do Google) ' +
+              'ou ative o billing em aistudio.google.com.'
+            );
+          }
+          var label = res.status === 429 ? 'Rate limit' : 'Servidor ocupado';
+          addLog('⏳ ' + label + ' — aguardando ' + waitSec + 's...', 'warn');
+          await sleep(waitSec * 1000);
+          continue;
+        }
+        throw new Error('Gemini ' + res.status + ': ' + errMsg.slice(0, 200));
+      }
+
+      var data = await res.json();
+      var full = (
+        data.candidates &&
+        data.candidates[0] &&
+        data.candidates[0].content &&
+        data.candidates[0].content.parts &&
+        data.candidates[0].content.parts[0] &&
+        data.candidates[0].content.parts[0].text
+      ) || '';
+
+      // Split response by === PAGINA N === markers
+      var texts = [];
+      var sections = full.split(/===\s*PAGINA\s*\d+\s*===/i);
+      // sections[0] is before first marker (usually empty), rest are page texts
+      for (var k = 1; k <= n; k++) {
+        texts.push(sections[k] ? sections[k].trim() : '');
+      }
+      // Fallback: if model didn't use markers and n=1, return full text
+      if (texts.every(function(t){ return t === ''; })) {
+        texts = [full.trim()];
+        for (var m = 1; m < n; m++) texts.push('');
+      }
+      return texts;
+
+    } catch (e) {
+      if (e.message.startsWith('Gemini') || e.message.startsWith('Cota')) throw e;
+      addLog('Erro de rede: ' + e.message, 'err');
+      if (attempt < backoff.length) { await sleep(5000); continue; }
+      throw e;
+    }
+  }
+  throw new Error('Falha após todas as tentativas. Tente novamente em alguns minutos.');
+}
+
+// ── EPUB builder ──────────────────────────────────────────────────────────────
+function buildEPUB(pages, title, author, lang) {
+  var valid = pages.filter(function (p) { return p.text.trim() && p.text.trim() !== '[em branco]'; });
+  var chunkSize = 10;
+  var chapters = [];
+  for (var i = 0; i < valid.length; i += chunkSize) {
+    var num = Math.floor(i / chunkSize) + 1;
+    var html = valid.slice(i, i + chunkSize).map(function (p) {
+      return p.text.split(/\n\n+/).map(function (para) {
+        return para.trim() ? '<p>' + esc(para.replace(/\n/g, ' ').trim()) + '</p>' : '';
+      }).filter(Boolean).join('\n');
+    }).join('\n<hr/>\n');
+    chapters.push({ num: num, html: html });
+  }
+
+  var files = {};
+  files['mimetype'] = 'application/epub+zip';
+  files['META-INF/container.xml'] = '<?xml version="1.0" encoding="UTF-8"?><container version="1.0" xmlns="urn:oasis:schemas:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>';
+  var manifest = chapters.map(function (c) { return '<item id="c' + c.num + '" href="c' + c.num + '.xhtml" media-type="application/xhtml+xml"/>'; }).join('');
+  var spine    = chapters.map(function (c) { return '<itemref idref="c' + c.num + '"/>'; }).join('');
+  files['OEBPS/content.opf'] = '<?xml version="1.0" encoding="UTF-8"?><package xmlns="http://www.idpf.org/2007/opf" unique-identifier="uid" version="2.0"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:title>' + esc(title) + '</dc:title><dc:creator>' + esc(author) + '</dc:creator><dc:language>' + lang + '</dc:language><dc:identifier id="uid">epubly-' + Date.now() + '</dc:identifier></metadata><manifest><item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/><item id="css" href="style.css" media-type="text/css"/>' + manifest + '</manifest><spine toc="ncx">' + spine + '</spine></package>';
+  var navPts   = chapters.map(function (c, i) { return '<navPoint id="n' + c.num + '" playOrder="' + (i + 1) + '"><navLabel><text>Capítulo ' + c.num + '</text></navLabel><content src="c' + c.num + '.xhtml"/></navPoint>'; }).join('');
+  files['OEBPS/toc.ncx'] = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE ncx PUBLIC "-//NISO//DTD ncx 2005-1//EN" "http://www.daisy.org/z3986/2005/ncx-2005-1.dtd"><ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1"><head><meta name="dtb:uid" content="epubly-' + Date.now() + '"/></head><docTitle><text>' + esc(title) + '</text></docTitle><navMap>' + navPts + '</navMap></ncx>';
+  files['OEBPS/style.css'] = 'body{font-family:Georgia,serif;font-size:1em;line-height:1.75;margin:1em 1.5em;color:#1a1410}p{margin:0 0 .8em;text-indent:1.5em}p:first-child{text-indent:0}hr{border:none;border-top:1px solid #ccc;margin:2em auto;width:40%}';
+  chapters.forEach(function (c) {
+    files['OEBPS/c' + c.num + '.xhtml'] = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="' + lang + '"><head><meta http-equiv="Content-Type" content="application/xhtml+xml;charset=utf-8"/><title>' + esc(title) + '</title><link rel="stylesheet" type="text/css" href="style.css"/></head><body>' + c.html + '</body></html>';
+  });
+  return zipBlob(files);
+}
+
+function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+// ── ZIP ───────────────────────────────────────────────────────────────────────
+function zipBlob(files) {
+  var enc = new TextEncoder();
+  var entries = [];
+  var offset = 0;
+  Object.keys(files).forEach(function (name) {
+    var nameB = enc.encode(name);
+    var data  = typeof files[name] === 'string' ? enc.encode(files[name]) : files[name];
+    var crc   = crc32(data);
+    var lh = new Uint8Array(30 + nameB.length);
+    var lv = new DataView(lh.buffer);
+    lv.setUint32(0, 0x04034b50, true); lv.setUint16(4, 20, true);
+    lv.setUint16(6, 0, true); lv.setUint16(8, 0, true);
+    lv.setUint16(10, 0, true); lv.setUint16(12, 0, true);
+    lv.setUint32(14, crc, true); lv.setUint32(18, data.length, true); lv.setUint32(22, data.length, true);
+    lv.setUint16(26, nameB.length, true); lv.setUint16(28, 0, true);
+    lh.set(nameB, 30);
+    entries.push({ nameB: nameB, crc: crc, size: data.length, offset: offset, lh: lh, data: data });
+    offset += lh.length + data.length;
+  });
+  var cds = entries.map(function (e) {
+    var cd = new Uint8Array(46 + e.nameB.length);
+    var dv = new DataView(cd.buffer);
+    dv.setUint32(0, 0x02014b50, true); dv.setUint16(4, 20, true); dv.setUint16(6, 20, true);
+    dv.setUint16(8, 0, true); dv.setUint16(10, 0, true); dv.setUint16(12, 0, true); dv.setUint16(14, 0, true);
+    dv.setUint32(16, e.crc, true); dv.setUint32(20, e.size, true); dv.setUint32(24, e.size, true);
+    dv.setUint16(28, e.nameB.length, true); dv.setUint16(30, 0, true); dv.setUint16(32, 0, true);
+    dv.setUint16(34, 0, true); dv.setUint16(36, 0, true); dv.setUint32(38, 0, true); dv.setUint32(42, e.offset, true);
+    cd.set(e.nameB, 46);
+    return cd;
+  });
+  var cdSize = cds.reduce(function (s, c) { return s + c.length; }, 0);
+  var eocd = new Uint8Array(22);
+  var ev = new DataView(eocd.buffer);
+  ev.setUint32(0, 0x06054b50, true); ev.setUint16(4, 0, true); ev.setUint16(6, 0, true);
+  ev.setUint16(8, entries.length, true); ev.setUint16(10, entries.length, true);
+  ev.setUint32(12, cdSize, true); ev.setUint32(16, offset, true); ev.setUint16(20, 0, true);
+  var parts = [];
+  entries.forEach(function (e) { parts.push(e.lh); parts.push(e.data); });
+  cds.forEach(function (cd) { parts.push(cd); });
+  parts.push(eocd);
+  return new Blob(parts, { type: 'application/epub+zip' });
+}
+
+function crc32(data) {
+  if (!crc32.t) {
+    crc32.t = new Uint32Array(256);
+    for (var i = 0; i < 256; i++) {
+      var c = i;
+      for (var j = 0; j < 8; j++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+      crc32.t[i] = c;
+    }
+  }
+  var c = 0xFFFFFFFF;
+  for (var i = 0; i < data.length; i++) c = crc32.t[(c ^ data[i]) & 0xFF] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+
+})();
+</script>
+
+<!-- Donate Modal -->
+<div class="modal-overlay" id="donateModal" style="display:none;">
+  <div class="modal" style="max-width:400px;">
+    <button class="modal-close" type="button" onclick="document.getElementById('donateModal').style.display='none';return false;">✕</button>
+
+    <div class="modal-header">
+      <div class="modal-tag">Doação via PIX</div>
+      <h2>Apoie o Epubly ♡</h2>
+      <p>O Epubly é gratuito e de código aberto. Se ele foi útil para você, considere uma contribuição para manter o projeto vivo.</p>
+    </div>
+
+    <div class="modal-body">
+      <div class="modal-divider"></div>
+
+      <div style="text-align:center;">
+        <div id="qrcode-container" style="
+          display:inline-block;
+          padding:16px;
+          background:white;
+          border-radius:16px;
+          border:1px solid var(--border-lit);
+          margin-bottom:1.25rem;
+        ">
+          <div id="qrcode"></div>
+        </div>
+
+        <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:.75rem;">
+          Escaneie com o app do seu banco
+        </p>
+
+        <div class="modal-divider" style="margin-top:1.25rem;"></div>
+        <p style="font-size:.75rem;color:var(--text-dim);margin-top:1rem;line-height:1.6;">
+          Qualquer valor é bem-vindo e ajuda a manter o servidor, o domínio
