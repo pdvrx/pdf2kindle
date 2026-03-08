@@ -1,272 +1,657 @@
-<!doctype html>
-<html lang="pt-br">
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>PDF2Kindle Web — OCR e Separação de Páginas</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fólio — PDF para EPUB</title>
+<script src="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;1,8..60,300&display=swap');
+:root{--ink:#1a1410;--paper:#f5f0e8;--aged:#e8dcc8;--rust:#8b3a2a;--gold:#c9a84c;--muted:#6b5c48}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Source Serif 4',Georgia,serif;background:var(--paper);color:var(--ink);min-height:100vh}
+header{border-bottom:1px solid var(--gold);padding:2rem 4rem;display:flex;align-items:baseline;gap:1.5rem}
+.logo{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:700}.logo span{color:var(--rust)}
+.tagline{font-size:.85rem;color:var(--muted);font-style:italic}
+main{max-width:860px;margin:0 auto;padding:3rem 2rem 5rem}
+.hero{text-align:center;margin-bottom:2.5rem}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,4vw,2.6rem);font-weight:400;margin-bottom:.8rem}
+.hero h1 em{color:var(--rust);font-style:italic}
+.hero p{color:var(--muted);max-width:520px;margin:0 auto;line-height:1.7;font-weight:300}
+.ornament{text-align:center;color:var(--gold);letter-spacing:.5em;margin:.6rem 0;opacity:.7}
+.api-notice{margin-bottom:1.5rem;padding:1rem 1.5rem;background:rgba(139,58,42,.06);border:1px solid rgba(139,58,42,.2);font-size:.875rem;color:var(--muted);line-height:1.6}
+.api-notice strong{color:var(--rust)}.api-notice a{color:var(--rust)}
+.api-key-row{display:flex;gap:.5rem;margin-top:.75rem}
+.api-key-row input{flex:1;padding:.5rem .75rem;background:var(--paper);border:1px solid var(--aged);font-family:'Courier New',monospace;font-size:.8rem;color:var(--ink);outline:none}
+.api-key-row input:focus{border-color:var(--gold)}
+.api-key-row button{padding:.5rem 1.2rem;background:var(--ink);color:var(--paper);font-size:.85rem;border:none;cursor:pointer;white-space:nowrap}
+.api-key-row button:hover{background:var(--rust)}
+#helpKeyBtn{background:transparent;color:var(--muted);border:1px solid var(--aged);width:32px;font-size:1rem;font-weight:700;padding:0;flex-shrink:0;}
+#helpKeyBtn:hover{background:var(--aged);color:var(--ink);}
+.upload-zone{border:1.5px dashed var(--gold);padding:3rem 2rem;text-align:center;cursor:pointer;transition:all .25s;background:rgba(201,168,76,.03)}
+.upload-zone:hover,.upload-zone.drag-over{border-color:var(--rust);background:rgba(139,58,42,.05)}
+.upload-zone .icon{font-size:2.8rem;display:block;margin-bottom:.8rem}
+.upload-zone h3{font-family:'Playfair Display',serif;font-weight:400;font-size:1.2rem}
+.upload-zone p{font-size:.875rem;color:var(--muted);margin:.4rem 0 1.2rem}
+.btn-select{display:inline-block;padding:.6rem 1.8rem;background:var(--ink);color:var(--paper);font-family:'Source Serif 4',serif;font-size:.875rem;border:none;cursor:pointer;transition:background .2s}
+.btn-select:hover{background:var(--rust)}
+.file-info{display:none;margin-top:1rem;padding:.75rem 1.25rem;background:rgba(201,168,76,.08);border-left:3px solid var(--gold);font-size:.875rem;align-items:center;gap:1rem}
+.file-info.show{display:flex}
+.settings-panel{display:none;margin-top:1.5rem;padding:1.5rem 2rem;background:rgba(255,255,255,.5);border:1px solid var(--aged)}
+.settings-panel.show{display:block}
+.settings-panel h4{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem}
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.setting-item label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:.3rem}
+.setting-item select,.setting-item input[type=text]{width:100%;padding:.5rem .75rem;background:var(--paper);border:1px solid var(--aged);font-family:'Source Serif 4',serif;font-size:.875rem;color:var(--ink);outline:none}
+.setting-item select:focus,.setting-item input:focus{border-color:var(--gold)}
+.toggles{display:flex;gap:2rem;flex-wrap:wrap;margin-top:1rem}
+.toggle-row{display:flex;align-items:center;gap:.75rem}
+.toggle{position:relative;width:40px;height:22px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:var(--aged);cursor:pointer;transition:background .2s;border-radius:11px}
+.toggle-slider::before{content:'';position:absolute;height:16px;width:16px;left:3px;top:3px;background:white;border-radius:50%;transition:transform .2s}
+.toggle input:checked + .toggle-slider{background:var(--rust)}
+.toggle input:checked + .toggle-slider::before{transform:translateX(18px)}
+.toggle-label{font-size:.875rem}
+.process-btn{display:none;width:100%;margin-top:1.5rem;padding:1rem;background:var(--rust);color:var(--paper);font-family:'Playfair Display',serif;font-size:1.1rem;letter-spacing:.08em;border:none;cursor:pointer;transition:background .2s}
+.process-btn:hover{background:#7a3222}.process-btn:disabled{background:var(--muted);cursor:not-allowed}.process-btn.show{display:block}
+.pages-preview{display:none;margin-top:2rem}.pages-preview.show{display:block}
+.pages-preview h4{font-family:'Playfair Display',serif;font-weight:400;color:var(--muted);margin-bottom:1rem}
+.pages-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:.75rem}
+.page-thumb{position:relative;background:white;border:1px solid var(--aged);aspect-ratio:3/4;overflow:hidden}
+.page-thumb canvas{width:100%;height:100%;display:block}
+.page-thumb .badge{position:absolute;bottom:0;left:0;right:0;background:rgba(26,20,16,.7);color:var(--paper);font-size:.6rem;text-align:center;padding:2px 4px;font-family:monospace}
+.page-thumb.double-page{border-color:var(--gold)}.page-thumb.double-page .badge{background:rgba(139,58,42,.85)}
+.progress-section{display:none;margin-top:2rem}.progress-section.show{display:block}
+.progress-header{display:flex;justify-content:space-between;margin-bottom:.5rem}
+.progress-label{font-family:'Playfair Display',serif}
+.progress-pct{font-size:.875rem;color:var(--muted)}
+.progress-track{height:3px;background:var(--aged);overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--rust),var(--gold));width:0%;transition:width .4s}
+.log-container{margin-top:1rem;max-height:260px;overflow-y:auto;padding:.75rem 1rem;background:#1a1410;border:1px solid var(--aged);font-family:'Courier New',monospace;font-size:.78rem;color:#aaa;line-height:1.9}
+.log-ok{color:#7ec870}.log-err{color:#e07070}.log-warn{color:#e0c070}
+.result-section{display:none;margin-top:2rem;text-align:center;padding:2.5rem;background:rgba(255,255,255,.6);border:1px solid var(--aged)}
+.result-section.show{display:block}
+.result-section .big-icon{font-size:3rem;display:block;margin-bottom:1rem}
+.result-section h3{font-family:'Playfair Display',serif;font-weight:400;font-size:1.4rem;margin-bottom:.5rem}
+.result-section p{color:var(--muted);font-size:.9rem;margin-bottom:1.5rem}
+.btn-dl{display:inline-block;padding:.7rem 2rem;background:var(--ink);color:var(--paper);font-size:.9rem;border:none;cursor:pointer;margin:0 .4rem;transition:background .2s;font-family:'Source Serif 4',serif}
+.btn-dl:hover{background:var(--rust)}.btn-dl.secondary{background:transparent;color:var(--ink);border:1px solid var(--ink)}.btn-dl.secondary:hover{background:var(--ink);color:var(--paper)}
+footer{text-align:center;padding:2rem;border-top:1px solid var(--aged);color:var(--muted);font-size:.8rem;font-style:italic}
+@media(max-width:600px){header{padding:1.5rem}.settings-grid{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>pdf2kindle</h1>
-    <div class="subtitle">Faça upload do seu PDF e gere uma versão pesquisável para Kindle — tudo no navegador.</div>
 
-    <div class="card">
-      <label>
-        <span>PDF</span>
-        <input id="file" type="file" accept="application/pdf" />
-      </label>
+<header>
+  <div class="logo">F<span>ó</span>lio</div>
+  <span class="tagline">restaurador de livros digitais</span>
+</header>
 
-      <label>
-        <span>Páginas (ex.: <em>1,3-5,-8</em>)</span>
-        <input id="pages" type="text" placeholder="vazio = todas" />
-      </label>
+<main>
+  <div class="hero">
+    <div class="ornament">— ✦ —</div>
+    <h1>Livros antigos merecem<br><em>nova vida</em></h1>
+    <p>Envie um PDF escaneado, mesmo torto ou de baixa qualidade. O Fólio separa páginas duplas, extrai o texto com IA e gera um EPUB legível no Kindle.</p>
+    <div class="ornament" style="margin-top:1rem">— ✦ —</div>
+  </div>
 
-      <label>
-        <span>Escala
-          <span class="tooltip">?
-            <span class="tooltiptext">Amplia as páginas antes do OCR para melhorar precisão e legibilidade no Kindle. Recomendo ≥ 1.5.</span>
-          </span>
-        </span>
-        <input id="scale" type="number" step="0.1" min="0.5" value="1.8" />
-      </label>
-
-      <label style="display:flex; align-items:center; gap:10px; margin-top:12px;">
-        <input id="split" type="checkbox" />
-        <span style="flex:1;">Separar páginas duplas</span>
-      </label>
-
-      <label style="display:flex; align-items:center; gap:10px;">
-        <input id="forceSplit" type="checkbox" />
-        <span>Forçar separação
-          <span class="tooltip">?
-            <span class="tooltiptext">Força a divisão de cada página em duas metades — útil para scans que sempre mostram duas páginas juntas.</span>
-          </span>
-        </span>
-      </label>
-
-      <label>
-        <span>Língua OCR</span>
-        <select id="lang">
-          <option value="por" selected>Português</option>
-          <option value="eng">Inglês</option>
-          <option value="spa">Espanhol</option>
-        </select>
-      </label>
-
-      <button id="go">Processar</button>
-      <a id="dl" download style="display:none; margin-top:10px;"></a>
-    </div> <!-- card -->
-
-    <div class="card" style="text-align:left;">
-      <div id="status">Aguardando arquivo…</div>
-      <progress id="prog" max="100" value="0"></progress>
-      <div id="log"></div>
+  <div class="api-notice">
+    <strong>Chave Google Gemini — gratuita</strong> — 1500 req/dia sem cartão.
+    Obtenha em <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com</a>.
+    <div class="api-key-row">
+      <input type="password" id="apiKeyInput" placeholder="AIzaSy..." autocomplete="off">
+      <button id="saveKeyBtn">Salvar</button>
+      <button id="helpKeyBtn" title="Como obter a chave">?</button>
     </div>
+    <small id="apiKeyStatus"></small>
+  </div>
 
-  </div> <!-- container -->
+  <!-- Help modal -->
+  <div id="helpModal" style="display:none;position:fixed;inset:0;background:rgba(26,20,16,.7);z-index:1000;align-items:center;justify-content:center;">
+    <div style="background:var(--paper);max-width:520px;width:90%;padding:2.5rem;position:relative;border:1px solid var(--gold);font-size:.9rem;line-height:1.7;color:var(--ink);">
+      <button id="closeModal" style="position:absolute;top:1rem;right:1.2rem;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--muted);">×</button>
+      <h2 style="font-family:'Playfair Display',serif;font-weight:400;font-size:1.4rem;margin-bottom:1.2rem;color:var(--shadow);">Como obter sua chave Gemini</h2>
+      <ol style="padding-left:1.4rem;display:flex;flex-direction:column;gap:.8rem;">
+        <li>Acesse <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--rust);font-weight:600;">aistudio.google.com/app/apikey</a></li>
+        <li>Faça login com sua conta Google</li>
+        <li>Clique em <strong>"Create API Key"</strong></li>
+        <li>Selecione um projeto (ou crie um novo)</li>
+        <li>Copie a chave gerada — começa com <code style="background:var(--aged);padding:1px 5px;border-radius:2px;">AIzaSy...</code></li>
+        <li>Cole no campo acima e clique em <strong>Salvar</strong></li>
+      </ol>
+      <div style="margin-top:1.5rem;padding:.85rem 1rem;background:rgba(201,168,76,.1);border-left:3px solid var(--gold);font-size:.82rem;color:var(--muted);">
+        <strong style="color:var(--ink);">Totalmente gratuito</strong> — 1500 requisições por dia, sem cartão de crédito. Cada página do PDF usa 1 requisição.
+      </div>
+    </div>
+  </div>
 
-  <!-- libs -->
-  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
-  <script>pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";</script>
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <div id="uploadZone" class="upload-zone">
+    <span class="icon">📖</span>
+    <h3>Arraste seu PDF aqui</h3>
+    <p>ou clique no botão abaixo</p>
+    <button class="btn-select" id="selectFileBtn">Selecionar PDF</button>
+  </div>
+  <input type="file" id="fileInput" accept=".pdf" style="display:none">
 
-  <script>
-  const $ = id => document.getElementById(id);
-  const statusEl = $("status");
-  const progEl = $("prog");
-  const logEl = $("log");
-  const dlEl = $("dl");
+  <div class="file-info" id="fileInfo">
+    <span style="font-size:1.5rem">📄</span>
+    <div>
+      <strong id="fileName"></strong><br>
+      <span id="fileDetails" style="color:var(--muted)"></span>
+    </div>
+  </div>
 
-  function log(msg) {
-    logEl.textContent += msg + "\n";
-    logEl.scrollTop = logEl.scrollHeight;
+  <div class="settings-panel" id="settingsPanel">
+    <h4>⚙ Configurações</h4>
+    <div class="settings-grid">
+      <div class="setting-item">
+        <label>Título</label>
+        <input type="text" id="bookTitle" placeholder="Ex: Dom Casmurro">
+      </div>
+      <div class="setting-item">
+        <label>Autor</label>
+        <input type="text" id="bookAuthor" placeholder="Ex: Machado de Assis">
+      </div>
+      <div class="setting-item">
+        <label>Idioma</label>
+        <select id="bookLang">
+          <option value="pt">Português</option>
+          <option value="en">Inglês</option>
+          <option value="es">Espanhol</option>
+          <option value="fr">Francês</option>
+          <option value="de">Alemão</option>
+          <option value="it">Italiano</option>
+          <option value="la">Latim</option>
+        </select>
+      </div>
+    </div>
+    <div class="toggles">
+      <div class="toggle-row">
+        <label class="toggle">
+          <input type="checkbox" id="splitDouble" checked>
+          <span class="toggle-slider"></span>
+        </label>
+        <span class="toggle-label">Separar páginas duplas</span>
+      </div>
+      <div class="toggle-row">
+        <label class="toggle">
+          <input type="checkbox" id="cleanText" checked>
+          <span class="toggle-slider"></span>
+        </label>
+        <span class="toggle-label">Corrigir hifenizações</span>
+      </div>
+    </div>
+  </div>
+
+  <button class="process-btn" id="processBtn">Converter para EPUB</button>
+
+  <div class="pages-preview" id="pagesPreview">
+    <h4>Prévia das páginas</h4>
+    <div class="pages-grid" id="pagesGrid"></div>
+  </div>
+
+  <div class="progress-section" id="progressSection">
+    <div class="progress-header">
+      <span class="progress-label" id="progressLabel">Processando...</span>
+      <span class="progress-pct" id="progressPct">0%</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="log-container" id="logContainer"></div>
+  </div>
+
+  <div class="result-section" id="resultSection">
+    <span class="big-icon">📚</span>
+    <h3>EPUB gerado com sucesso</h3>
+    <p id="resultStats"></p>
+    <button class="btn-dl" id="downloadBtn">⬇ Baixar EPUB</button>
+    <button class="btn-dl secondary" id="resetBtn">Novo PDF</button>
+  </div>
+</main>
+
+<footer>Fólio — OCR via Google Gemini (gratuito) · compatível com Kindle, Kobo, Apple Books</footer>
+
+<script>
+(function () {
+'use strict';
+
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+
+// ── State ─────────────────────────────────────────────────────────────────────
+var apiKey   = localStorage.getItem('folio_api_key') || '';
+var pdfFile  = null;
+var pdfDoc   = null;
+var epubBlob = null;
+
+// Candidate model names to try in order
+var MODELS = [
+  'gemini-2.0-flash',
+  'gemini-1.5-flash',
+  'gemini-1.5-flash-latest',
+  'gemini-1.5-flash-8b'
+];
+var workingModel = localStorage.getItem('folio_model') || null;
+
+function $(id) { return document.getElementById(id); }
+
+// ── Restore key ───────────────────────────────────────────────────────────────
+if (apiKey) {
+  $('apiKeyInput').value = apiKey;
+  setStatus('✓ Chave carregada' + (workingModel ? ' · modelo: ' + workingModel : ''), 'green');
+}
+
+function setStatus(msg, color) {
+  $('apiKeyStatus').textContent = msg;
+  $('apiKeyStatus').style.color = color === 'green' ? '#5a7a3a' : color === 'red' ? '#8b3a2a' : '#6b5c48';
+}
+
+// ── Save key ──────────────────────────────────────────────────────────────────
+$('saveKeyBtn').addEventListener('click', function () {
+  var k = $('apiKeyInput').value.trim();
+  if (!k.startsWith('AIza')) {
+    alert('Chave inválida. Deve começar com AIza...\nObtanhe em: https://aistudio.google.com/app/apikey');
+    return;
   }
+  apiKey = k;
+  localStorage.setItem('folio_api_key', k);
+  setStatus('✓ Chave salva. Clique em "Testar" para verificar.', 'green');
+});
 
-  function interpretarPaginas(str, total) {
-    if (!str || !str.trim()) return Array.from({length: total}, (_, i) => i);
-    const paginas = new Set();
-    str = str.replace(/\s+/g, "");
-    for (const parte of str.split(",")) {
-      if (!parte) continue;
-      if (parte.includes("-")) {
-        if (parte.startsWith("-")) {
-          const fim = parseInt(parte.slice(1), 10);
-          const inicio = paginas.size ? (Math.max(...paginas) + 1) : 1;
-          for (let p = inicio; p <= fim; p++) paginas.add(p-1);
-        } else {
-          const [ini, fim] = parte.split("-").map(n => parseInt(n, 10));
-          for (let p = ini; p <= fim; p++) paginas.add(p-1);
-        }
-      } else {
-        paginas.add(parseInt(parte, 10) - 1);
-      }
-    }
-    return Array.from(paginas).filter(p => p >= 0 && p < total).sort((a,b)=>a-b);
+// ── Help modal ────────────────────────────────────────────────────────────────
+$('helpKeyBtn').addEventListener('click', function () {
+  $('helpModal').style.display = 'flex';
+});
+$('closeModal').addEventListener('click', function () {
+  $('helpModal').style.display = 'none';
+});
+$('helpModal').addEventListener('click', function (e) {
+  if (e.target === $('helpModal')) $('helpModal').style.display = 'none';
+});
+
+// ── File input ────────────────────────────────────────────────────────────────
+$('fileInput').addEventListener('change', function () {
+  if ($('fileInput').files[0]) handleFile($('fileInput').files[0]);
+});
+
+$('selectFileBtn').addEventListener('click', function (e) {
+  e.stopPropagation();
+  $('fileInput').click();
+});
+
+$('uploadZone').addEventListener('click', function (e) {
+  if (e.target.id === 'selectFileBtn') return;
+  $('fileInput').click();
+});
+
+// ── Drag & drop ───────────────────────────────────────────────────────────────
+window.addEventListener('dragover', function (e) { e.preventDefault(); });
+window.addEventListener('drop', function (e) { e.preventDefault(); });
+
+$('uploadZone').addEventListener('dragover', function (e) {
+  e.preventDefault(); e.stopPropagation();
+  $('uploadZone').classList.add('drag-over');
+});
+$('uploadZone').addEventListener('dragleave', function (e) {
+  e.preventDefault(); e.stopPropagation();
+  $('uploadZone').classList.remove('drag-over');
+});
+$('uploadZone').addEventListener('drop', function (e) {
+  e.preventDefault(); e.stopPropagation();
+  $('uploadZone').classList.remove('drag-over');
+  var f = e.dataTransfer.files[0];
+  if (!f) return;
+  if (!f.name.toLowerCase().endsWith('.pdf')) { alert('Selecione um arquivo .pdf'); return; }
+  handleFile(f);
+});
+
+// ── Load PDF ──────────────────────────────────────────────────────────────────
+async function handleFile(file) {
+  pdfFile = file;
+  var mb = (file.size / 1048576).toFixed(2);
+  var buf = await file.arrayBuffer();
+  pdfDoc = await pdfjsLib.getDocument({ data: buf }).promise;
+  var n = pdfDoc.numPages;
+  $('fileName').textContent = file.name;
+  $('fileDetails').textContent = n + ' páginas · ' + mb + ' MB';
+  $('fileInfo').classList.add('show');
+  $('settingsPanel').classList.add('show');
+  $('processBtn').classList.add('show');
+  $('bookTitle').value = file.name.replace(/\.pdf$/i, '').replace(/[_-]/g, ' ');
+  await showThumbnails(pdfDoc, n);
+}
+
+async function showThumbnails(doc, total) {
+  $('pagesGrid').innerHTML = '';
+  $('pagesPreview').classList.add('show');
+  var show = Math.min(total, 20);
+  for (var i = 1; i <= show; i++) {
+    var page = await doc.getPage(i);
+    var vp = page.getViewport({ scale: 0.28 });
+    var c = document.createElement('canvas');
+    c.width = vp.width; c.height = vp.height;
+    await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
+    var isDouble = (vp.width / vp.height) > 1.4;
+    var wrap = document.createElement('div');
+    wrap.className = 'page-thumb' + (isDouble ? ' double-page' : '');
+    wrap.appendChild(c);
+    var badge = document.createElement('div');
+    badge.className = 'badge';
+    badge.textContent = isDouble ? 'p.' + i + ' dupla' : 'p.' + i;
+    wrap.appendChild(badge);
+    $('pagesGrid').appendChild(wrap);
   }
-
-  function temPaginasDuplas(width, height, limiar=1.25) {
-    const proporcao = width / height;
-    return proporcao > limiar;
+  if (total > show) {
+    var d = document.createElement('div');
+    d.style.cssText = 'display:flex;align-items:center;justify-content:center;font-size:.8rem;color:var(--muted);font-style:italic;';
+    d.textContent = '+' + (total - show) + ' páginas';
+    $('pagesGrid').appendChild(d);
   }
+}
 
-  function cropBordasPretas(imgData, w, h, limiar=30) {
-    const linhaMedia = (y) => {
-      let s=0;
-      for (let x=0; x<w; x++) s += imgData[(y*w + x)*4];
-      return s / w;
-    };
-    const colunaMedia = (x, top, bottom) => {
-      let s=0, n=0;
-      for (let y=top; y<=bottom; y++) { s += imgData[(y*w + x)*4]; n++; }
-      return s / n;
-    };
-    let topo=0, base=h-1, esq=0, dir=w-1;
-    for (let y=0; y<Math.floor(h/4); y++){ if (linhaMedia(y)>limiar){ topo=y; break; } }
-    for (let y=h-1; y>h-Math.floor(h/4); y--){ if (linhaMedia(y)>limiar){ base=y; break; } }
-    for (let x=0; x<Math.floor(w/4); x++){ if (colunaMedia(x, topo, base)>limiar){ esq=x; break; } }
-    for (let x=w-1; x>w-Math.floor(w/4); x--){ if (colunaMedia(x, topo, base)>limiar){ dir=x; break; } }
-    return {esq, topo, dir, base};
+// ── Process ───────────────────────────────────────────────────────────────────
+$('processBtn').addEventListener('click', async function () {
+  if (!apiKey) { alert('Insira sua chave Gemini primeiro.'); return; }
+  if (!workingModel) {
+    // auto-detect: use gemini-2.5-flash as default
+    workingModel = 'gemini-2.5-flash';
   }
+  if (!pdfFile) return;
 
-  async function rasterizarPagina(pdf, index, scaleFactor) {
-    const page = await pdf.getPage(index + 1);
-    const viewport = page.getViewport({ scale: 2.0 * scaleFactor });
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d", { willReadFrequently: true });
-    canvas.width = Math.floor(viewport.width);
-    canvas.height = Math.floor(viewport.height);
-    await page.render({ canvasContext: ctx, viewport }).promise;
-    return canvas;
-  }
+  $('processBtn').disabled = true;
+  $('progressSection').classList.add('show');
+  $('logContainer').innerHTML = '';
 
-  async function run() {
-    dlEl.style.display = "none";
-    const file = $("file").files?.[0];
-    if (!file) { alert("Selecione um PDF."); return; }
-    const escala = parseFloat($("scale").value) || 1.8;
-    const separar = $("split").checked;
-    const forcar = $("forceSplit").checked;
-    const lang = $("lang").value || "por";
+  var splitDouble = $('splitDouble').checked;
+  var cleanText   = $('cleanText').checked;
+  var lang        = $('bookLang').value;
+  var title       = $('bookTitle').value || 'Livro';
+  var author      = $('bookAuthor').value || 'Desconhecido';
 
-    statusEl.textContent = "Carregando PDF…";
-    logEl.textContent = "";
-    progEl.value = 0;
+  addLog('Modelo: ' + workingModel, 'ok');
+  addLog('Iniciando conversão...');
+  setProgress(2, 'Extraindo páginas...');
 
-    const arrayBuf = await file.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument({ data: arrayBuf }).promise;
-    const total = pdf.numPages;
-    log(`Páginas no PDF: ${total}`);
-
-    const selecionadas = interpretarPaginas($("pages").value, total);
-    if (selecionadas.length === 0) { alert("Nenhuma página válida selecionada."); return; }
-    log(`Selecionadas: ${selecionadas.map(p=>p+1).join(", ")}`);
-
-    const outPdf = await PDFLib.PDFDocument.create();
-    statusEl.textContent = "Inicializando OCR…";
-
-    // ✅ Tesseract.js v5: inicializa diretamente
-    const worker = await Tesseract.createWorker(lang);
-
-    let done = 0;
-    const totalSteps = selecionadas.length;
-    progEl.max = totalSteps;
-
-    for (const idx of selecionadas) {
-      statusEl.textContent = `Renderizando página ${idx+1}…`;
-      const canvas = await rasterizarPagina(pdf, idx, escala);
-      const ctx = canvas.getContext("2d");
-      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const crop = cropBordasPretas(imgData.data, canvas.width, canvas.height);
-      const cw = Math.max(1, crop.dir - crop.esq);
-      const ch = Math.max(1, crop.base - crop.topo);
-      const cropCanvas = document.createElement("canvas");
-      cropCanvas.width = cw; cropCanvas.height = ch;
-      cropCanvas.getContext("2d").drawImage(canvas, crop.esq, crop.topo, cw, ch, 0, 0, cw, ch);
-
-      const toSplit = separar && (forcar || temPaginasDuplas(cw, ch));
-      const parts = [];
-      if (toSplit) {
-        const overlap = Math.floor(cw * 0.08);
-        const mid = Math.floor(cw/2);
-        const left = document.createElement("canvas");
-        left.width = mid + overlap; left.height = ch + Math.floor(ch*0.10);
-        left.getContext("2d").fillStyle = "#fff";
-        left.getContext("2d").fillRect(0,0,left.width,left.height);
-        left.getContext("2d").drawImage(cropCanvas, 0, 0, mid+overlap, ch, 0, Math.floor(ch*0.05), mid+overlap, ch);
-        const right = document.createElement("canvas");
-        right.width = cw - mid + overlap; right.height = ch + Math.floor(ch*0.10);
-        right.getContext("2d").fillStyle = "#fff";
-        right.getContext("2d").fillRect(0,0,right.width,right.height);
-        right.getContext("2d").drawImage(cropCanvas, mid-overlap, 0, cw-(mid-overlap), ch, 0, Math.floor(ch*0.05), cw-(mid-overlap), ch);
-        parts.push(left, right);
-      } else {
-        parts.push(cropCanvas);
-      }
-
-      for (const part of parts) {
-        statusEl.textContent = `OCR página ${idx+1}${parts.length>1?" (metade)":""}…`;
-        const { data } = await worker.recognize(part, { rectangle: { left:0, top:0, width: part.width, height: part.height }});
-        const page = outPdf.addPage([part.width, part.height]);
-        const pngBytes = await (await fetch(part.toDataURL("image/png"))).arrayBuffer();
-        const png = await outPdf.embedPng(pngBytes);
-        page.drawImage(png, { x: 0, y: 0, width: part.width, height: part.height });
-
-        const font = await outPdf.embedFont(PDFLib.StandardFonts.Helvetica);
-        if (data && Array.isArray(data.words)) {
-          for (const w of data.words) {
-            const bb = w.bbox;
-            const text = w.text || (w.symbols ? w.symbols.map(s=>s.text).join("") : "");
-            if (!text || !bb) continue;
-            const x = bb.x0;
-            const y = part.height - bb.y1;
-            const height = bb.y1 - bb.y0;
-            const fontSize = Math.max(6, height * 0.9);
-            try {
-              page.drawText(text, {
-                x, y,
-                size: fontSize,
-                font,
-                color: PDFLib.rgb(1,1,1),
-                opacity: 0.0,
-              });
-            } catch(e) {
-              // ignora erro pontual
-            }
-          }
-        }
-      }
-
-      done++; progEl.value = done;
-      log(`Página ${idx+1} concluída.`);
-    }
-
-    await worker.terminate();
-    statusEl.textContent = "Finalizando PDF…";
-    const bytes = await outPdf.save();
-    const blob = new Blob([bytes], {type: "application/pdf"});
-    const url = URL.createObjectURL(blob);
-    const baseName = (file.name.replace(/\.pdf$/i, "")) || "saida";
-    dlEl.href = url;
-    dlEl.download = baseName + "-OCR.pdf";
-    dlEl.style.display = "inline-block";
-    dlEl.textContent = "⬇️ Baixar " + baseName + "-OCR.pdf";
-    statusEl.textContent = "Pronto!";
-    log("Concluído.");
-  }
-
-  $("go").addEventListener("click", () => {
-    run().catch(err => {
-      console.error(err);
-      statusEl.textContent = "Erro.";
-      log("Erro: " + (err?.message || err));
-      alert("Ocorreu um erro. Veja o log.");
+  try {
+    var pageImages = await extractPages(pdfDoc, splitDouble, function (i, t) {
+      setProgress(2 + (i / t) * 28, 'Extraindo página ' + i + '/' + t + '...');
     });
+    addLog('✓ ' + pageImages.length + ' imagens prontas', 'ok');
+    setProgress(30, 'OCR em andamento...');
+
+    var results = [];
+    for (var i = 0; i < pageImages.length; i++) {
+      var pi = pageImages[i];
+      addLog('OCR ' + (i + 1) + '/' + pageImages.length + (pi.wasSplit ? ' (dupla)' : '') + '...');
+      setProgress(30 + (i / pageImages.length) * 55, 'OCR: ' + (i + 1) + '/' + pageImages.length);
+      var text = await geminiOCR(pi.dataUrl, lang, cleanText);
+      results.push({ text: text, pageNum: pi.originalPage, side: pi.side });
+      var preview = text.trim().slice(0, 50).replace(/\n/g, ' ');
+      if (text.trim().length > 20)
+        addLog('  ✓ ' + preview + '...', 'ok');
+      else
+        addLog('  ⚠ pouco texto detectado', 'warn');
+    }
+
+    setProgress(88, 'Gerando EPUB...');
+    addLog('Montando EPUB...');
+    epubBlob = buildEPUB(results, title, author, lang);
+    setProgress(100, 'Concluído!');
+
+    var words = results.reduce(function (s, p) {
+      return s + p.text.split(/\s+/).filter(function (w) { return w.length > 2; }).length;
+    }, 0);
+    addLog('✓ Pronto: ' + results.length + ' páginas, ~' + words.toLocaleString('pt-BR') + ' palavras', 'ok');
+
+    $('resultStats').textContent = results.length + ' páginas · ~' + words.toLocaleString('pt-BR') + ' palavras';
+    $('resultSection').classList.add('show');
+
+    $('downloadBtn').onclick = function () {
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(epubBlob);
+      a.download = title.replace(/\s+/g, '_') + '.epub';
+      a.click();
+    };
+
+  } catch (err) {
+    addLog('❌ ' + err.message, 'err');
+    console.error(err);
+    $('processBtn').disabled = false;
+  }
+});
+
+$('resetBtn').addEventListener('click', function () {
+  pdfFile = null; pdfDoc = null; epubBlob = null;
+  $('fileInput').value = '';
+  ['fileInfo', 'settingsPanel', 'pagesPreview', 'progressSection', 'resultSection'].forEach(function (id) {
+    $(id).classList.remove('show');
   });
-  $("file").addEventListener("change", () => {
-    statusEl.textContent = $("file").files?.[0] ? "PDF carregado." : "Aguardando arquivo…";
+  $('processBtn').classList.remove('show');
+  $('processBtn').disabled = false;
+  $('pagesGrid').innerHTML = '';
+  $('logContainer').innerHTML = '';
+  $('progressFill').style.width = '0';
+  $('bookTitle').value = '';
+  $('bookAuthor').value = '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function setProgress(pct, label) {
+  $('progressFill').style.width = pct + '%';
+  $('progressPct').textContent = Math.round(pct) + '%';
+  if (label) $('progressLabel').textContent = label;
+}
+
+function addLog(msg, type) {
+  var d = document.createElement('div');
+  if (type) d.className = 'log-' + type;
+  var ts = new Date().toLocaleTimeString('pt-BR');
+  d.textContent = '[' + ts + '] ' + msg;
+  $('logContainer').appendChild(d);
+  $('logContainer').scrollTop = $('logContainer').scrollHeight;
+}
+
+function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+// ── Extract pages ─────────────────────────────────────────────────────────────
+async function extractPages(doc, splitDouble, onProgress) {
+  var pages = [];
+  var total = doc.numPages;
+  for (var i = 1; i <= total; i++) {
+    onProgress(i, total);
+    var page = await doc.getPage(i);
+    // Scale 1.5 — good quality for OCR without being too heavy
+    var vp = page.getViewport({ scale: 1.5 });
+    var c = document.createElement('canvas');
+    c.width = vp.width; c.height = vp.height;
+    await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
+    var isDouble = splitDouble && (vp.width / vp.height > 1.4);
+    if (isDouble) {
+      var half = Math.floor(c.width / 2);
+      ['esq', 'dir'].forEach(function (side, idx) {
+        var cv = document.createElement('canvas');
+        cv.width = half; cv.height = c.height;
+        cv.getContext('2d').drawImage(c, idx * half, 0, half, c.height, 0, 0, half, c.height);
+        pages.push({ dataUrl: cv.toDataURL('image/jpeg', 0.85), originalPage: i, side: side, wasSplit: true });
+      });
+    } else {
+      pages.push({ dataUrl: c.toDataURL('image/jpeg', 0.85), originalPage: i, side: null, wasSplit: false });
+    }
+  }
+  return pages;
+}
+
+// ── Gemini OCR — with loop retry, no recursion ────────────────────────────────
+async function geminiOCR(dataUrl, lang, clean) {
+  var langMap = { pt: 'português', en: 'inglês', es: 'espanhol', fr: 'francês', de: 'alemão', it: 'italiano', la: 'latim' };
+  var base64 = dataUrl.split(',')[1];
+  var prompt =
+    'Transcreva TODO o texto desta página escaneada de livro antigo, do início ao fim, sem omitir nada.\n' +
+    'REGRAS OBRIGATÓRIAS:\n' +
+    '- Retorne SOMENTE o texto transcrito, sem introdução, comentário ou explicação\n' +
+    '- Transcreva TODOS os parágrafos visíveis, não pare antes do fim da página\n' +
+    '- Idioma: ' + (langMap[lang] || 'português') + '\n' +
+    (clean
+      ? '- Una palavras hifenizadas no fim de linha (ex: "ca-\\nsa" vira "casa")\n'
+      : '') +
+    '- Separe parágrafos com linha em branco\n' +
+    '- Inclua notas de rodapé se houver\n' +
+    '- Se a página estiver em branco ou ilegível, responda apenas: [em branco]';
+
+  var maxAttempts = 4;
+  for (var attempt = 1; attempt <= maxAttempts; attempt++) {
+    // Throttle: 4s gap keeps us under 15 req/min
+    if (attempt === 1) await sleep(4000);
+
+    try {
+      var res = await fetch(
+        'https://generativelanguage.googleapis.com/v1beta/models/' + workingModel + ':generateContent?key=' + apiKey,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [
+              { inline_data: { mime_type: 'image/jpeg', data: base64 } },
+              { text: prompt }
+            ]}],
+            generationConfig: { temperature: 0.1, maxOutputTokens: 8192 }
+          })
+        }
+      );
+
+      // Log raw status always
+      if (!res.ok) {
+        var errBody = await res.json().catch(function () { return {}; });
+        var errMsg = errBody.error ? errBody.error.message : JSON.stringify(errBody);
+        addLog('  API ' + res.status + ': ' + errMsg.slice(0, 120), 'err');
+
+        if (res.status === 429) {
+          // Parse "retry in X.Xs" from the error message
+          var retryMatch = errMsg.match(/retry in ([\d.]+)s/i);
+          var retrySeconds = retryMatch ? Math.ceil(parseFloat(retryMatch[1])) + 5 : 60;
+          addLog('  ⏳ Rate limit — aguardando ' + retrySeconds + 's (tentativa ' + attempt + '/' + maxAttempts + ')', 'warn');
+          await sleep(retrySeconds * 1000);
+          continue;
+        }
+        throw new Error('Gemini ' + res.status + ': ' + errMsg);
+      }
+
+      var data = await res.json();
+      var text = (
+        data.candidates &&
+        data.candidates[0] &&
+        data.candidates[0].content &&
+        data.candidates[0].content.parts &&
+        data.candidates[0].content.parts[0] &&
+        data.candidates[0].content.parts[0].text
+      ) || '';
+      return text;
+
+    } catch (e) {
+      if (e.message.indexOf('Gemini') === 0) throw e; // rethrow API errors
+      addLog('  Erro de rede: ' + e.message, 'err');
+      if (attempt < maxAttempts) {
+        await sleep(5000);
+        continue;
+      }
+      throw e;
+    }
+  }
+  throw new Error('Falha após ' + maxAttempts + ' tentativas. Tente novamente mais tarde.');
+}
+
+// ── EPUB builder ──────────────────────────────────────────────────────────────
+function buildEPUB(pages, title, author, lang) {
+  var valid = pages.filter(function (p) { return p.text.trim() && p.text.trim() !== '[em branco]'; });
+  var chunkSize = 10;
+  var chapters = [];
+  for (var i = 0; i < valid.length; i += chunkSize) {
+    var num = Math.floor(i / chunkSize) + 1;
+    var html = valid.slice(i, i + chunkSize).map(function (p) {
+      return p.text.split(/\n\n+/).map(function (para) {
+        return para.trim() ? '<p>' + esc(para.replace(/\n/g, ' ').trim()) + '</p>' : '';
+      }).filter(Boolean).join('\n');
+    }).join('\n<hr/>\n');
+    chapters.push({ num: num, html: html });
+  }
+
+  var files = {};
+  files['mimetype'] = 'application/epub+zip';
+  files['META-INF/container.xml'] = '<?xml version="1.0" encoding="UTF-8"?><container version="1.0" xmlns="urn:oasis:schemas:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>';
+  var manifest = chapters.map(function (c) { return '<item id="c' + c.num + '" href="c' + c.num + '.xhtml" media-type="application/xhtml+xml"/>'; }).join('');
+  var spine    = chapters.map(function (c) { return '<itemref idref="c' + c.num + '"/>'; }).join('');
+  files['OEBPS/content.opf'] = '<?xml version="1.0" encoding="UTF-8"?><package xmlns="http://www.idpf.org/2007/opf" unique-identifier="uid" version="2.0"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:title>' + esc(title) + '</dc:title><dc:creator>' + esc(author) + '</dc:creator><dc:language>' + lang + '</dc:language><dc:identifier id="uid">folio-' + Date.now() + '</dc:identifier></metadata><manifest><item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/><item id="css" href="style.css" media-type="text/css"/>' + manifest + '</manifest><spine toc="ncx">' + spine + '</spine></package>';
+  var navPts   = chapters.map(function (c, i) { return '<navPoint id="n' + c.num + '" playOrder="' + (i + 1) + '"><navLabel><text>Capítulo ' + c.num + '</text></navLabel><content src="c' + c.num + '.xhtml"/></navPoint>'; }).join('');
+  files['OEBPS/toc.ncx'] = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE ncx PUBLIC "-//NISO//DTD ncx 2005-1//EN" "http://www.daisy.org/z3986/2005/ncx-2005-1.dtd"><ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1"><head><meta name="dtb:uid" content="folio-' + Date.now() + '"/></head><docTitle><text>' + esc(title) + '</text></docTitle><navMap>' + navPts + '</navMap></ncx>';
+  files['OEBPS/style.css'] = 'body{font-family:Georgia,serif;font-size:1em;line-height:1.75;margin:1em 1.5em;color:#1a1410}p{margin:0 0 .8em;text-indent:1.5em}p:first-child{text-indent:0}hr{border:none;border-top:1px solid #ccc;margin:2em auto;width:40%}';
+  chapters.forEach(function (c) {
+    files['OEBPS/c' + c.num + '.xhtml'] = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="' + lang + '"><head><meta http-equiv="Content-Type" content="application/xhtml+xml;charset=utf-8"/><title>' + esc(title) + '</title><link rel="stylesheet" type="text/css" href="style.css"/></head><body>' + c.html + '</body></html>';
   });
-  </script>
+  return zipBlob(files);
+}
+
+function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+// ── ZIP ───────────────────────────────────────────────────────────────────────
+function zipBlob(files) {
+  var enc = new TextEncoder();
+  var entries = [];
+  var offset = 0;
+  Object.keys(files).forEach(function (name) {
+    var nameB = enc.encode(name);
+    var data  = typeof files[name] === 'string' ? enc.encode(files[name]) : files[name];
+    var crc   = crc32(data);
+    var lh = new Uint8Array(30 + nameB.length);
+    var lv = new DataView(lh.buffer);
+    lv.setUint32(0, 0x04034b50, true); lv.setUint16(4, 20, true);
+    lv.setUint16(6, 0, true); lv.setUint16(8, 0, true);
+    lv.setUint16(10, 0, true); lv.setUint16(12, 0, true);
+    lv.setUint32(14, crc, true); lv.setUint32(18, data.length, true); lv.setUint32(22, data.length, true);
+    lv.setUint16(26, nameB.length, true); lv.setUint16(28, 0, true);
+    lh.set(nameB, 30);
+    entries.push({ nameB: nameB, crc: crc, size: data.length, offset: offset, lh: lh, data: data });
+    offset += lh.length + data.length;
+  });
+  var cds = entries.map(function (e) {
+    var cd = new Uint8Array(46 + e.nameB.length);
+    var dv = new DataView(cd.buffer);
+    dv.setUint32(0, 0x02014b50, true); dv.setUint16(4, 20, true); dv.setUint16(6, 20, true);
+    dv.setUint16(8, 0, true); dv.setUint16(10, 0, true); dv.setUint16(12, 0, true); dv.setUint16(14, 0, true);
+    dv.setUint32(16, e.crc, true); dv.setUint32(20, e.size, true); dv.setUint32(24, e.size, true);
+    dv.setUint16(28, e.nameB.length, true); dv.setUint16(30, 0, true); dv.setUint16(32, 0, true);
+    dv.setUint16(34, 0, true); dv.setUint16(36, 0, true); dv.setUint32(38, 0, true); dv.setUint32(42, e.offset, true);
+    cd.set(e.nameB, 46);
+    return cd;
+  });
+  var cdSize = cds.reduce(function (s, c) { return s + c.length; }, 0);
+  var eocd = new Uint8Array(22);
+  var ev = new DataView(eocd.buffer);
+  ev.setUint32(0, 0x06054b50, true); ev.setUint16(4, 0, true); ev.setUint16(6, 0, true);
+  ev.setUint16(8, entries.length, true); ev.setUint16(10, entries.length, true);
+  ev.setUint32(12, cdSize, true); ev.setUint32(16, offset, true); ev.setUint16(20, 0, true);
+  var parts = [];
+  entries.forEach(function (e) { parts.push(e.lh); parts.push(e.data); });
+  cds.forEach(function (cd) { parts.push(cd); });
+  parts.push(eocd);
+  return new Blob(parts, { type: 'application/epub+zip' });
+}
+
+function crc32(data) {
+  if (!crc32.t) {
+    crc32.t = new Uint32Array(256);
+    for (var i = 0; i < 256; i++) {
+      var c = i;
+      for (var j = 0; j < 8; j++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+      crc32.t[i] = c;
+    }
+  }
+  var c = 0xFFFFFFFF;
+  for (var i = 0; i < data.length; i++) c = crc32.t[(c ^ data[i]) & 0xFF] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+
+})();
+</script>
 </body>
 </html>
