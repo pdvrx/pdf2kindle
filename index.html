@@ -73,7 +73,2460 @@ header {
   letter-spacing: -.02em;
   color: var(--text);
 }
+.logo em { color: var(--accent); font-style: italic; }<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+  <link rel="icon" href="data:,">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Epubly — PDF para EPUB</title>
+<script src="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0e0e11;
+  --surface: #16161a;
+  --surface2: #1e1e24;
+  --border: #2a2a32;
+  --border-lit: #3d3d4d;
+  --accent: #c9855a;
+  --accent-dim: rgba(201,133,90,.15);
+  --accent-glow: rgba(201,133,90,.25);
+  --text: #e8e6e1;
+  --text-muted: #7a7888;
+  --text-dim: #4a4857;
+  --green: #5a9e6f;
+  --red: #c05a5a;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+
+/* Subtle noise texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: .4;
+}
+
+/* ── Layout ── */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid var(--border);
+  background: rgba(14,14,17,.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 0 2.5rem;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.9rem;
+  letter-spacing: -.02em;
+  color: var(--text);
+}
 .logo em { color: var(--accent); font-style: italic; }
+
+.header-right { display: flex; align-items: center; gap: .6rem; }
+.btn-change-key {
+  font-size: .78rem;
+  font-weight: 500;
+  letter-spacing: .04em;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid rgba(201,133,90,.3);
+  padding: .35rem 1rem;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+  font-family: 'DM Sans', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+}
+.btn-change-key:hover {
+  background: rgba(201,133,90,.25);
+  border-color: var(--accent);
+}
+.btn-donate {
+  font-size: .78rem;
+  font-weight: 500;
+  letter-spacing: .04em;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid rgba(201,133,90,.3);
+  padding: .35rem 1rem;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-donate:hover {
+  background: rgba(201,133,90,.25);
+  border-color: var(--accent);
+}
+
+main {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 4rem 2rem 2.5rem;
+  flex: 1;
+}
+
+/* ── Hero ── */
+.hero {
+  text-align: center;
+  margin-bottom: 3.5rem;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  font-size: .72rem;
+  font-weight: 500;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid var(--accent-dim);
+  background: var(--accent-dim);
+  padding: .35rem .9rem;
+  border-radius: 100px;
+  margin-bottom: 1.5rem;
+}
+.hero-badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
+}
+
+.hero h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -.02em;
+  margin-bottom: 1.2rem;
+  color: var(--text);
+}
+.hero h1 em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.hero p {
+  font-size: 1rem;
+  color: var(--text-muted);
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+/* ── Card ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.75rem;
+  margin-bottom: 1rem;
+  transition: border-color .2s;
+}
+.card:hover { border-color: var(--border-lit); }
+
+.card-label {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 1rem;
+}
+.card-label::before {
+  content: '';
+  display: block;
+  width: 3px; height: 12px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* ── API key section ── */
+.api-desc {
+  font-size: .875rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  line-height: 1.65;
+}
+
+.key-input-row {
+  display: flex;
+  gap: .5rem;
+  align-items: stretch;
+}
+
+.key-input-row input {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .65rem 1rem;
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: .8rem;
+  color: var(--text);
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+  min-width: 0;
+}
+.key-input-row input::placeholder { color: var(--text-dim); }
+.key-input-row input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: .65rem 1.3rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .85rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity .15s, transform .1s;
+}
+.btn-primary:hover { opacity: .88; }
+.btn-primary:active { transform: scale(.97); }
+
+.key-help-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  font-size: .78rem;
+  font-weight: 500;
+  color: var(--accent);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background .15s, border-color .15s, color .15s;
+  background: var(--accent-dim);
+  border: 1px solid rgba(201,133,90,.3);
+  padding: .4rem .9rem;
+  border-radius: 8px;
+  font-family: inherit;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.key-help-link:hover {
+  background: rgba(201,133,90,.25);
+  border-color: var(--accent);
+}
+.key-help-link svg { opacity: .7; flex-shrink: 0; }
+
+
+/* ── Upload zone ── */
+#uploadZone {
+  border: 1.5px dashed var(--border-lit);
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+  background: transparent;
+  margin-bottom: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+#uploadZone::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, var(--accent-dim) 0%, transparent 65%);
+  opacity: 0;
+  transition: opacity .3s;
+  pointer-events: none;
+}
+#uploadZone:hover::before,
+#uploadZone.drag-over::before { opacity: 1; }
+#uploadZone:hover,
+#uploadZone.drag-over {
+  border-color: var(--accent);
+  background: rgba(201,133,90,.03);
+}
+
+.upload-icon {
+  width: 52px; height: 52px;
+  background: var(--surface2);
+  border: 1px solid var(--border-lit);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.2rem;
+  font-size: 1.5rem;
+  transition: transform .2s;
+}
+#uploadZone:hover .upload-icon { transform: translateY(-2px); }
+/* Children must not intercept drag events — zone handles everything */
+#uploadZone .upload-icon,
+#uploadZone h3,
+#uploadZone p,
+#uploadZone #selectFileBtn { pointer-events: none; }
+
+#uploadZone h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.2rem;
+  font-weight: 400;
+  margin-bottom: .4rem;
+}
+#uploadZone p {
+  font-size: .85rem;
+  color: var(--text-muted);
+  margin-bottom: 1.4rem;
+}
+
+.btn-ghost {
+  display: inline-block;
+  background: transparent;
+  border: 1px solid var(--border-lit);
+  border-radius: 8px;
+  padding: .55rem 1.4rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .85rem;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.btn-ghost:hover {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+/* ── File info ── */
+.provider-tabs {
+  display: flex;
+  gap: .35rem;
+  margin-top: .5rem;
+}
+.provider-tab {
+  font-size: .72rem;
+  font-weight: 500;
+  padding: .25rem .75rem;
+  border-radius: 100px;
+  border: 1px solid var(--border-lit);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all .15s;
+}
+.provider-tab.active {
+  background: var(--accent-dim);
+  border-color: rgba(201,133,90,.4);
+  color: var(--accent);
+}
+.provider-tab:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
+
+.estimate-strip {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: .6rem 1rem;
+  margin-bottom: .75rem;
+  font-size: .75rem;
+  color: var(--text-muted);
+}
+.estimate-item { display: flex; align-items: center; gap: .4rem; flex: 1; justify-content: center; }
+.estimate-icon { font-size: .8rem; opacity: .7; }
+.estimate-label { font-weight: 500; color: var(--text); }
+.estimate-sep { width: 1px; height: 1.2em; background: var(--border-lit); flex-shrink: 0; }
+
+.file-info {
+  display: none;
+  align-items: center;
+  gap: 1rem;
+  padding: .9rem 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  font-size: .875rem;
+}
+.file-info.show { display: flex; }
+.file-icon {
+  width: 36px; height: 36px;
+  background: var(--accent-dim);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.file-meta strong { display: block; color: var(--text); font-weight: 500; }
+.file-meta span { color: var(--text-muted); font-size: .8rem; }
+
+/* ── Settings ── */
+.settings-panel {
+  display: none;
+  margin-bottom: 1rem;
+}
+.settings-panel.show { display: block; }
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .75rem;
+  margin-bottom: .75rem;
+}
+
+.setting-item label {
+  display: block;
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: .4rem;
+}
+
+.setting-item input,
+.setting-item select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .6rem .9rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .875rem;
+  color: var(--text);
+  outline: none;
+  transition: border-color .15s;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.setting-item input:focus,
+.setting-item select:focus { border-color: var(--accent); }
+.setting-item select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a7888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right .8rem center;
+  padding-right: 2rem;
+}
+
+.toggles {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .55rem 1rem;
+  cursor: pointer;
+  transition: border-color .15s;
+  flex: 1;
+  min-width: 180px;
+}
+.toggle-row:hover { border-color: var(--border-lit); }
+.toggle-hint { font-size: .7rem; color: var(--text-dim); margin-top: .15rem; line-height: 1.4; }
+
+.toggle {
+  position: relative;
+  width: 36px; height: 20px;
+  flex-shrink: 0;
+}
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--border-lit);
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background .2s;
+}
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  height: 14px; width: 14px;
+  left: 3px; top: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: transform .2s;
+}
+.toggle input:checked + .toggle-slider { background: var(--accent); }
+.toggle input:checked + .toggle-slider::before { transform: translateX(16px); }
+.toggle-label { font-size: .82rem; color: var(--text-muted); font-weight: 400; }
+
+/* ── Process button ── */
+.process-btn {
+  display: none;
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: .95rem;
+  background: var(--accent);
+  color: white;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  letter-spacing: .01em;
+  transition: opacity .15s, transform .1s, box-shadow .2s;
+  box-shadow: 0 4px 24px var(--accent-glow);
+}
+.process-btn:hover { opacity: .9; box-shadow: 0 6px 32px rgba(201,133,90,.35); }
+.process-btn:active { transform: scale(.99); }
+.process-btn:disabled { background: var(--surface2); color: var(--text-dim); cursor: not-allowed; box-shadow: none; }
+.process-btn.show { display: block; }
+
+/* ── Page thumbs ── */
+.pages-preview { display: none; margin-bottom: 1rem; }
+.pages-preview.show { display: block; }
+.pages-toolbar { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: .75rem; }
+.pages-preview-header {
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: .2rem;
+}
+.page-range-hint { font-size: .72rem; color: var(--text-dim); line-height: 1.5; }
+.page-range-hint code { background: var(--surface2); border: 1px solid var(--border); border-radius: 3px; padding: 1px 5px; font-family: 'Courier New',monospace; font-size: .7rem; color: var(--accent); }
+.page-range-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: .25rem; flex-shrink: 0; }
+.page-range-input { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: .45rem .85rem; font-family: 'Courier New',monospace; font-size: .8rem; color: var(--text); outline: none; width: 210px; transition: border-color .15s, box-shadow .15s; }
+.page-range-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+.page-range-input.invalid { border-color: var(--red); }
+.page-range-status { font-size: .7rem; color: var(--text-muted); min-height: 1em; }
+.page-range-status.ok { color: var(--green); }
+.page-range-status.err { color: var(--red); }
+.page-thumb.dimmed { opacity: .22; }
+.pages-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: .5rem;
+}
+.page-thumb {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  aspect-ratio: 3/4;
+  overflow: hidden;
+}
+.page-thumb canvas { width: 100%; height: 100%; display: block; }
+.page-thumb .badge {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(14,14,17,.85);
+  color: var(--text-muted);
+  font-size: .55rem;
+  text-align: center;
+  padding: 2px 4px;
+  font-family: monospace;
+}
+.page-thumb.double-page { border-color: rgba(201,133,90,.4); }
+.page-thumb.double-page .badge { background: rgba(201,133,90,.8); color: white; }
+
+/* ── Progress ── */
+.progress-section { display: none; margin-bottom: 1rem; }
+.progress-section.show { display: block; }
+
+.progress-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 1rem;
+}
+.progress-label {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.05rem;
+}
+.progress-pct {
+  font-size: .8rem;
+  color: var(--accent);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.progress-track {
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #e8a87c);
+  width: 0%;
+  transition: width .4s cubic-bezier(.4,0,.2,1);
+  border-radius: 2px;
+}
+
+.status-line {
+  font-size: .78rem;
+  color: var(--text-muted);
+  margin-top: .65rem;
+  min-height: 1.2em;
+  transition: color .2s;
+}
+.status-line.ok { color: var(--green); }
+.status-line.warn { color: #c9a84c; }
+.status-line.err { color: var(--red); }
+.log-errors {
+  margin-top: .4rem;
+  font-size: .72rem;
+  color: var(--red);
+  font-family: 'Courier New', monospace;
+}
+
+/* ── Result ── */
+.result-inline {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: .85rem;
+  padding-top: 1.1rem;
+  margin-top: .75rem;
+  border-top: 1px solid var(--border);
+}
+.result-ok-text {
+  font-size: .85rem;
+  color: var(--green);
+  font-weight: 500;
+  margin: 0;
+}
+
+.btn-download {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: .75rem 1.75rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity .15s;
+  box-shadow: 0 4px 16px var(--accent-glow);
+}
+.btn-download:hover { opacity: .88; }
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border-lit);
+  border-radius: 10px;
+  padding: .75rem 1.5rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .9rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── Footer ── */
+footer {
+  border-top: 1px solid var(--border);
+  position: relative;
+  z-index: 1;
+}
+.footer-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: .75rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--text-dim);
+  font-size: .78rem;
+}
+.footer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .72rem;
+  font-weight: 500;
+  letter-spacing: .05em;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid rgba(201,133,90,.2);
+  padding: .3rem .75rem;
+  border-radius: 100px;
+}
+
+/* ── Modal ── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.7);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border-lit);
+  border-radius: 20px;
+  max-width: 560px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: modal-in .2s cubic-bezier(.34,1.4,.64,1);
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) var(--surface2);
+}
+.modal::-webkit-scrollbar { width: 5px; }
+.modal::-webkit-scrollbar-track { background: var(--surface2); border-radius: 0 20px 20px 0; }
+.modal::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+.modal::-webkit-scrollbar-thumb:hover { background: #d99a72; }
+
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(.94) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-close {
+  position: absolute;
+  top: 1.1rem; right: 1.1rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  transition: background .15s, color .15s;
+}
+.modal-close:hover { background: var(--border); color: var(--text); }
+
+.modal-header {
+  padding: 2rem 2rem 0;
+}
+.modal-tag {
+  display: inline-block;
+  font-size: .68rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border-radius: 6px;
+  padding: .25rem .65rem;
+  margin-bottom: 1rem;
+}
+.modal-header h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+  line-height: 1.3;
+  margin-bottom: .6rem;
+}
+.modal-header p {
+  font-size: .875rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+.modal-provider-tabs {
+  display: flex;
+  gap: .4rem;
+  margin-top: .25rem;
+}
+.modal-ptab {
+  font-size: .75rem;
+  font-weight: 500;
+  padding: .3rem .85rem;
+  border-radius: 100px;
+  border: 1px solid var(--border-lit);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all .15s;
+}
+.modal-ptab.active { background: var(--accent-dim); border-color: rgba(201,133,90,.4); color: var(--accent); }
+.modal-ptab:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
+
+.modal-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 1.5rem 0;
+}
+
+.modal-body { padding: 0 2rem 2rem; }
+
+.modal-section-title {
+  font-size: .68rem;
+  font-weight: 600;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 1rem;
+}
+
+.steps-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  margin-bottom: 1.5rem;
+}
+.steps-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: .85rem;
+  font-size: .875rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.step-num {
+  flex-shrink: 0;
+  width: 22px; height: 22px;
+  background: var(--accent-dim);
+  border: 1px solid rgba(201,133,90,.3);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .68rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-top: .1rem;
+}
+.steps-list a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+.steps-list a:hover { text-decoration: underline; }
+.steps-list code {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-family: 'Courier New', monospace;
+  font-size: .8rem;
+  color: var(--text);
+}
+
+.security-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .6rem;
+}
+
+.security-item {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: .9rem;
+}
+.security-item-icon { font-size: 1.1rem; margin-bottom: .4rem; }
+.security-item-title {
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: .25rem;
+}
+.security-item-text {
+  font-size: .75rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.modal-cta {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: .6rem;
+}
+.modal-cta a {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  background: var(--accent);
+  color: white;
+  text-decoration: none;
+  border-radius: 10px;
+  padding: .7rem 1rem;
+  font-size: .875rem;
+  font-weight: 500;
+  transition: opacity .15s;
+}
+.modal-cta a:hover { opacity: .88; }
+
+
+.pix-key-box {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  background: var(--surface2);
+  border: 1px solid var(--border-lit);
+  border-radius: 10px;
+  padding: .65rem 1rem;
+  text-align: left;
+}
+.pix-key-label {
+  font-size: .65rem;
+  font-weight: 600;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+.pix-key-value {
+  flex: 1;
+  font-family: 'Courier New', monospace;
+  font-size: .78rem;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pix-copy-btn {
+  flex-shrink: 0;
+  background: var(--accent-dim);
+  border: 1px solid rgba(201,133,90,.3);
+  border-radius: 6px;
+  padding: .25rem .65rem;
+  font-size: .72rem;
+  font-weight: 500;
+  color: var(--accent);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background .15s;
+}
+.pix-copy-btn:hover { background: rgba(201,133,90,.25); }
+
+@media (max-width: 640px) {
+  /* Header */
+  header { padding: 0 1rem; height: 52px; }
+  .logo { font-size: 1.25rem; }
+  .btn-donate, .btn-change-key { font-size: .66rem; padding: .25rem .6rem; gap: .25rem; }
+  .btn-change-key svg { width: 9px; height: 9px; }
+
+  /* Main */
+  main { padding: 2rem 1rem 5rem; }
+
+  /* Hero */
+  .hero { margin-bottom: 2rem; }
+  .hero h1 { font-size: 1.75rem; }
+  .hero p { font-size: .9rem; }
+  .hero-badge { font-size: .68rem; }
+
+  /* Upload */
+  #uploadZone { padding: 2rem 1.25rem; margin-bottom: .75rem; }
+  .upload-icon { width: 44px; height: 44px; border-radius: 12px; font-size: 1.3rem; }
+  #uploadZone h3 { font-size: 1.05rem; }
+  #uploadZone p { font-size: .8rem; margin-bottom: 1rem; }
+
+  /* API compact */
+  .api-compact { padding: .85rem 1rem; }
+  .api-compact-top { flex-direction: column; align-items: flex-start; gap: .5rem; }
+  .key-help-link { align-self: flex-start; }
+  .api-compact-desc { font-size: .75rem; }
+  .key-input-row input { font-size: .75rem; }
+  .btn-primary { padding: .65rem 1rem; font-size: .8rem; }
+
+  /* Settings */
+  .settings-grid { grid-template-columns: 1fr; }
+  .card { padding: 1.25rem 1rem; }
+  .toggles { flex-direction: column; }
+  .toggle-row { min-width: unset; }
+
+  /* Process btn */
+  .process-btn { font-size: .95rem; padding: .85rem; }
+
+  /* Pages grid */
+  .pages-grid { grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); gap: .4rem; }
+
+  /* Progress */
+  .progress-card { padding: 1.1rem; }
+
+
+  /* Result */
+
+  .result-buttons { flex-direction: column; align-items: center; }
+  .btn-download, .btn-secondary { width: 100%; justify-content: center; }
+
+  /* Modal */
+  .modal { border-radius: 16px; }
+  .modal-header { padding: 1.5rem 1.25rem 0; }
+  .modal-body { padding: 0 1.25rem 1.5rem; }
+  .modal-header h2 { font-size: 1.25rem; }
+  .steps-list li { font-size: .78rem; gap: .6rem; }
+  .step-num { width: 18px; height: 18px; font-size: .6rem; }
+  .steps-list code { font-size: .72rem; padding: 1px 4px; }
+  .security-grid { grid-template-columns: 1fr; }
+  .modal-cta { flex-direction: column; }
+
+  /* Footer */
+  .footer-inner { flex-direction: column; gap: .6rem; text-align: center; padding: 1.25rem 1rem; }
+}
+
+/* About modal */
+.about-steps { display: flex; flex-direction: column; gap: 1.25rem; }
+.about-step { display: flex; gap: 1rem; align-items: flex-start; }
+.about-step-icon { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: .1rem; }
+.about-step-title { font-size: .88rem; font-weight: 600; color: var(--text); margin-bottom: .3rem; }
+.about-step-text { font-size: .82rem; color: var(--text-muted); line-height: 1.65; }
+.about-step-text a { color: var(--accent); text-decoration: none; }
+.about-step-text a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">E<em>pub</em>ly</div>
+  <div class="header-right">
+  <button class="btn-change-key" id="aboutBtn" type="button" onclick="document.getElementById('aboutModal').style.display='flex';return false;" data-i18n="about">Sobre</button>
+  <a class="btn-change-key" href="https://github.com/pdvrx/epubly" target="_blank" rel="noopener" title="Repositório no GitHub"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.341-3.369-1.341-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg></a>
+  <button class="btn-donate" id="donateBtn" type="button" onclick="
+  var m=document.getElementById('donateModal');
+  m.style.display='flex';
+  if(!document.getElementById('qrcode').hasChildNodes()){
+    new QRCode(document.getElementById('qrcode'),{
+      text:'00020126410014br.gov.bcb.pix0119pedro06bf@gmail.com5204000053039865802BR5909Epubly App6006Brasil62070503***6304185E',
+      width:200,height:200,colorDark:'#1a1410',colorLight:'#ffffff',
+      correctLevel:QRCode.CorrectLevel.M
+    });
+  }
+  return false;
+" data-i18n="donate">♡ Apoie-nos</button>
+</header>
+
+<main>
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1 data-i18n="heroTitle">Dê nova vida aos<br><em>livros esquecidos</em></h1>
+    <p data-i18n="heroSub">Envie um PDF escaneado: torto, manchado, antigo e em página dupla. A IA extrai o texto e entrega ele limpo para o seu e-reader.</p>
+  </div>
+
+  <!-- Upload — em destaque -->
+  <div id="uploadZone">
+    <div class="upload-icon">📖</div>
+    <h3 data-i18n="dropTitle">Arraste seu PDF aqui</h3>
+    <p data-i18n="dropSub">Suporte a PDFs escaneados, páginas duplas e baixa qualidade</p>
+    <button class="btn-ghost" id="selectFileBtn" data-i18n="selectFile">Selecionar arquivo</button>
+  </div>
+  <input type="file" id="fileInput" accept=".pdf" style="display:none">
+
+  <!-- File info -->
+  <div class="file-info" id="fileInfo">
+    <div class="file-icon">📄</div>
+    <div class="file-meta">
+      <strong id="fileName"></strong>
+      <span id="fileDetails"></span>
+    </div>
+  </div>
+  <div class="estimate-strip" id="estimateStrip" style="display:none;">
+    <div class="estimate-item">
+      <span class="estimate-icon">⏱</span>
+      <span class="estimate-label" id="estTime">—</span>
+    </div>
+    <div class="estimate-sep"></div>
+    <div class="estimate-item">
+      <span class="estimate-icon">🔗</span>
+      <span class="estimate-label" id="estCalls">—</span>
+    </div>
+    <div class="estimate-sep"></div>
+    <div class="estimate-item">
+      <span class="estimate-icon">📊</span>
+      <span class="estimate-label" id="estQuota">—</span>
+    </div>
+  </div>
+
+  <!-- Settings -->
+  <div class="settings-panel card" id="settingsPanel">
+    <div class="card-label" data-i18n="settings">Configurações</div>
+    <div class="settings-grid">
+      <div class="setting-item">
+        <label data-i18n="bookTitle">Título do livro</label>
+        <input type="text" id="bookTitle" placeholder="Ex: Dom Casmurro">
+      </div>
+      <div class="setting-item">
+        <label data-i18n="author">Autor</label>
+        <input type="text" id="bookAuthor" placeholder="Ex: Machado de Assis">
+      </div>
+      <div class="setting-item">
+        <label data-i18n="language">Idioma</label>
+        <select id="bookLang">
+          <option value="pt">Português</option>
+          <option value="en">Inglês</option>
+          <option value="es">Espanhol</option>
+          <option value="fr">Francês</option>
+          <option value="de">Alemão</option>
+          <option value="it">Italiano</option>
+          <option value="la">Latim</option>
+        </select>
+      </div>
+      <div class="setting-item" id="pageRangeItem" style="display:none;">
+        <label>Páginas <span id="pageRangeTotalLabel" style="font-weight:400;color:var(--text-dim);"></span></label>
+        <input type="text" id="pageRangeInput" class="page-range-input" placeholder="Em branco = todas. Ex: 1-10, 15">
+        <span class="page-range-status" id="pageRangeStatus"></span>
+        <small style="color:var(--text-dim);font-size:.68rem;margin-top:.25rem;display:block;">Use <code style="background:var(--surface2);border-radius:3px;padding:1px 4px;color:var(--accent);">1-5</code>, <code style="background:var(--surface2);border-radius:3px;padding:1px 4px;color:var(--accent);">1,3,7</code> ou combine: <code style="background:var(--surface2);border-radius:3px;padding:1px 4px;color:var(--accent);">1-5,8,12</code></small>
+      </div>
+    </div>
+    <div class="toggles">
+      <label class="toggle-row">
+        <label class="toggle">
+          <input type="checkbox" id="splitDouble" checked>
+          <span class="toggle-slider"></span>
+        </label>
+        <span class="toggle-label" data-i18n="splitDouble">Separar páginas duplas</span>
+      </label>
+      <label class="toggle-row">
+        <label class="toggle">
+          <input type="checkbox" id="cleanText" checked>
+          <span class="toggle-slider"></span>
+        </label>
+        <span class="toggle-label" data-i18n="cleanText">Corrigir hifenizações</span>
+      </label>
+
+    </div>
+  </div>
+
+  <!-- Convert button -->
+  <button class="process-btn" id="processBtn" data-i18n="convert">Converter para EPUB</button>
+
+  <!-- Page preview (thumbnails only) -->
+  <div class="pages-preview" id="pagesPreview">
+    <div class="pages-preview-header" data-i18n="pagesDetected">Páginas detectadas</div>
+    <div class="pages-grid" id="pagesGrid"></div>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-section" id="progressSection">
+    <div class="progress-card">
+      <div class="progress-header">
+        <span class="progress-label" id="progressLabel">Convertendo</span>
+        <span class="progress-pct" id="progressPct">0%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="status-line" id="statusLine"></div>
+      <div class="log-errors" id="logErrors"></div>
+      <div class="result-inline" id="resultSection" style="display:none;">
+        <p class="result-ok-text" id="resultStats"></p>
+        <button class="btn-download" id="downloadBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span data-i18n="download">Baixar EPUB</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+
+<footer>
+  <div class="footer-inner">
+    <span data-i18n="footerText">Epubly · Kindle, Kobo, Apple Books</span>
+    <span class="footer-badge">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:.6"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      Powered by Qwen Vision
+    </span>
+  </div>
+</footer>
+
+<script>
+
+// ── i18n ──────────────────────────────────────────────────────────────────────
+var I18N = {
+  pt: {
+    changeKey:    'Trocar chave',
+    donate:       '♡ Apoie-nos',
+    donateTag:    'Apoie o projeto',
+    donateTitle:  'Apoie o Epubly ♡',
+    donateIntro:  'O Epubly é gratuito e de código aberto. Se ele foi útil para você, considere uma contribuição para manter o projeto vivo.',
+    donatePix:    'PIX (Brasil)',
+    donateKofi:   'Internacional (Ko-fi)',
+    donateScan:   'Escaneie com o app do seu banco',
+    donateThanks: 'Qualquer valor é bem-vindo e ajuda a manter o servidor e as chamadas de IA que tornam o Epubly possível. Obrigado ♡',
+    heroTitle:    'Dê nova vida aos<br><em>livros esquecidos</em>',
+    heroSub:      'Envie um PDF escaneado: torto, manchado, antigo e em página dupla. A IA extrai o texto e entrega ele limpo para o seu e-reader.',
+    dropTitle:    'Arraste seu PDF aqui',
+    dropSub:      'Suporte a PDFs escaneados, páginas duplas e baixa qualidade',
+    selectFile:   'Selecionar arquivo',
+    apiLabel:     'Chave de API — Google Gemini',
+    apiDesc:      'O Epubly processa tudo no seu navegador e usa o Gemini para ler o texto das páginas. A chave identifica você junto ao Google — é gratuita e nenhum servidor do Epubly a recebe.',
+    howToKey:     'Como pegar minha chave',
+    save:         'Salvar',
+    settings:     'Configurações',
+    bookTitle:    'Título do livro',
+    author:       'Autor',
+    language:     'Idioma',
+    splitDouble:  'Separar páginas duplas',
+    cleanText:    'Corrigir hifenizações',
+    convert:      'Converter para EPUB',
+    pagesDetected:'Páginas detectadas',
+    download:     'Baixar EPUB',
+    footerText:   'Epubly · Kindle, Kobo, Apple Books',
+    converting:   'Convertendo',
+    pages:        'páginas',
+    words:        'palavras',
+    epubReady:    'EPUB gerado',
+    extracting:   'Extraindo página',
+    of:           'de',
+    batch:        'lote',
+    building:     'Montando EPUB...',
+    done:         'Concluído!',
+    readingBatch: 'Lendo texto... lote',
+    pagesSelected:'páginas para processar',
+    about:        'Sobre',
+    aboutTag:     'Sobre o projeto',
+    aboutTitle:   'O que é o Epubly?',
+    aboutIntro:   'Uma ferramenta gratuita e de código aberto para resgatar livros esquecidos — PDFs escaneados, tortos, manchados — e transformá-los em EPUBs legíveis em qualquer e-reader.',
+    aboutS1t:     'A iniciativa',
+    aboutS1:      'Milhares de obras brasileiras raras existem apenas como scans de baixa qualidade — ilegíveis em celulares, tablets e Kindles. O Epubly nasceu para mudar isso: qualquer pessoa pode enviar um PDF e receber um EPUB bem formatado, sem instalar nada, sem criar conta.',
+    aboutS2t:     'Como funciona',
+    aboutS2:      'O PDF é renderizado página a página direto no seu navegador. As imagens vão para uma IA de visão (Qwen2.5-VL) que lê o texto, reconhece tabelas e identifica figuras. Tudo acontece entre o seu computador e a API — o Epubly não armazena nenhum arquivo.',
+    aboutS3t:     'Código aberto',
+    aboutS3:      'Todo o código está disponível no <a href="https://github.com/pdvrx/epubly" target="_blank">GitHub</a>. Você pode hospedar sua própria instância, contribuir com melhorias ou auditar o que acontece com seus dados.',
+    aboutS4t:     'Por que as doações são fundamentais',
+    aboutS4:      'O Epubly é gratuito para quem usa, mas cada conversão tem um custo real de processamento de IA. Sem doações, o projeto não consegue pagar as contas. Uma contribuição de qualquer valor mantém o serviço aberto para todos — especialmente para quem não poderia pagar.',
+    aboutDonate:  '♡ Apoiar com uma doação',
+  },
+  en: {
+    changeKey:    'Change key',
+    donate:       '♡ Support us',
+    donateTag:    'Support the project',
+    donateTitle:  'Support Epubly ♡',
+    donateIntro:  'Epubly is free and open source. If it was useful to you, consider a contribution to keep the project alive.',
+    donatePix:    'PIX (Brazil)',
+    donateKofi:   'International (Ko-fi)',
+    donateScan:   'Scan with your bank app',
+    donateThanks: 'Any amount is welcome and helps keep the server and AI calls running. Thank you ♡',
+    heroTitle:    'Breathe new life into<br><em>forgotten books</em>',
+    heroSub:      'Upload a scanned PDF — skewed, stained, old or double-page. AI extracts the text and delivers it clean to your e-reader.',
+    dropTitle:    'Drop your PDF here',
+    dropSub:      'Supports scanned PDFs, double pages and low quality',
+    selectFile:   'Select file',
+    apiLabel:     'API Key — Google Gemini',
+    apiDesc:      'Epubly runs entirely in your browser and uses Gemini to read page text. The key identifies you with Google — it\'s free and Epubly\'s servers never receive it.',
+    howToKey:     'How to get my key',
+    save:         'Save',
+    settings:     'Settings',
+    bookTitle:    'Book title',
+    author:       'Author',
+    language:     'Language',
+    splitDouble:  'Split double pages',
+    cleanText:    'Fix hyphenation',
+    convert:      'Convert to EPUB',
+    pagesDetected:'Detected pages',
+    download:     'Download EPUB',
+    footerText:   'Epubly · Kindle, Kobo, Apple Books',
+    converting:   'Converting',
+    pages:        'pages',
+    words:        'words',
+    epubReady:    'EPUB generated',
+    extracting:   'Extracting page',
+    of:           'of',
+    batch:        'batch',
+    building:     'Building EPUB...',
+    done:         'Done!',
+    readingBatch: 'Reading text... batch',
+    pagesSelected:'pages to process',
+    about:        'About',
+    aboutTag:     'About the project',
+    aboutTitle:   'What is Epubly?',
+    aboutIntro:   'A free, open-source tool to rescue forgotten books — scanned PDFs, skewed, stained — and turn them into EPUBs readable on any e-reader.',
+    aboutS1t:     'The initiative',
+    aboutS1:      'Thousands of rare books exist only as poor-quality scans — unreadable on phones, tablets and Kindles. Epubly was created to change that: anyone can upload a PDF and receive a well-formatted EPUB, with no installation and no account required.',
+    aboutS2t:     'How it works',
+    aboutS2:      'The PDF is rendered page by page directly in your browser. The page images go to a vision AI (Qwen2.5-VL) that reads the text, recognises tables and identifies figures. Everything happens between your computer and the API — Epubly stores no files.',
+    aboutS3t:     'Open source',
+    aboutS3:      'All code is available on <a href="https://github.com/pdvrx/epubly" target="_blank">GitHub</a>. You can host your own instance, contribute improvements, or audit what happens to your data.',
+    aboutS4t:     'Why donations are essential',
+    aboutS4:      'Epubly is free to use, but every conversion has a real AI processing cost. Without donations the project cannot pay its bills. Any contribution keeps the service open and accessible to everyone — especially those who could not afford to pay.',
+    aboutDonate:  '♡ Support with a donation',
+  },
+  es: {
+    changeKey:    'Cambiar clave',
+    donate:       '♡ Apóyanos',
+    donateTag:    'Apoya el proyecto',
+    donateTitle:  'Apoya Epubly ♡',
+    donateIntro:  'Epubly es gratuito y de código abierto. Si te fue útil, considera una contribución para mantener el proyecto vivo.',
+    donatePix:    'PIX (Brasil)',
+    donateKofi:   'Internacional (Ko-fi)',
+    donateScan:   'Escanea con la app de tu banco',
+    donateThanks: 'Cualquier monto es bienvenido y ayuda a mantener el servidor y las llamadas de IA. ¡Gracias ♡',
+    heroTitle:    'Dale nueva vida a los<br><em>libros olvidados</em>',
+    heroSub:      'Sube un PDF escaneado — torcido, manchado, antiguo o doble página. La IA extrae el texto y lo entrega limpio a tu e-reader.',
+    dropTitle:    'Arrastra tu PDF aquí',
+    dropSub:      'Compatible con PDFs escaneados, páginas dobles y baja calidad',
+    selectFile:   'Seleccionar archivo',
+    apiLabel:     'Clave de API — Google Gemini',
+    apiDesc:      'Epubly procesa todo en tu navegador y usa Gemini para leer el texto. La clave te identifica con Google — es gratuita y ningún servidor de Epubly la recibe.',
+    howToKey:     'Cómo obtener mi clave',
+    save:         'Guardar',
+    settings:     'Configuración',
+    bookTitle:    'Título del libro',
+    author:       'Autor',
+    language:     'Idioma',
+    splitDouble:  'Separar páginas dobles',
+    cleanText:    'Corregir guiones',
+    convert:      'Convertir a EPUB',
+    pagesDetected:'Páginas detectadas',
+    download:     'Descargar EPUB',
+    footerText:   'Epubly · Kindle, Kobo, Apple Books',
+    converting:   'Convirtiendo',
+    pages:        'páginas',
+    words:        'palabras',
+    epubReady:    'EPUB generado',
+    extracting:   'Extrayendo página',
+    of:           'de',
+    batch:        'lote',
+    building:     'Construyendo EPUB...',
+    done:         '¡Listo!',
+    readingBatch: 'Leyendo texto... lote',
+    pagesSelected:'páginas a procesar',
+    about:        'Acerca de',
+    aboutTag:     'Sobre el proyecto',
+    aboutTitle:   '¿Qué es Epubly?',
+    aboutIntro:   'Una herramienta gratuita y de código abierto para rescatar libros olvidados — PDFs escaneados, torcidos, manchados — y convertirlos en EPUBs legibles en cualquier e-reader.',
+    aboutS1t:     'La iniciativa',
+    aboutS1:      'Miles de obras raras existen solo como scans de baja calidad — ilegibles en móviles, tablets y Kindles. Epubly nació para cambiar eso: cualquiera puede subir un PDF y recibir un EPUB bien formateado, sin instalar nada ni crear cuenta.',
+    aboutS2t:     'Cómo funciona',
+    aboutS2:      'El PDF se renderiza página a página en tu navegador. Las imágenes van a una IA de visión (Qwen2.5-VL) que lee el texto, reconoce tablas e identifica figuras. Todo ocurre entre tu computadora y la API — Epubly no almacena ningún archivo.',
+    aboutS3t:     'Código abierto',
+    aboutS3:      'Todo el código está disponible en <a href="https://github.com/pdvrx/epubly" target="_blank">GitHub</a>. Puedes alojar tu propia instancia, contribuir con mejoras o auditar qué ocurre con tus datos.',
+    aboutS4t:     'Por qué las donaciones son fundamentales',
+    aboutS4:      'Epubly es gratuito para quien lo usa, pero cada conversión tiene un coste real de procesamiento de IA. Sin donaciones, el proyecto no puede pagar sus facturas. Cualquier contribución mantiene el servicio abierto para todos — especialmente para quienes no podrían pagarlo.',
+    aboutDonate:  '♡ Apoyar con una donación',
+  }
+};
+
+var siteLang = (navigator.language || 'pt').toLowerCase().slice(0, 2);
+if (!I18N[siteLang]) siteLang = 'pt';
+var T = I18N[siteLang];
+
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    var key = el.getAttribute('data-i18n');
+    if (T[key] !== undefined) el.innerHTML = T[key];
+  });
+  // placeholders
+  var bt = document.getElementById('bookTitle');
+  if (bt) bt.placeholder = siteLang === 'en' ? 'E.g. Moby Dick' : siteLang === 'es' ? 'Ej: Don Quijote' : 'Ex: Dom Casmurro';
+  var ba = document.getElementById('bookAuthor');
+  if (ba) ba.placeholder = siteLang === 'en' ? 'E.g. Herman Melville' : siteLang === 'es' ? 'Ej: Cervantes' : 'Ex: Machado de Assis';
+  // progress label
+  var pl = document.getElementById('progressLabel');
+  if (pl) pl.textContent = T.converting;
+  // page range placeholder
+  var pr = document.getElementById('pageRangeInput');
+  if (pr) pr.placeholder = siteLang === 'en' ? 'Blank = all. E.g. 1-10, 15' : siteLang === 'es' ? 'Vacío = todas. Ej: 1-10, 15' : 'Em branco = todas. Ex: 1-10, 15';
+}
+document.addEventListener('DOMContentLoaded', applyI18n);
+
+// API key — managed by Cloudflare Worker proxy (not needed client-side)
+var apiKey = ''; // unused, kept for compatibility
+
+(function () {
+'use strict';
+
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+
+// ── State ─────────────────────────────────────────────────────────────────────
+var pdfFile  = null;
+var pdfDoc   = null;
+var epubBlob = null;
+
+function $(id) { return document.getElementById(id); }
+
+
+// ── File input ────────────────────────────────────────────────────────────────
+$('fileInput').addEventListener('change', function () {
+  if ($('fileInput').files[0]) handleFile($('fileInput').files[0]);
+});
+
+$('selectFileBtn').addEventListener('click', function (e) {
+  e.stopPropagation();
+  $('fileInput').click();
+});
+
+$('uploadZone').addEventListener('click', function (e) {
+  if (e.target.id === 'selectFileBtn') return;
+  $('fileInput').click();
+});
+
+// ── Drag & drop ───────────────────────────────────────────────────────────────
+window.addEventListener('dragover', function (e) { e.preventDefault(); });
+window.addEventListener('drop',     function (e) { e.preventDefault(); });
+
+$('uploadZone').addEventListener('dragenter', function (e) {
+  e.preventDefault();
+  $('uploadZone').classList.add('drag-over');
+});
+$('uploadZone').addEventListener('dragleave', function () {
+  $('uploadZone').classList.remove('drag-over');
+});
+$('uploadZone').addEventListener('dragover', function (e) {
+  e.preventDefault();
+});
+$('uploadZone').addEventListener('drop', function (e) {
+  e.preventDefault();
+  $('uploadZone').classList.remove('drag-over');
+  var f = e.dataTransfer.files[0];
+  if (!f) return;
+  if (!f.name.toLowerCase().endsWith('.pdf')) { alert('Selecione um arquivo .pdf'); return; }
+  handleFile(f);
+});
+
+// ── Load PDF ──────────────────────────────────────────────────────────────────
+async function handleFile(file) {
+  pdfFile = file;
+  var mb = (file.size / 1048576).toFixed(2);
+  var buf = await file.arrayBuffer();
+  pdfDoc = await pdfjsLib.getDocument({ data: buf }).promise;
+  var n = pdfDoc.numPages;
+  $('fileName').textContent = file.name;
+  $('fileDetails').textContent = n + ' ' + T.pages + ' · ' + mb + ' MB';
+  $('fileInfo').classList.add('show');
+  $('settingsPanel').classList.add('show');
+  $('processBtn').classList.add('show');
+  $('bookTitle').value = file.name.replace(/\.pdf$/i, '').replace(/[_-]/g, ' ');
+  $('pageRangeItem').style.display = '';
+  $('pageRangeTotalLabel').textContent = '(' + T.of + ' ' + n + ')';
+  // Attach live-validation listener once per load
+  $('pageRangeInput').oninput = function () {
+    var st = $('pageRangeStatus');
+    $('pageRangeInput').classList.remove('invalid');
+    var v = $('pageRangeInput').value.trim();
+    if (!v) { st.textContent = ''; st.className = 'page-range-status'; updateEstimate(n); return; }
+    try {
+      var sel = parsePageRange(v, n);
+      st.textContent = sel ? sel.size + ' de ' + n + ' págs' : n + ' págs';
+      st.className = 'page-range-status ok';
+      updateEstimate(sel ? sel.size : n);
+    } catch (e) {
+      $('pageRangeInput').classList.add('invalid');
+      st.textContent = e;
+      st.className = 'page-range-status err';
+    }
+  };
+  updateEstimate(n);
+  await showThumbnails(pdfDoc, n);
+}
+
+function updateEstimate(pageCount) {
+  var batches = Math.ceil(pageCount / 3);
+  var totalCalls = batches + 1; // +1 for chapter detection
+  var batches2 = Math.ceil(pageCount / 3);
+  var totalSec = batches2 * 12 + (batches2 - 1) * 3;
+  var mins = Math.floor(totalSec / 60);
+  var secs = totalSec % 60;
+  var timeStr = mins > 0 ? '~' + mins + 'min' + (secs > 0 ? ' ' + secs + 's' : '') : '~' + secs + 's';
+  var quotaPct = ((totalCalls / 1500) * 100).toFixed(1);
+  $('estTime').textContent = timeStr;
+  $('estCalls').textContent = totalCalls + ' chamadas';
+  $('estQuota').textContent = quotaPct + '% da cota';
+  $('estimateStrip').style.display = 'flex';
+}
+
+// ── Page range parser ─────────────────────────────────────────────────────────
+function parsePageRange(str, total) {
+  str = str.trim();
+  if (!str) return null; // null = todas
+  var selected = new Set();
+  var parts = str.split(',');
+  for (var p = 0; p < parts.length; p++) {
+    var part = parts[p].trim();
+    if (!part) continue;
+    var range = part.match(/^(\d+)\s*-\s*(\d+)$/);
+    var single = part.match(/^(\d+)$/);
+    if (range) {
+      var a = parseInt(range[1]), b = parseInt(range[2]);
+      if (a < 1 || b > total || a > b)
+        throw 'Intervalo "' + part + '" inválido (PDF tem ' + total + ' págs)';
+      for (var n = a; n <= b; n++) selected.add(n);
+    } else if (single) {
+      var ns = parseInt(single[1]);
+      if (ns < 1 || ns > total)
+        throw 'Página ' + ns + ' não existe (PDF tem ' + total + ' págs)';
+      selected.add(ns);
+    } else {
+      throw 'Formato inválido: "' + part + '"';
+    }
+  }
+  if (selected.size === 0) throw 'Nenhuma página selecionada';
+  return selected;
+}
+
+var totalPages = 0;
+
+async function showThumbnails(doc, total) {
+  totalPages = total;
+  $('pagesGrid').innerHTML = '';
+  $('pagesPreview').classList.add('show');
+
+  for (var i = 1; i <= total; i++) {
+    var page = await doc.getPage(i);
+    var vp = page.getViewport({ scale: 0.28 });
+    var c = document.createElement('canvas');
+    c.width = vp.width; c.height = vp.height;
+    await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
+    var isDouble = (vp.width / vp.height) > 1.4;
+    var wrap = document.createElement('div');
+    wrap.className = 'page-thumb' + (isDouble ? ' double-page' : '');
+    wrap.dataset.page = i;
+    wrap.appendChild(c);
+    var badge = document.createElement('div');
+    badge.className = 'badge';
+    badge.textContent = isDouble ? 'p.' + i + ' dupla' : 'p.' + i;
+    wrap.appendChild(badge);
+    $('pagesGrid').appendChild(wrap);
+  }
+
+
+}
+
+// ── Unified API call ──────────────────────────────────────────────────────────
+// Model selection handled by Cloudflare Worker
+var OR_MODELS = [
+  'qwen/qwen2.5-vl-72b-instruct',
+  'qwen/qwen2.5-vl-32b-instruct',
+  'qwen/qwen2.5-vl-7b-instruct'
+];
+var modelIndex = 0;
+var modelCycleCount = 0;
+var workingModel = OR_MODELS[0];
+
+function switchToNextModel() {
+  modelIndex++;
+  if (modelIndex < OR_MODELS.length) {
+    workingModel = OR_MODELS[modelIndex];
+    console.log('[Epubly] Trocando modelo para:', workingModel);
+    return true;
+  }
+  if (modelCycleCount < 1) {
+    modelCycleCount++;
+    modelIndex = 0;
+    workingModel = OR_MODELS[0];
+    console.log('[Epubly] Reiniciando ciclo...');
+    return 'retry';
+  }
+  return false;
+}
+
+async function detectBestModel() {
+  modelIndex = 0;
+  modelCycleCount = 0;
+  workingModel = OR_MODELS[0];
+  return workingModel;
+}
+
+// ── Worker URL — update after wrangler deploy ────────────────────────────────
+// ── Troque para a URL do Cloudflare quando for publicar ──────────────────────
+var WORKER_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:8787/ocr'               // desenvolvimento local
+  : 'https://epubly-worker.pedro06bf.workers.dev/ocr'; // produção — atualizar após deploy
+
+async function callAI(parts, maxTokens) {
+  var messages = [{ role: 'user', content: [] }];
+  for (var i = 0; i < parts.length; i++) {
+    var p = parts[i];
+    if (p.text) {
+      messages[0].content.push({ type: 'text', text: p.text });
+    } else if (p.inline_data) {
+      messages[0].content.push({
+        type: 'image_url',
+        image_url: { url: 'data:' + p.inline_data.mime_type + ';base64,' + p.inline_data.data }
+      });
+    }
+  }
+  return fetch(WORKER_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: workingModel,
+      max_tokens: maxTokens || 2048,
+      temperature: 0,
+      messages: messages
+    })
+  });
+}
+
+async function parseAIResponse(res) {
+  var data = await res.json();
+  return (data.choices && data.choices[0] &&
+    data.choices[0].message && data.choices[0].message.content) || '';
+}
+
+// ── Process ───────────────────────────────────────────────────────────────────
+$('processBtn').addEventListener('click', async function () {
+  $('progressLabel').textContent = T.converting;
+  if (!pdfFile) return;
+
+  $('processBtn').disabled = true;
+  ['settingsPanel','pagesPreview','processBtn'].forEach(function(id){
+    var el=$(id); el.style.overflow='hidden';
+    el.style.maxHeight=el.scrollHeight+'px';
+    el.style.transition='max-height .4s ease,opacity .3s ease,margin .4s ease';
+    requestAnimationFrame(function(){
+      el.style.maxHeight='0'; el.style.opacity='0'; el.style.marginBottom='0';
+    });
+    setTimeout(function(){ el.style.display='none'; },420);
+  });
+  $('progressSection').classList.add('show');
+  $('statusLine').textContent = '';
+  $('statusLine').className = 'status-line';
+  $('logErrors').innerHTML = '';
+  $('progressFill').style.width = '0';
+  $('progressPct').textContent = '0%';
+
+  var splitDouble = $('splitDouble').checked;
+  var cleanText   = $('cleanText').checked;
+  var lang        = $('bookLang').value;
+  var title       = $('bookTitle').value || 'Livro';
+  var author      = $('bookAuthor').value || 'Desconhecido';
+
+  
+  
+  setProgress(2, T.extracting + '...');
+
+  try {
+    var selectedPages = null;
+    try {
+      selectedPages = parsePageRange($('pageRangeInput').value, pdfDoc.numPages);
+    } catch(e) {
+      alert('Seleção inválida: ' + e);
+      $('processBtn').disabled = false;
+      return;
+    }
+    var pageImages = await extractPages(pdfDoc, splitDouble, selectedPages, function (i, t) {
+      setProgress(2 + (i / t) * 28, T.extracting + ' ' + i + '/' + t + '...');
+    });
+    addLog(pageImages.length + ' ' + T.pagesSelected);
+    setProgress(30, T.readingBatch + '...');
+
+    // Parallel OCR — waves of 3 concurrent batches, results kept in order
+    var BATCH = 3;
+    var CONCURRENCY = 3;
+    var totalBatches = Math.ceil(pageImages.length / BATCH);
+    var results = [];
+    // Pre-fill results array with correct length based on actual images
+    for (var pi = 0; pi < pageImages.length; pi++) results.push(null);
+    var completed = 0;
+
+    for (var wave = 0; wave < totalBatches; wave += CONCURRENCY) {
+      var waveEnd = Math.min(wave + CONCURRENCY, totalBatches);
+      var wavePromises = [];
+      for (var wb = wave; wb < waveEnd; wb++) {
+        (function(bIdx) {
+          var batchStart = bIdx * BATCH;
+          var batch = pageImages.slice(batchStart, batchStart + BATCH);
+          wavePromises.push(
+            geminiOCRBatch(batch, lang, cleanText).then(function(texts) {
+              for (var j = 0; j < batch.length; j++) {
+                results[batchStart + j] = {
+                  text: texts[j] || '',
+                  pageNum: batch[j].originalPage,
+                  side: batch[j].side,
+                  dataUrl: batch[j].dataUrl  // kept for figure embedding
+                };
+              }
+              completed++;
+              setProgress(30 + (completed / totalBatches) * 55,
+                T.readingBatch + ' ' + completed + ' ' + T.of + ' ' + totalBatches);
+            })
+          );
+        })(wb);
+      }
+      await Promise.all(wavePromises);
+    }
+    results = results.filter(Boolean);
+
+    setProgress(88, T.building);
+    addLog(T.building);
+    var chapterMap = await detectChapters(results, lang, title);
+    epubBlob = buildEPUB(results, title, author, lang, chapterMap);
+    setProgress(100, T.done);
+
+    var words = results.reduce(function (s, p) {
+      return s + p.text.split(/\s+/).filter(function (w) { return w.length > 2; }).length;
+    }, 0);
+    addLog('✓ ' + results.length + ' ' + T.pages + ' · ~' + words.toLocaleString() + ' ' + T.words, 'ok');
+
+    $('resultStats').textContent = '✓ ' + T.epubReady + ' — ' + results.length + ' ' + T.pages + ' · ~' + words.toLocaleString() + ' ' + T.words;
+    $('resultSection').style.display = 'flex';
+
+    $('downloadBtn').onclick = function () {
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(epubBlob);
+      a.download = title.replace(/\s+/g, '_') + '.epub';
+      a.click();
+    };
+
+  } catch (err) {
+    addLog(err.message, 'err');
+    console.error(err);
+    $('processBtn').disabled = false;
+  }
+});
+
+
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function setProgress(pct, label) {
+  $('progressFill').style.width = pct + '%';
+  $('progressPct').textContent = Math.round(pct) + '%';
+  if (label) {
+    var sl = $('statusLine');
+    sl.textContent = label;
+    sl.className = 'status-line';
+  }
+}
+
+function addLog(msg, type) {
+  // Errors shown separately; everything else updates the single status line
+  if (type === 'err') {
+    var d = document.createElement('div');
+    d.textContent = msg;
+    $('logErrors').appendChild(d);
+  } else {
+    var sl = $('statusLine');
+    sl.textContent = msg;
+    sl.className = 'status-line' + (type ? ' ' + type : '');
+  }
+}
+
+function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+// Returns fraction of pixels that are near-white (>230 brightness)
+function isBlankImage(canvas) {
+  try {
+    var ctx = canvas.getContext('2d');
+    var d = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+    var white = 0;
+    for (var i = 0; i < d.length; i += 4) {
+      if (d[i] > 230 && d[i+1] > 230 && d[i+2] > 230) white++;
+    }
+    return white / (d.length / 4);
+  } catch(e) { return 0; }
+}
+
+async function sleepWithCountdown(sec) {
+  for (var i = sec; i > 0; i--) {
+    addLog('⏳ Aguardando ' + i + 's para continuar...', 'warn');
+    await sleep(1000);
+  }
+}
+
+// ── Extract pages ─────────────────────────────────────────────────────────────
+async function extractPages(doc, splitDouble, selectedPages, onProgress) {
+  var pages = [];
+  var total = doc.numPages;
+  // Count only selected pages for progress reporting
+  var selectedTotal = selectedPages ? selectedPages.size : total;
+  var rendered = 0;
+  for (var i = 1; i <= total; i++) {
+    // Skip pages not in selection — no render, no canvas
+    if (selectedPages !== null && !selectedPages.has(i)) continue;
+    rendered++;
+    onProgress(rendered, selectedTotal);
+    var page = await doc.getPage(i);
+    // Scale 1.5 — better OCR for small text in old scanned books
+    var vp = page.getViewport({ scale: 1.5 });
+    var c = document.createElement('canvas');
+    c.width = vp.width; c.height = vp.height;
+    await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
+    var ratio = vp.width / vp.height;
+    var isDouble = splitDouble && ratio > 1.2;
+    if (isDouble) {
+      // Detect gutter: scan center 10% of width for darkest column (binding shadow)
+      var gutterX = Math.floor(c.width / 2);
+      try {
+        var ctx2 = c.getContext('2d');
+        var scanW = Math.floor(c.width * 0.1);
+        var scanStart = Math.floor(c.width / 2) - Math.floor(scanW / 2);
+        var imgData = ctx2.getImageData(scanStart, 0, scanW, c.height);
+        var colDark = new Float32Array(scanW);
+        for (var px = 0; px < imgData.data.length; px += 4) {
+          var col = Math.floor((px / 4) % scanW);
+          colDark[col] += (255 - imgData.data[px]); // darkness
+        }
+        // Find darkest column in center region
+        var darkest = 0, darkCol = Math.floor(scanW / 2);
+        for (var ci2 = 0; ci2 < scanW; ci2++) {
+          if (colDark[ci2] > darkest) { darkest = colDark[ci2]; darkCol = ci2; }
+        }
+        gutterX = scanStart + darkCol;
+      } catch(e) { /* fallback to center */ }
+
+      var splitX = gutterX;
+      [
+        { side: 'esq', x: 0,      w: splitX },
+        { side: 'dir', x: splitX, w: c.width - splitX }
+      ].forEach(function(s) {
+        if (s.w < 50) return; // skip slivers
+        var cv = document.createElement('canvas');
+        cv.width = s.w; cv.height = c.height;
+        cv.getContext('2d').drawImage(c, s.x, 0, s.w, c.height, 0, 0, s.w, c.height);
+        var dataUrl = cv.toDataURL('image/jpeg', 0.82);
+        // Skip near-blank pages (mostly white)
+        var pct = isBlankImage(cv);
+        if (pct > 0.95) return;
+        pages.push({ dataUrl: dataUrl, originalPage: i, side: s.side, wasSplit: true });
+      });
+    } else {
+      var dataUrl2 = c.toDataURL('image/jpeg', 0.82);
+      var pct2 = isBlankImage(c);
+      if (pct2 <= 0.95) {
+        pages.push({ dataUrl: dataUrl2, originalPage: i, side: null, wasSplit: false });
+      }
+    }
+  }
+  return pages;
+}
+
+// ── Gemini OCR (batch) ────────────────────────────────────────────────────────
+// Sends up to 3 pages per API call. Prompt uses page markers so the model
+// returns sections clearly delimited for splitting.
+async function geminiOCRBatch(pages, lang, clean) {
+  var langMap = { pt: 'português', en: 'inglês', es: 'espanhol', fr: 'francês', de: 'alemão', it: 'italiano', la: 'latim' };
+  var n = pages.length;
+
+  // Build parts: text prompt first, then images
+  var parts = [];
+
+  var prompt =
+    'Você receberá ' + n + ' imagem(ns) de página(s) de livro antigo escaneado.\n' +
+    'Transcreva CADA imagem de cima a baixo, preservando a ordem de leitura.\n' +
+    'FORMATO — obrigatório:\n' +
+    '=== PAGINA 1 ===\n' +
+    '(conteúdo da página 1)\n' +
+    (n > 1 ? '=== PAGINA 2 ===\n(conteúdo da página 2)\n' : '') +
+    (n > 2 ? '=== PAGINA 3 ===\n(conteúdo da página 3)\n' : '') +
+    'REGRAS DE TRANSCRIÇÃO:\n' +
+    '- Idioma: ' + (langMap[lang] || 'português') + '\n' +
+    (clean ? '- Una hifenizações de fim de linha (ex: "ca-\\nsa" → "casa")\n' : '') +
+    '- Parágrafos de texto: separe com linha em branco\n' +
+    '- Notas de rodapé: inclua ao final, separadas por linha em branco\n' +
+    '- Tabelas: converta para HTML válido <table><thead><tr><th>...</th></tr></thead><tbody><tr><td>...</td></tr></tbody></table>\n' +
+    '- Figuras, ilustrações, fotografias, gravuras, mapas, gráficos:\n' +
+    '  substitua pelo marcador numa linha própria: [FIGURA: descrição]\n' +
+    '  exemplo: [FIGURA: gravura mostrando o porto do Rio de Janeiro]\n' +
+    '  se houver legenda impressa, inclua-a na mesma linha após o marcador\n' +
+    '  NÃO escreva o texto da página que está por trás da figura\n' +
+    '- Somente conteúdo transcrito — sem comentários, sem explicações\n' +
+    '- Página em branco ou ilegível: escreva apenas [em branco]';
+
+  parts.push({ text: prompt });
+  // Images after text — Gemini identifies them by order, no separators needed
+  for (var j = 0; j < n; j++) {
+    parts.push({ inline_data: { mime_type: 'image/jpeg', data: pages[j].dataUrl.split(',')[1] } });
+  }
+
+  var totalAttempts = 0;
+  var maxAttempts = OR_MODELS.length * 2;
+
+  while (totalAttempts < maxAttempts) {
+    totalAttempts++;
+    try {
+      var res = await callAI(parts, 4096);
+
+      if (!res.ok) {
+        var errBody = await res.json().catch(function () { return {}; });
+        var errMsg = (errBody.error && errBody.error.message) || (errBody.error && errBody.error.code) || JSON.stringify(errBody);
+
+        if (res.status === 429 || res.status === 503 || res.status === 529) {
+          // OpenRouter: retry after 10s on rate limit (paid tier, rare)
+          var waitSec = 10;
+          // Try to get retry-after from headers or body
+          var ra = res.headers && res.headers.get && res.headers.get('retry-after');
+          if (ra) waitSec = Math.min(parseInt(ra) + 2, 60);
+          await sleepWithCountdown(waitSec);
+          continue;
+        }
+
+        if (res.status === 404 || res.status === 400) {
+          // Model unavailable — try next model
+          var switched = switchToNextModel();
+          if (switched) continue;
+        }
+        throw new Error('API ' + res.status + ': ' + errMsg.slice(0, 200));
+      }
+
+      var full = await parseAIResponse(res);
+
+      // Split response by === PAGINA N === markers
+      var texts = [];
+      var sections = full.split(/===\s*PAGINA\s*\d+\s*===/i);
+      for (var k = 1; k <= n; k++) {
+        texts.push(sections[k] ? sections[k].trim() : '');
+      }
+      // Fallback: model didn't use markers
+      if (texts.every(function(t){ return t === ''; })) {
+        texts = [full.trim()];
+        for (var m = 1; m < n; m++) texts.push('');
+      }
+      return texts;
+
+    } catch (e) {
+      if (totalAttempts < maxAttempts) { await sleep(3000); continue; }
+      throw e;
+    }
+  }
+  throw new Error('Não foi possível processar esta página. Tente novamente.');
+}
+
+// ── Chapter detector ─────────────────────────────────────────────────────────
+async function detectChapters(pages, lang, title) {
+  // Build a compact page index for Gemini to analyse
+  var index = pages.map(function(p, i) {
+    return 'p' + (i + 1) + ': ' + p.text.trim().slice(0, 120).replace(/\n/g, ' ');
+  }).join('\n');
+
+  var prompt =
+    'You are analysing the table of contents of a scanned book (lang: ' + lang + ').\n' +
+    'Below is an index of pages with their first words.\n' +
+    'Identify chapter boundaries — lines that start a new chapter, part, or major section.\n' +
+    'Return ONLY a JSON array, no markdown, no explanation.\n' +
+    'Format: [{"title":"Chapter name","page":1}, ...]\n' +
+    'Rules:\n' +
+    '- page is the 1-based index in the list below (not the original PDF page number)\n' +
+    '- If no clear chapters found, return [{"title":"' + (lang === 'en' ? 'Full text' : lang === 'es' ? 'Texto completo' : 'Texto completo') + '","page":1}]\n' +
+    '- Titles should be in the book original language\n\n' +
+    index;
+
+  try {
+    var res = await callAI([{ text: prompt }], 1024);
+    if (!res.ok) throw new Error('status ' + res.status);
+    var raw = await parseAIResponse(res) || '[]';
+    // Strip possible markdown fences
+    raw = raw.replace(/```json|```/g, '').trim();
+    var chapters = JSON.parse(raw);
+    if (!Array.isArray(chapters) || chapters.length === 0) throw new Error('empty');
+    return chapters; // [{title, page}]
+  } catch(e) {
+    // Fallback: single chapter with full text
+    return [{ title: title, page: 1 }];
+  }
+}
+
+// ── Page text → HTML (handles tables and figures) ───────────────────────────
+function pageToHtml(p) {
+  var text = p.text || '';
+
+  // Split into segments: normal text, <table>...</table>, [FIGURA]...[/FIGURA]
+  var html = '';
+  var remaining = text;
+
+  // Process token by token (table first, then figura)
+  var tableRe = /(<table[\s\S]*?<\/table>)/i;
+  var figRe   = /\[FIGURA\]([\s\S]*?)\[\/FIGURA\]/i;
+
+  while (remaining.length > 0) {
+    var tableMatch = tableRe.exec(remaining);
+    var figMatch   = figRe.exec(remaining);
+
+    // Pick whichever comes first
+    var nextTable = tableMatch ? tableMatch.index : Infinity;
+    var nextFig   = figMatch   ? figMatch.index   : Infinity;
+
+    if (nextTable === Infinity && nextFig === Infinity) {
+      // Only plain text left
+      html += plainTextToHtml(remaining);
+      break;
+    }
+
+    if (nextTable <= nextFig) {
+      // Plain text before table
+      if (nextTable > 0) html += plainTextToHtml(remaining.slice(0, nextTable));
+      // Table itself — sanitize but keep structure
+      html += sanitizeTable(tableMatch[1]);
+      remaining = remaining.slice(nextTable + tableMatch[1].length);
+    } else {
+      // Plain text before figure marker
+      if (nextFig > 0) html += plainTextToHtml(remaining.slice(0, nextFig));
+      // Figure — embed page image if available, with caption
+      var caption = figMatch[1].trim();
+      if (p.dataUrl) {
+        html += '<div class="figura"><img src="' + p.dataUrl + '" alt="' + esc(caption) + '" style="max-width:100%;height:auto;"/>';
+        if (caption) html += '<p class="figura-caption"><em>' + esc(caption) + '</em></p>';
+        html += '</div>';
+      } else if (caption) {
+        html += '<p class="figura-caption"><em>[Figura: ' + esc(caption) + ']</em></p>';
+      }
+      remaining = remaining.slice(nextFig + figMatch[0].length);
+    }
+  }
+  return html;
+}
+
+function plainTextToHtml(text) {
+  return text.split(/\n\n+/).map(function(para) {
+    para = para.trim();
+    if (!para) return '';
+    // Single newlines inside paragraph → space
+    return '<p>' + esc(para.replace(/\n/g, ' ')) + '</p>';
+  }).filter(Boolean).join('\n');
+}
+
+function sanitizeTable(tableHtml) {
+  // Allow only safe table tags, escape content inside cells
+  // Simple approach: strip all attributes, re-escape text content
+  var clean = tableHtml
+    .replace(/<table[^>]*>/i, '<table>')
+    .replace(/<tr[^>]*>/gi, '<tr>')
+    .replace(/<th[^>]*>/gi, '<th>')
+    .replace(/<td[^>]*>/gi, '<td>')
+    .replace(/<\/?(thead|tbody|tfoot)[^>]*>/gi, '');
+  return clean;
+}
+
+// ── EPUB builder ──────────────────────────────────────────────────────────────
+
+// Convert raw OCR text (with [FIGURA:...] and <table>...</table>) to XHTML,
+// embedding the page image for any [FIGURA] detected.
+function pageToHTML(text, dataUrl, imgId) {
+  var html = '';
+  // Split on table blocks and figure markers, processing each segment
+  // Strategy: line by line, track if we're inside a <table>
+  var lines = text.split('\n');
+  var inTable = false;
+  var tableHTML = '';
+  var paraLines = [];
+
+  function flushPara() {
+    if (paraLines.length === 0) return;
+    var para = paraLines.join(' ').trim();
+    paraLines = [];
+    if (!para) return;
+    // Check for [FIGURA/IMAGEM/GRAVURA/MAPA/...] marker — flexible detection
+    var figMatch = para.match(/\[(FIGURA|IMAGEM|ILUSTRA[ÇC][ÃA]O|GRAVURA|FOTO|MAPA|GR[ÁA]FICO|DIAGRAMA)(?::([^\]]*?))?\](.*)/i);
+    if (figMatch) {
+      var desc = (figMatch[2] || figMatch[1] || 'Figura').trim();
+      var caption = (figMatch[3] || '').trim();
+      if (dataUrl && imgId) {
+        html += '<div class="figura"><img src="img/' + imgId + '.jpg" alt="' + esc(desc) + '"/>';
+        if (desc) html += '<p class="legenda"><em>' + esc(desc) + (caption ? ' — ' + esc(caption) : '') + '</em></p>';
+        html += '</div>\n';
+      } else {
+        html += '<p class="figura-placeholder">[Figura: ' + esc(desc) + (caption ? ' — ' + esc(caption) : '') + ']</p>\n';
+      }
+    } else {
+      html += '<p>' + esc(para) + '</p>\n';
+    }
+  }
+
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i];
+
+    // Detect table start
+    if (!inTable && /<table/i.test(line)) {
+      flushPara();
+      inTable = true;
+      tableHTML = line + '\n';
+      continue;
+    }
+    if (inTable) {
+      tableHTML += line + '\n';
+      if (/<\/table>/i.test(line)) {
+        inTable = false;
+        // Clean and emit table — strip any escaping that Qwen might have added
+        html += tableHTML;
+        tableHTML = '';
+      }
+      continue;
+    }
+
+    // Blank line → flush paragraph
+    if (line.trim() === '') {
+      flushPara();
+    } else {
+      paraLines.push(line.trim());
+    }
+  }
+  if (inTable) html += tableHTML; // unclosed table safety
+  flushPara();
+  return html;
+}
+
+function buildEPUB(pages, title, author, lang, chapterMap) {
+  var valid = pages.filter(function (p) {
+    return p.text.trim() && p.text.trim() !== '[em branco]';
+  });
+
+  // Assign an imgId to each page that has a [FIGURA] marker
+  valid.forEach(function(p, i) {
+    if (/\[(FIGURA|IMAGEM|ILUSTRA|GRAVURA|FOTO|MAPA|GR[ÁA]FICO|DIAGRAMA)/i.test(p.text)) p.imgId = 'p' + (i + 1);
+  });
+
+  var chapters = [];
+
+  function buildChapterHTML(slice) {
+    return slice.map(function(p) {
+      return pageToHTML(p.text, p.dataUrl, p.imgId);
+    }).join('\n');
+  }
+
+  if (chapterMap && chapterMap.length > 0) {
+    for (var ci = 0; ci < chapterMap.length; ci++) {
+      var startIdx = chapterMap[ci].page - 1;
+      var endIdx   = ci + 1 < chapterMap.length ? chapterMap[ci + 1].page - 1 : valid.length;
+      chapters.push({
+        num: ci + 1,
+        title: chapterMap[ci].title,
+        html: buildChapterHTML(valid.slice(startIdx, endIdx))
+      });
+    }
+  } else {
+    var chunkSize = 10;
+    for (var i = 0; i < valid.length; i += chunkSize) {
+      var num = Math.floor(i / chunkSize) + 1;
+      chapters.push({ num: num, title: null, html: buildChapterHTML(valid.slice(i, i + chunkSize)) });
+    }
+  }
+
+  // Collect all images that need to be embedded
+  var images = {}; // imgId → base64 jpeg data
+  valid.forEach(function(p) {
+    if (p.imgId && p.dataUrl) {
+      images[p.imgId] = p.dataUrl.split(',')[1]; // base64 only
+    }
+  });
+  var hasImages = Object.keys(images).length > 0;
+
+  var files = {};
+  files['mimetype'] = 'application/epub+zip';
+  files['META-INF/container.xml'] = '<?xml version="1.0" encoding="UTF-8"?><container version="1.0" xmlns="urn:oasis:schemas:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>';
+
+  // Manifest: chapters + css + images
+  var manifestItems = chapters.map(function (c) {
+    return '<item id="c' + c.num + '" href="c' + c.num + '.xhtml" media-type="application/xhtml+xml"/>';
+  });
+  manifestItems.push('<item id="css" href="style.css" media-type="text/css"/>');
+  Object.keys(images).forEach(function(id) {
+    manifestItems.push('<item id="img-' + id + '" href="img/' + id + '.jpg" media-type="image/jpeg"/>');
+  });
+
+  var spine = chapters.map(function (c) { return '<itemref idref="c' + c.num + '"/>'; }).join('');
+  files['OEBPS/content.opf'] = '<?xml version="1.0" encoding="UTF-8"?><package xmlns="http://www.idpf.org/2007/opf" unique-identifier="uid" version="2.0"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:title>' + esc(title) + '</dc:title><dc:creator>' + esc(author) + '</dc:creator><dc:language>' + lang + '</dc:language><dc:identifier id="uid">epubly-' + Date.now() + '</dc:identifier></metadata><manifest><item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>' + manifestItems.join('') + '</manifest><spine toc="ncx">' + spine + '</spine></package>';
+
+  var navPts = chapters.map(function (c, i) {
+    return '<navPoint id="n' + c.num + '" playOrder="' + (i + 1) + '"><navLabel><text>' + esc(c.title || (lang === 'en' ? 'Chapter ' : 'Capítulo ') + c.num) + '</text></navLabel><content src="c' + c.num + '.xhtml"/></navPoint>';
+  }).join('');
+  files['OEBPS/toc.ncx'] = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE ncx PUBLIC "-//NISO//DTD ncx 2005-1//EN" "http://www.daisy.org/z3986/2005/ncx-2005-1.dtd"><ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1"><head><meta name="dtb:uid" content="epubly-' + Date.now() + '"/></head><docTitle><text>' + esc(title) + '</text></docTitle><navMap>' + navPts + '</navMap></ncx>';
+
+  files['OEBPS/style.css'] = [
+    'body{font-family:Georgia,serif;font-size:1em;line-height:1.75;margin:1em 1.5em;color:#1a1410}',
+    'p{margin:0 0 .8em;text-indent:1.5em}',
+    'p:first-child{text-indent:0}',
+    'h2{font-family:Georgia,serif;font-size:1.4em;font-weight:normal;margin:1.5em 0 1em;color:#1a1410;page-break-before:always}',
+    'hr{border:none;border-top:1px solid #ccc;margin:2em auto;width:40%}',
+    'table{border-collapse:collapse;width:100%;margin:1.2em 0;font-size:.9em}',
+    'th,td{border:1px solid #bbb;padding:.35em .6em;text-align:left;vertical-align:top}',
+    'th{background:#f0ece4;font-weight:bold}',
+    'tr:nth-child(even){background:#faf9f6}',
+    '.figura{text-align:center;margin:1.5em 0;page-break-inside:avoid}',
+    '.figura img{max-width:100%;height:auto;border:1px solid #ddd}',
+    '.legenda{font-size:.85em;font-style:italic;color:#555;text-indent:0;margin-top:.4em}',
+    '.figura-placeholder{font-style:italic;color:#888;text-align:center}'
+  ].join('\n');
+
+  chapters.forEach(function (c) {
+    var heading = c.title ? '<h2>' + esc(c.title) + '</h2>\n' : '';
+    files['OEBPS/c' + c.num + '.xhtml'] =
+      '<?xml version="1.0" encoding="UTF-8"?>' +
+      '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">' +
+      '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="' + lang + '">' +
+      '<head><meta http-equiv="Content-Type" content="application/xhtml+xml;charset=utf-8"/>' +
+      '<title>' + esc(title) + '</title>' +
+      '<link rel="stylesheet" type="text/css" href="style.css"/></head>' +
+      '<body>' + heading + c.html + '</body></html>';
+  });
+
+  // Embed images as binary Uint8Array from base64
+  Object.keys(images).forEach(function(id) {
+    var b64 = images[id];
+    var bin = atob(b64);
+    var arr = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    files['OEBPS/img/' + id + '.jpg'] = arr;
+  });
+
+  return zipBlob(files);
+}
+
+function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+// ── ZIP ───────────────────────────────────────────────────────────────────────
+function zipBlob(files) {
+  var enc = new TextEncoder();
+  var entries = [];
+  var offset = 0;
+  Object.keys(files).forEach(function (name) {
+    var nameB = enc.encode(name);
+    var data  = typeof files[name] === 'string' ? enc.encode(files[name]) : files[name];
+    var crc   = crc32(data);
+    var lh = new Uint8Array(30 + nameB.length);
+    var lv = new DataView(lh.buffer);
+    lv.setUint32(0, 0x04034b50, true); lv.setUint16(4, 20, true);
+    lv.setUint16(6, 0, true); lv.setUint16(8, 0, true);
+    lv.setUint16(10, 0, true); lv.setUint16(12, 0, true);
+    lv.setUint32(14, crc, true); lv.setUint32(18, data.length, true); lv.setUint32(22, data.length, true);
+    lv.setUint16(26, nameB.length, true); lv.setUint16(28, 0, true);
+    lh.set(nameB, 30);
+    entries.push({ nameB: nameB, crc: crc, size: data.length, offset: offset, lh: lh, data: data });
+    offset += lh.length + data.length;
+  });
+  var cds = entries.map(function (e) {
+    var cd = new Uint8Array(46 + e.nameB.length);
+    var dv = new DataView(cd.buffer);
+    dv.setUint32(0, 0x02014b50, true); dv.setUint16(4, 20, true); dv.setUint16(6, 20, true);
+    dv.setUint16(8, 0, true); dv.setUint16(10, 0, true); dv.setUint16(12, 0, true); dv.setUint16(14, 0, true);
+    dv.setUint32(16, e.crc, true); dv.setUint32(20, e.size, true); dv.setUint32(24, e.size, true);
+    dv.setUint16(28, e.nameB.length, true); dv.setUint16(30, 0, true); dv.setUint16(32, 0, true);
+    dv.setUint16(34, 0, true); dv.setUint16(36, 0, true); dv.setUint32(38, 0, true); dv.setUint32(42, e.offset, true);
+    cd.set(e.nameB, 46);
+    return cd;
+  });
+  var cdSize = cds.reduce(function (s, c) { return s + c.length; }, 0);
+  var eocd = new Uint8Array(22);
+  var ev = new DataView(eocd.buffer);
+  ev.setUint32(0, 0x06054b50, true); ev.setUint16(4, 0, true); ev.setUint16(6, 0, true);
+  ev.setUint16(8, entries.length, true); ev.setUint16(10, entries.length, true);
+  ev.setUint32(12, cdSize, true); ev.setUint32(16, offset, true); ev.setUint16(20, 0, true);
+  var parts = [];
+  entries.forEach(function (e) { parts.push(e.lh); parts.push(e.data); });
+  cds.forEach(function (cd) { parts.push(cd); });
+  parts.push(eocd);
+  return new Blob(parts, { type: 'application/epub+zip' });
+}
+
+function crc32(data) {
+  if (!crc32.t) {
+    crc32.t = new Uint32Array(256);
+    for (var i = 0; i < 256; i++) {
+      var c = i;
+      for (var j = 0; j < 8; j++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+      crc32.t[i] = c;
+    }
+  }
+  var c = 0xFFFFFFFF;
+  for (var i = 0; i < data.length; i++) c = crc32.t[(c ^ data[i]) & 0xFF] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+
+})();
+
+function switchDonateTab(tab) {
+  var isPix = tab === 'pix';
+  document.getElementById('panelPix').style.display  = isPix ? 'block' : 'none';
+  document.getElementById('panelKofi').style.display = isPix ? 'none'  : 'block';
+  var tPix  = document.getElementById('tabPix');
+  var tKofi = document.getElementById('tabKofi');
+  tPix.style.background = isPix ? 'var(--accent)' : 'transparent';
+  tPix.style.color       = isPix ? '#fff' : 'var(--text-muted)';
+  tPix.style.borderColor = isPix ? 'var(--accent)' : 'var(--border)';
+  tKofi.style.background = isPix ? 'transparent' : 'var(--accent)';
+  tKofi.style.color       = isPix ? 'var(--text-muted)' : '#fff';
+  tKofi.style.borderColor = isPix ? 'var(--border)' : 'var(--accent)';
+}
+</script>
+
+<!-- Donate Modal -->
+<div class="modal-overlay" id="donateModal" style="display:none;">
+  <div class="modal" style="max-width:420px;">
+    <button class="modal-close" type="button" onclick="document.getElementById('donateModal').style.display='none';return false;">✕</button>
+
+    <div class="modal-header">
+      <div class="modal-tag" data-i18n="donateTag">Apoie o projeto</div>
+      <h2 data-i18n="donateTitle">Apoie o Epubly ♡</h2>
+      <p data-i18n="donateIntro">O Epubly é gratuito e de código aberto. Se ele foi útil para você, considere uma contribuição para manter o projeto vivo.</p>
+    </div>
+
+    <div class="modal-body">
+      <div class="modal-divider"></div>
+
+      <!-- Tabs -->
+      <div style="display:flex;gap:.5rem;margin-bottom:1.25rem;">
+        <button id="tabPix" type="button" onclick="switchDonateTab('pix')"
+          style="flex:1;padding:.45rem;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:#fff;font-size:.8rem;cursor:pointer;font-family:inherit;font-weight:500;"
+          data-i18n="donatePix">PIX (Brasil)</button>
+        <button id="tabKofi" type="button" onclick="switchDonateTab('kofi')"
+          style="flex:1;padding:.45rem;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:.8rem;cursor:pointer;font-family:inherit;"
+          data-i18n="donateKofi">Internacional (Ko-fi)</button>
+      </div>
+
+      <!-- PIX panel -->
+      <div id="panelPix" style="text-align:center;">
+        <div id="qrcode-container" style="display:inline-block;padding:16px;background:white;border-radius:16px;border:1px solid var(--border-lit);margin-bottom:1.25rem;">
+          <div id="qrcode"></div>
+        </div>
+        <p data-i18n="donateScan" style="font-size:.78rem;color:var(--text-muted);margin-bottom:.75rem;">Escaneie com o app do seu banco</p>
+      </div>
+
+      <!-- Ko-fi panel -->
+      <div id="panelKofi" style="display:none;text-align:center;padding:.5rem 0 .75rem;">
+        <a href="https://ko-fi.com/epubly" target="_blank" rel="noopener"
+           style="display:inline-flex;align-items:center;gap:.6rem;background:#FF5E5B;color:#fff;padding:.7rem 1.5rem;border-radius:100px;font-size:.88rem;font-weight:600;text-decoration:none;font-family:inherit;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.034-.099-.077-.099-.077-.678-.772-3.517-3.36-3.76-3.702-.268-.368-.267-.826-.267-1.156l.005-1.207c0-.382.356-.38.356-.38h6.297c.356 0 .325.381.325.381l.002 1.188c-.016.479-.278.979-.538.974zm7.085.914c-.547.093-1.026.03-1.026.03V5.765c.978.112 1.814.767 1.967 1.857.12.677-.074 1.332-.353 1.306z"/></svg>
+          Ko-fi
+        </a>
+        <p style="font-size:.76rem;color:var(--text-muted);margin-top:1rem;line-height:1.5;">ko-fi.com/epubly &nbsp;·&nbsp; PayPal ou cartão internacional</p>
+      </div>
+
+      <div class="modal-divider" style="margin-top:1.25rem;"></div>
+      <p data-i18n="donateThanks" style="font-size:.75rem;color:var(--text-dim);margin-top:1rem;line-height:1.6;text-align:center;">
+        Qualquer valor é bem-vindo e ajuda a manter o servidor e as chamadas de IA. Obrigado ♡
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Sobre -->
+<div class="modal-overlay" id="aboutModal" style="display:none;">
+  <div class="modal" style="max-width:560px;">
+    <button class="modal-close" type="button" onclick="document.getElementById('aboutModal').style.display='none';return false;">✕</button>
+
+    <div class="modal-header">
+      <div class="modal-tag" data-i18n="aboutTag">Sobre o projeto</div>
+      <h2 data-i18n="aboutTitle">O que é o Epubly?</h2>
+      <p data-i18n="aboutIntro">Uma ferramenta gratuita e de código aberto para resgatar livros esquecidos.</p>
+    </div>
+
+    <div class="modal-body">
+      <div class="modal-divider"></div>
+
+      <div class="about-steps">
+
+        <div class="about-step">
+          <div class="about-step-icon" style="background:rgba(201,133,90,.12);color:var(--accent);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <div>
+            <div class="about-step-title" data-i18n="aboutS1t">A iniciativa</div>
+            <div class="about-step-text" data-i18n="aboutS1">Milhares de obras raras existem apenas como scans de baixa qualidade.</div>
+          </div>
+        </div>
+
+        <div class="about-step">
+          <div class="about-step-icon" style="background:rgba(90,158,111,.12);color:var(--green);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          </div>
+          <div>
+            <div class="about-step-title" data-i18n="aboutS2t">Como funciona</div>
+            <div class="about-step-text" data-i18n="aboutS2">O PDF é renderizado direto no navegador e as imagens vão para a IA.</div>
+          </div>
+        </div>
+
+        <div class="about-step">
+          <div class="about-step-icon" style="background:rgba(90,120,180,.12);color:#7a9fd4;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+          </div>
+          <div>
+            <div class="about-step-title" data-i18n="aboutS3t">Código aberto</div>
+            <div class="about-step-text" data-i18n="aboutS3">Todo o código está disponível no <a href="https://github.com/pdvrx/epubly" target="_blank">GitHub</a>.</div>
+          </div>
+        </div>
+
+        <div class="about-step">
+          <div class="about-step-icon" style="background:rgba(192,90,90,.12);color:var(--red);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </div>
+          <div>
+            <div class="about-step-title" data-i18n="aboutS4t">Por que as doações são fundamentais</div>
+            <div class="about-step-text" data-i18n="aboutS4">Cada conversão tem um custo real de IA. Sem doações o projeto precisa fechar.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-divider" style="margin-top:1.5rem;"></div>
+
+      <div style="text-align:center;padding-top:1rem;">
+        <button class="btn-primary" type="button" data-i18n="aboutDonate" onclick="
+          document.getElementById('aboutModal').style.display='none';
+          var m=document.getElementById('donateModal');
+          m.style.display='flex';
+          if(!document.getElementById('qrcode').hasChildNodes()){
+            new QRCode(document.getElementById('qrcode'),{
+              text:'00020126410014br.gov.bcb.pix0119pedro06bf@gmail.com5204000053039865802BR5909Epubly App6006Brasil62070503***6304185E',
+              width:200,height:200,colorDark:'#1a1410',colorLight:'#ffffff',
+              correctLevel:QRCode.CorrectLevel.M
+            });
+          }
+          return false;
+        ">♡ Apoiar com uma doação</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
+
 
 .header-right { display: flex; align-items: center; gap: .6rem; }
 .btn-change-key {
