@@ -1,61 +1,55 @@
-[README (1).md](https://github.com/user-attachments/files/25829139/README.1.md)
 # Epubly
 
 **Converta PDFs escaneados em EPUBs limpos, direto no navegador.**
 
-Envie um PDF escaneado — torto, manchado, antigo, em página dupla. A IA extrai o texto e entrega ele limpo para o seu e-reader.
+Envie um PDF escaneado — torto, manchado, antigo, em página dupla. A IA extrai o texto, reconhece tabelas e identifica figuras, entregando tudo limpo para o seu e-reader.
 
-![Epubly](https://img.shields.io/badge/OCR-Google%20Gemini-orange?style=flat-square) ![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
+![OCR](https://img.shields.io/badge/OCR-Qwen2.5--VL-blueviolet?style=flat-square) ![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square) [![Ko-fi](https://img.shields.io/badge/Apoie-Ko--fi-FF5E5B?style=flat-square&logo=ko-fi&logoColor=white)](https://ko-fi.com/epubly)
 
 ---
 
 ## Como funciona
 
 1. Arraste ou selecione um PDF escaneado
-2. Insira sua chave de API do Google Gemini (gratuita)
-3. Ajuste as configurações — título, autor, idioma, páginas
-4. Clique em **Converter para EPUB**
-5. Baixe o `.epub` pronto para Kindle, Kobo ou Apple Books
+2. Ajuste as configurações — título, autor, idioma, páginas
+3. Clique em **Converter para EPUB**
+4. Baixe o `.epub` pronto para Kindle, Kobo ou Apple Books
 
-O processamento acontece inteiramente no seu navegador. Nenhum arquivo é enviado a servidores do Epubly.
+O processamento acontece no seu navegador. As imagens das páginas vão direto para a API de IA — nenhum arquivo passa por servidores do Epubly.
 
 ---
 
 ## Funcionalidades
 
-- **OCR via Gemini Vision** — lê texto de páginas tortas, manchadas ou de baixa qualidade
-- **Separação de páginas duplas** — detecta spreads automaticamente e divide cada metade
-- **Seleção de páginas** — converta só o intervalo que quiser (`1-5`, `1,3,7`, `1-5,8,12`)
+- **OCR via Qwen2.5-VL** — modelo de visão de última geração; lê texto de páginas tortas, manchadas ou de baixa qualidade
+- **Separação de páginas duplas** — detecta spreads automaticamente, encontra o gutter da encadernação e divide cada metade com precisão
+- **Seleção de páginas** — converta só o intervalo que quiser (`1-5`, `1,3,7`, `1-5,8,12`). Páginas fora da seleção não são nem renderizadas
+- **Reconhecimento de tabelas** — converte tabelas do PDF em HTML `<table>` válido no EPUB
+- **Reconhecimento de figuras** — detecta ilustrações, gravuras e fotografias e as embute como imagem no EPUB
 - **Correção de hifenização** — une palavras quebradas no fim de linha
 - **EPUB 2.0 válido** — compatível com Kindle, Kobo, Apple Books e outros leitores
-- **Processamento em lotes** — 3 páginas por chamada à API, reduzindo uso de cota em ~65%
-- **Rate limit inteligente** — backoff exponencial e detecção de cota diária esgotada
-- **Chave armazenada localmente** — nunca sai do seu navegador
+- **Detecção automática de capítulos** — identifica e estrutura o sumário (TOC) do EPUB
 
 ---
 
-## Como obter a chave de API
+## Tecnologias
 
-1. Acesse [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
-2. Clique em **Create API key**
-3. Copie a chave (começa com `AIza...`)
-4. Cole no campo da chave no Epubly e clique em **Salvar**
-
-O plano gratuito permite ~1.500 requisições/dia — suficiente para dezenas de livros.
+- [PDF.js](https://mozilla.github.io/pdf.js/) — renderização de PDF no navegador
+- [Qwen2.5-VL](https://huggingface.co/Qwen/Qwen2.5-VL-72B-Instruct) via [OpenRouter](https://openrouter.ai) — OCR multimodal
+- [Cloudflare Workers](https://workers.cloudflare.com/) — proxy serverless para proteger a chave de API
+- [QRCode.js](https://davidshimjs.github.io/qrcodejs/) — geração do QR code PIX
+- EPUB 2.0 gerado em JavaScript puro, sem dependências
 
 ---
 
-## Uso local
+## Apoie o projeto
 
-O Epubly é um único arquivo HTML. Para rodar localmente sem problemas de CORS:
+O Epubly é gratuito, mas cada conversão tem um custo real de processamento de IA. Se ele foi útil para você, considere uma contribuição:
 
-```bash
-python3 iniciar_servidor.py
-```
+- 🇧🇷 **PIX** — disponível diretamente no app, clique em *♡ Apoie-nos*
+- 🌍 **Ko-fi** — [ko-fi.com/epubly](https://ko-fi.com/epubly) · aceita PayPal e cartão de qualquer país
 
-Acesse `http://localhost:8000` no navegador.
-
-> **Não abra o `index.html` diretamente via `file://`** — o PDF.js exige um servidor HTTP para funcionar corretamente.
+Qualquer valor ajuda a manter o servidor e as chamadas de IA. Obrigado ♡
 
 ---
 
