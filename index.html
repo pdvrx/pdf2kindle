@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-
-<!-- Google tag (gtag.js) -->
+<!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4R83PBQC6"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
+  gtag('config', 'G-D4R83PBQC6', { send_page_view: true });
 
-  gtag('config', 'G-D4R83PBQC6');
+  function track(event, params) {
+    try { gtag('event', event, params || {}); } catch(e) {}
+  }
 </script>
-  
 <meta charset="UTF-8">
   <link rel="icon" href="data:,">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -578,7 +579,8 @@ main {
 .page-range-input.invalid { border-color: var(--red); }
 .page-range-status { font-size: .7rem; color: var(--text-muted); min-height: 1em; }
 .page-range-status.ok { color: var(--green); }
-.page-range-status.err { color: var(--red); }
+.page-range-status.err  { color: var(--red); }
+.warn { color: #c9a85a; }
 .page-thumb.dimmed { opacity: .22; }
 .pages-grid {
   display: grid;
@@ -659,7 +661,8 @@ main {
 }
 .status-line.ok { color: var(--green); }
 .status-line.warn { color: #c9a84c; }
-.status-line.err { color: var(--red); }
+.status-line.err  { color: var(--red); }
+.warn { color: #c9a85a; }
 .log-errors {
   margin-top: .4rem;
   font-size: .72rem;
@@ -1083,18 +1086,7 @@ footer {
   <div class="header-right">
   <button class="btn-change-key" id="aboutBtn" type="button" onclick="document.getElementById('aboutModal').style.display='flex';return false;" data-i18n="about">Sobre</button>
   <a class="btn-change-key" href="https://github.com/pdvrx/epubly" target="_blank" rel="noopener" title="Repositório no GitHub"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.341-3.369-1.341-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg></a>
-  <button class="btn-donate" id="donateBtn" type="button" onclick="
-  var m=document.getElementById('donateModal');
-  m.style.display='flex';
-  if(!document.getElementById('qrcode').hasChildNodes()){
-    new QRCode(document.getElementById('qrcode'),{
-      text:'00020126410014br.gov.bcb.pix0119pedro06bf@gmail.com5204000053039865802BR5909Epubly App6006Brasil62070503***6304185E',
-      width:200,height:200,colorDark:'#1a1410',colorLight:'#ffffff',
-      correctLevel:QRCode.CorrectLevel.M
-    });
-  }
-  return false;
-" data-i18n="donate">♡ Apoie-nos</button>
+  <button class="btn-donate" id="donateBtn" type="button" onclick="openDonateModal();return false;" data-i18n="donate">♡ Apoie-nos</button>
 </header>
 
 <main>
@@ -1275,6 +1267,7 @@ var I18N = {
     done:         'Concluído!',
     readingBatch: 'Lendo texto... lote',
     pagesSelected:'páginas para processar',
+    convertAnother:'Converter outro',
     about:        'Sobre',
     aboutTag:     'Sobre o projeto',
     aboutTitle:   'O que é o Epubly?',
@@ -1329,6 +1322,7 @@ var I18N = {
     done:         'Done!',
     readingBatch: 'Reading text... batch',
     pagesSelected:'pages to process',
+    convertAnother:'Convert another',
     about:        'About',
     aboutTag:     'About the project',
     aboutTitle:   'What is Epubly?',
@@ -1383,6 +1377,7 @@ var I18N = {
     done:         '¡Listo!',
     readingBatch: 'Leyendo texto... lote',
     pagesSelected:'páginas a procesar',
+    convertAnother:'Convertir otro',
     about:        'Acerca de',
     aboutTag:     'Sobre el proyecto',
     aboutTitle:   '¿Qué es Epubly?',
@@ -1490,6 +1485,7 @@ async function handleFile(file) {
   $('settingsPanel').classList.add('show');
   $('processBtn').classList.add('show');
   $('bookTitle').value = file.name.replace(/\.pdf$/i, '').replace(/[_-]/g, ' ');
+  track('pdf_uploaded', { pages: n, file_size_mb: parseFloat(mb) });
   $('pageRangeItem').style.display = '';
   $('pageRangeTotalLabel').textContent = '(' + T.of + ' ' + n + ')';
   // Attach live-validation listener once per load
@@ -1662,6 +1658,8 @@ $('processBtn').addEventListener('click', async function () {
   $('progressLabel').textContent = T.converting;
   if (!pdfFile) return;
 
+  var _convStart = Date.now();
+  track('conversion_started', { pages: pdfDoc ? pdfDoc.numPages : 0 });
   $('processBtn').disabled = true;
   ['settingsPanel','pagesPreview','processBtn'].forEach(function(id){
     var el=$(id); el.style.overflow='hidden';
@@ -1708,10 +1706,11 @@ $('processBtn').addEventListener('click', async function () {
     var BATCH = 3;
     var CONCURRENCY = 3;
     var totalBatches = Math.ceil(pageImages.length / BATCH);
+    var totalPages = pageImages.length;
     var results = [];
     // Pre-fill results array with correct length based on actual images
-    for (var pi = 0; pi < pageImages.length; pi++) results.push(null);
-    var completed = 0;
+    for (var pi = 0; pi < totalPages; pi++) results.push(null);
+    var completedPages = 0;
 
     for (var wave = 0; wave < totalBatches; wave += CONCURRENCY) {
       var waveEnd = Math.min(wave + CONCURRENCY, totalBatches);
@@ -1727,12 +1726,42 @@ $('processBtn').addEventListener('click', async function () {
                   text: texts[j] || '',
                   pageNum: batch[j].originalPage,
                   side: batch[j].side,
-                  dataUrl: batch[j].dataUrl  // kept for figure embedding
+                  dataUrl: batch[j].dataUrl
                 };
+                completedPages++;
+                setProgress(
+                  30 + (completedPages / totalPages) * 55,
+                  T.readingBatch + ' ' + completedPages + ' ' + T.of + ' ' + totalPages + ' ' + T.pages
+                );
               }
-              completed++;
-              setProgress(30 + (completed / totalBatches) * 55,
-                T.readingBatch + ' ' + completed + ' ' + T.of + ' ' + totalBatches);
+            }).catch(async function(batchErr) {
+              // ── Retry each page individually on batch failure ──────────
+              addLog('⚠ lote falhou, retentando página a página…', 'warn');
+              for (var j = 0; j < batch.length; j++) {
+                try {
+                  var singleTexts = await geminiOCRBatch([batch[j]], lang, cleanText);
+                  results[batchStart + j] = {
+                    text: singleTexts[0] || '',
+                    pageNum: batch[j].originalPage,
+                    side: batch[j].side,
+                    dataUrl: batch[j].dataUrl
+                  };
+                  addLog('✓ p.' + batch[j].originalPage + ' recuperada', 'ok');
+                } catch(singleErr) {
+                  results[batchStart + j] = {
+                    text: '[erro na transcrição desta página]',
+                    pageNum: batch[j].originalPage,
+                    side: batch[j].side,
+                    dataUrl: batch[j].dataUrl
+                  };
+                  addLog('✗ p.' + batch[j].originalPage + ' falhou: ' + singleErr.message, 'err');
+                }
+                completedPages++;
+                setProgress(
+                  30 + (completedPages / totalPages) * 55,
+                  T.readingBatch + ' ' + completedPages + ' ' + T.of + ' ' + totalPages + ' ' + T.pages
+                );
+              }
             })
           );
         })(wb);
@@ -1741,11 +1770,22 @@ $('processBtn').addEventListener('click', async function () {
     }
     results = results.filter(Boolean);
 
+    // ── Post-processing ───────────────────────────────────────────────
+    setProgress(86, 'Limpando cabeçalhos e rodapés repetidos…');
+    results = removeRepeatedHeadersFooters(results);
+    results = extractFootnotes(results);
+
     setProgress(88, T.building);
     addLog(T.building);
+    var coverDataUrl = pageImages.length > 0 ? pageImages[0].dataUrl : null;
     var chapterMap = await detectChapters(results, lang, title);
-    epubBlob = buildEPUB(results, title, author, lang, chapterMap);
+    epubBlob = buildEPUB(results, title, author, lang, chapterMap, coverDataUrl);
     setProgress(100, T.done);
+    track('conversion_completed', {
+      pages: results.length,
+      words: results.reduce(function(s,p){ return s + p.text.split(/\s+/).filter(function(w){return w.length>2;}).length; },0),
+      duration_sec: Math.round((Date.now() - _convStart) / 1000)
+    });
 
     var words = results.reduce(function (s, p) {
       return s + p.text.split(/\s+/).filter(function (w) { return w.length > 2; }).length;
@@ -1756,22 +1796,48 @@ $('processBtn').addEventListener('click', async function () {
     $('resultSection').style.display = 'flex';
 
     $('downloadBtn').onclick = function () {
+      track('epub_downloaded', { pages: results.length });
       var a = document.createElement('a');
       a.href = URL.createObjectURL(epubBlob);
       a.download = title.replace(/\s+/g, '_') + '.epub';
       a.click();
     };
 
+
   } catch (err) {
     addLog(err.message, 'err');
     console.error(err);
-    $('processBtn').disabled = false;
+    track('conversion_failed', {
+      error: err.message ? err.message.slice(0, 100) : 'unknown',
+      duration_sec: Math.round((Date.now() - _convStart) / 1000)
+    });
+    resetConversion();
   }
 });
 
 
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+function resetConversion() {
+  // Re-enable process button and show settings again so user can convert another
+  $('processBtn').disabled = false;
+  $('processBtn').classList.add('show');
+  $('settingsPanel').style.display = '';
+  $('settingsPanel').style.maxHeight = '';
+  $('settingsPanel').style.opacity  = '';
+  $('settingsPanel').style.marginBottom = '';
+  $('settingsPanel').classList.add('show');
+  $('pagesPreview').style.display = '';
+  $('pagesPreview').style.maxHeight = '';
+  $('pagesPreview').style.opacity = '';
+  $('pagesPreview').classList.add('show');
+  $('processBtn').style.display = '';
+  $('processBtn').style.maxHeight = '';
+  $('processBtn').style.opacity = '';
+  // Re-enable drop zone pointer events
+  $('uploadZone').style.pointerEvents = '';
+}
+
 function setProgress(pct, label) {
   $('progressFill').style.width = pct + '%';
   $('progressPct').textContent = Math.round(pct) + '%';
@@ -1975,6 +2041,55 @@ async function geminiOCRBatch(pages, lang, clean) {
   throw new Error('Não foi possível processar esta página. Tente novamente.');
 }
 
+// ── Post-processing: remove repeated headers/footers ─────────────────────────
+function removeRepeatedHeadersFooters(pages) {
+  if (pages.length < 4) return pages;
+
+  // Collect first and last non-empty line of each page
+  var firstLines = {}, lastLines = {};
+  pages.forEach(function(p) {
+    var lines = p.text.split('\n').map(function(l){ return l.trim(); }).filter(Boolean);
+    if (!lines.length) return;
+    var first = lines[0];
+    var last  = lines[lines.length - 1];
+    if (first.length > 3 && first.length < 120) firstLines[first] = (firstLines[first] || 0) + 1;
+    if (last.length  > 3 && last.length  < 120) lastLines[last]   = (lastLines[last]   || 0) + 1;
+  });
+
+  // A line is a repeated header/footer if it appears in >25% of pages (min 3)
+  var threshold = Math.max(3, Math.floor(pages.length * 0.25));
+  var badLines = new Set();
+  Object.keys(firstLines).forEach(function(l){ if (firstLines[l] >= threshold) badLines.add(l); });
+  Object.keys(lastLines).forEach(function(l){  if (lastLines[l]  >= threshold) badLines.add(l); });
+
+  if (badLines.size === 0) return pages;
+  addLog('⟳ ' + badLines.size + ' cabeçalho/rodapé repetido(s) removido(s)', 'ok');
+
+  return pages.map(function(p) {
+    var lines = p.text.split('\n');
+    // Remove matching first line
+    while (lines.length && badLines.has(lines[0].trim())) lines.shift();
+    // Remove matching last line
+    while (lines.length && badLines.has(lines[lines.length - 1].trim())) lines.pop();
+    return Object.assign({}, p, { text: lines.join('\n') });
+  });
+}
+
+// ── Post-processing: extract footnotes to page.footnotes ──────────────────────
+function extractFootnotes(pages) {
+  // Footnotes are separated from body by a blank line and start with
+  // a superscript digit, [N], * or ¹²³ etc.
+  var fnRe = /^(\s*\n){1,2}((?:[\*¹²³⁴⁵⁶⁷⁸⁹]|\[\d+\]|\d+\.)[ \t].+(?:\n(?![\n])[^\n]+)*(?:\n|$))+/m;
+
+  return pages.map(function(p) {
+    var m = fnRe.exec(p.text);
+    if (!m) return p;
+    var fnText = m[0].trim();
+    var body   = p.text.slice(0, m.index).trimEnd();
+    return Object.assign({}, p, { text: body, footnotes: fnText });
+  });
+}
+
 // ── Chapter detector ─────────────────────────────────────────────────────────
 async function detectChapters(pages, lang, title) {
   // Build a compact page index for Gemini to analyse
@@ -1990,7 +2105,7 @@ async function detectChapters(pages, lang, title) {
     'Format: [{"title":"Chapter name","page":1}, ...]\n' +
     'Rules:\n' +
     '- page is the 1-based index in the list below (not the original PDF page number)\n' +
-    '- If no clear chapters found, return [{"title":"' + (lang === 'en' ? 'Full text' : lang === 'es' ? 'Texto completo' : 'Texto completo') + '","page":1}]\n' +
+    '- If no clear chapters found, return [{"title":"","page":1}]\n' +
     '- Titles should be in the book original language\n\n' +
     index;
 
@@ -2084,7 +2199,7 @@ function sanitizeTable(tableHtml) {
 
 // Convert raw OCR text (with [FIGURA:...] and <table>...</table>) to XHTML,
 // embedding the page image for any [FIGURA] detected.
-function pageToHTML(text, dataUrl, imgId) {
+function pageToHTML(text, dataUrl, imgId, footnotes, pageNum) {
   var html = '';
   // Split on table blocks and figure markers, processing each segment
   // Strategy: line by line, track if we're inside a <table>
@@ -2145,10 +2260,26 @@ function pageToHTML(text, dataUrl, imgId) {
   }
   if (inTable) html += tableHTML; // unclosed table safety
   flushPara();
+
+  // Footnotes inline at bottom of this page
+  if (footnotes) {
+    html += '<div class="page-footnotes">';
+    footnotes.split('\n').forEach(function(line) {
+      line = line.trim();
+      if (line) html += '<p class="footnote">' + esc(line) + '</p>';
+    });
+    html += '</div>';
+  }
+
+  // Page number
+  if (pageNum) {
+    html += '<p class="page-num">' + pageNum + '</p>';
+  }
+
   return html;
 }
 
-function buildEPUB(pages, title, author, lang, chapterMap) {
+function buildEPUB(pages, title, author, lang, chapterMap, coverDataUrl) {
   var valid = pages.filter(function (p) {
     return p.text.trim() && p.text.trim() !== '[em branco]';
   });
@@ -2162,7 +2293,7 @@ function buildEPUB(pages, title, author, lang, chapterMap) {
 
   function buildChapterHTML(slice) {
     return slice.map(function(p) {
-      return pageToHTML(p.text, p.dataUrl, p.imgId);
+      return pageToHTML(p.text, p.dataUrl, p.imgId, p.footnotes, p.pageNum);
     }).join('\n');
   }
 
@@ -2197,17 +2328,40 @@ function buildEPUB(pages, title, author, lang, chapterMap) {
   files['mimetype'] = 'application/epub+zip';
   files['META-INF/container.xml'] = '<?xml version="1.0" encoding="UTF-8"?><container version="1.0" xmlns="urn:oasis:schemas:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>';
 
+  // ── Cover ──────────────────────────────────────────────────────────
+  var hasCover = !!(coverDataUrl);
+  if (hasCover) {
+    var coverB64 = coverDataUrl.split(',')[1];
+    var coverBin = atob(coverB64);
+    var coverArr = new Uint8Array(coverBin.length);
+    for (var ci = 0; ci < coverBin.length; ci++) coverArr[ci] = coverBin.charCodeAt(ci);
+    files['OEBPS/img/cover.jpg'] = coverArr;
+    files['OEBPS/cover.xhtml'] =
+      '<?xml version="1.0" encoding="UTF-8"?>' +
+      '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">' +
+      '<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Capa</title>' +
+      '<style type="text/css">body{margin:0;padding:0;text-align:center}img{max-width:100%;height:auto}</style>' +
+      '</head><body><img src="img/cover.jpg" alt="Capa"/></body></html>';
+  }
+
   // Manifest: chapters + css + images
   var manifestItems = chapters.map(function (c) {
     return '<item id="c' + c.num + '" href="c' + c.num + '.xhtml" media-type="application/xhtml+xml"/>';
   });
   manifestItems.push('<item id="css" href="style.css" media-type="text/css"/>');
+  if (hasCover) {
+    manifestItems.push('<item id="cover" href="cover.xhtml" media-type="application/xhtml+xml"/>');
+    manifestItems.push('<item id="cover-img" href="img/cover.jpg" media-type="image/jpeg" properties="cover-image"/>');
+  }
   Object.keys(images).forEach(function(id) {
     manifestItems.push('<item id="img-' + id + '" href="img/' + id + '.jpg" media-type="image/jpeg"/>');
   });
 
-  var spine = chapters.map(function (c) { return '<itemref idref="c' + c.num + '"/>'; }).join('');
-  files['OEBPS/content.opf'] = '<?xml version="1.0" encoding="UTF-8"?><package xmlns="http://www.idpf.org/2007/opf" unique-identifier="uid" version="2.0"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:title>' + esc(title) + '</dc:title><dc:creator>' + esc(author) + '</dc:creator><dc:language>' + lang + '</dc:language><dc:identifier id="uid">epubly-' + Date.now() + '</dc:identifier></metadata><manifest><item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>' + manifestItems.join('') + '</manifest><spine toc="ncx">' + spine + '</spine></package>';
+  var coverSpine = hasCover ? '<itemref idref="cover" linear="yes"/>' : '';
+  var spine = coverSpine + chapters.map(function (c) { return '<itemref idref="c' + c.num + '"/>'; }).join('');
+  files['OEBPS/content.opf'] = '<?xml version="1.0" encoding="UTF-8"?><package xmlns="http://www.idpf.org/2007/opf" unique-identifier="uid" version="2.0"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:title>' + esc(title) + '</dc:title><dc:creator>' + esc(author) + '</dc:creator><dc:language>' + lang + '</dc:language><dc:identifier id="uid">epubly-' + Date.now() + '</dc:identifier>' +
+      (hasCover ? '<meta name="cover" content="cover-img"/>' : '') +
+      '</metadata><manifest><item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>' + manifestItems.join('') + '</manifest><spine toc="ncx">' + spine + '</spine></package>';
 
   var navPts = chapters.map(function (c, i) {
     return '<navPoint id="n' + c.num + '" playOrder="' + (i + 1) + '"><navLabel><text>' + esc(c.title || (lang === 'en' ? 'Chapter ' : 'Capítulo ') + c.num) + '</text></navLabel><content src="c' + c.num + '.xhtml"/></navPoint>';
@@ -2227,11 +2381,17 @@ function buildEPUB(pages, title, author, lang, chapterMap) {
     '.figura{text-align:center;margin:1.5em 0;page-break-inside:avoid}',
     '.figura img{max-width:100%;height:auto;border:1px solid #ddd}',
     '.legenda{font-size:.85em;font-style:italic;color:#555;text-indent:0;margin-top:.4em}',
-    '.figura-placeholder{font-style:italic;color:#888;text-align:center}'
+    '.figura-placeholder{font-style:italic;color:#888;text-align:center}',
+    '.page-footnotes{border-top:1px dotted #bbb;margin-top:1.5em;padding-top:.6em}',
+    '.footnote{font-size:.78em;color:#666;text-indent:0;margin:.15em 0;line-height:1.45}',
+    '.page-num{font-size:.7em;color:#aaa;text-align:center;text-indent:0;margin:1em 0 0;letter-spacing:.08em}'
   ].join('\n');
 
   chapters.forEach(function (c) {
-    var heading = c.title ? '<h2>' + esc(c.title) + '</h2>\n' : '';
+    // Suppress generic fallback chapter headings
+    var genericTitles = ['texto completo','full text','texto completo'];
+    var isGeneric = c.title && genericTitles.indexOf(c.title.toLowerCase().trim()) !== -1;
+    var heading = (c.title && !isGeneric) ? '<h2>' + esc(c.title) + '</h2>\n' : '';
     files['OEBPS/c' + c.num + '.xhtml'] =
       '<?xml version="1.0" encoding="UTF-8"?>' +
       '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">' +
@@ -2316,6 +2476,8 @@ function crc32(data) {
 
 })();
 
+var IS_MOBILE = ('ontouchstart' in window) || (navigator.maxTouchPoints > 1);
+
 function switchDonateTab(tab) {
   var isPix = tab === 'pix';
   document.getElementById('panelPix').style.display  = isPix ? 'block' : 'none';
@@ -2328,6 +2490,49 @@ function switchDonateTab(tab) {
   tKofi.style.background = isPix ? 'transparent' : 'var(--accent)';
   tKofi.style.color       = isPix ? 'var(--text-muted)' : '#fff';
   tKofi.style.borderColor = isPix ? 'var(--border)' : 'var(--accent)';
+}
+
+function openDonateModal() {
+  track('donate_modal_opened');
+  var m = document.getElementById('donateModal');
+  m.style.display = 'flex';
+  // QR code (desktop only)
+  if (!IS_MOBILE && !document.getElementById('qrcode').hasChildNodes()) {
+    new QRCode(document.getElementById('qrcode'), {
+      text: '00020126410014br.gov.bcb.pix0119pedro06bf@gmail.com5204000053039865802BR5909Epubly App6006Brasil62070503***6304185E',
+      width: 200, height: 200,
+      colorDark: '#1a1410', colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  }
+  // On mobile: hide QR, show copy button
+  if (IS_MOBILE) {
+    document.getElementById('qrcode-wrap').style.display  = 'none';
+    document.getElementById('pix-mobile').style.display   = 'block';
+  }
+}
+
+function copyPixKey() {
+  var key = 'pedro06bf@gmail.com';
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(key).then(showCopied).catch(fallbackCopy);
+  } else { fallbackCopy(); }
+  function fallbackCopy() {
+    var ta = document.createElement('textarea');
+    ta.value = key; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    try { document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(ta);
+    showCopied();
+  }
+  function showCopied() {
+    track('donate_pix_copied');
+    var el = document.getElementById('pixCopied');
+    var btn = document.getElementById('copyPixBtn');
+    el.style.display = 'block';
+    btn.textContent = '✓';
+    setTimeout(function(){ el.style.display='none'; btn.textContent='Copiar'; }, 2500);
+  }
 }
 </script>
 
@@ -2357,15 +2562,31 @@ function switchDonateTab(tab) {
 
       <!-- PIX panel -->
       <div id="panelPix" style="text-align:center;">
-        <div id="qrcode-container" style="display:inline-block;padding:16px;background:white;border-radius:16px;border:1px solid var(--border-lit);margin-bottom:1.25rem;">
-          <div id="qrcode"></div>
+        <!-- Desktop: QR code -->
+        <div id="qrcode-wrap" style="display:inline-block;">
+          <div id="qrcode-container" style="display:inline-block;padding:16px;background:white;border-radius:16px;border:1px solid var(--border-lit);margin-bottom:.75rem;">
+            <div id="qrcode"></div>
+          </div>
+          <p data-i18n="donateScan" style="font-size:.78rem;color:var(--text-muted);margin-bottom:.75rem;">Escaneie com o app do seu banco</p>
         </div>
-        <p data-i18n="donateScan" style="font-size:.78rem;color:var(--text-muted);margin-bottom:.75rem;">Escaneie com o app do seu banco</p>
+        <!-- Mobile: copy key button (shown instead of QR on touch devices) -->
+        <div id="pix-mobile" style="display:none;">
+          <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:.85rem;line-height:1.5;">Copie a chave PIX abaixo e cole no app do seu banco:</p>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.7rem 1rem;margin-bottom:.75rem;display:flex;align-items:center;gap:.6rem;justify-content:space-between;">
+            <span id="pixKeyDisplay" style="font-size:.72rem;color:var(--text-muted);word-break:break-all;text-align:left;flex:1;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1f6f7a7b6d702f297d795f78727e7673317c7072">[email&#160;protected]</a></span>
+            <button type="button" id="copyPixBtn" onclick="copyPixKey()"
+              style="flex-shrink:0;background:var(--accent);color:#fff;border:none;border-radius:7px;padding:.4rem .75rem;font-size:.78rem;font-family:inherit;cursor:pointer;font-weight:500;">
+              Copiar
+            </button>
+          </div>
+          <p id="pixCopied" style="font-size:.75rem;color:var(--green);display:none;margin-bottom:.5rem;">✓ Chave copiada!</p>
+        </div>
       </div>
 
       <!-- Ko-fi panel -->
       <div id="panelKofi" style="display:none;text-align:center;padding:.5rem 0 .75rem;">
         <a href="https://ko-fi.com/epubly" target="_blank" rel="noopener"
+           onclick="track('kofi_clicked')"
            style="display:inline-flex;align-items:center;gap:.6rem;background:#FF5E5B;color:#fff;padding:.7rem 1.5rem;border-radius:100px;font-size:.88rem;font-weight:600;text-decoration:none;font-family:inherit;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.034-.099-.077-.099-.077-.678-.772-3.517-3.36-3.76-3.702-.268-.368-.267-.826-.267-1.156l.005-1.207c0-.382.356-.38.356-.38h6.297c.356 0 .325.381.325.381l.002 1.188c-.016.479-.278.979-.538.974zm7.085.914c-.547.093-1.026.03-1.026.03V5.765c.978.112 1.814.767 1.967 1.857.12.677-.074 1.332-.353 1.306z"/></svg>
           Ko-fi
@@ -2442,19 +2663,7 @@ function switchDonateTab(tab) {
       <div class="modal-divider" style="margin-top:1.5rem;"></div>
 
       <div style="text-align:center;padding-top:1rem;">
-        <button class="btn-primary" type="button" data-i18n="aboutDonate" onclick="
-          document.getElementById('aboutModal').style.display='none';
-          var m=document.getElementById('donateModal');
-          m.style.display='flex';
-          if(!document.getElementById('qrcode').hasChildNodes()){
-            new QRCode(document.getElementById('qrcode'),{
-              text:'00020126410014br.gov.bcb.pix0119pedro06bf@gmail.com5204000053039865802BR5909Epubly App6006Brasil62070503***6304185E',
-              width:200,height:200,colorDark:'#1a1410',colorLight:'#ffffff',
-              correctLevel:QRCode.CorrectLevel.M
-            });
-          }
-          return false;
-        ">♡ Apoiar com uma doação</button>
+        <button class="btn-primary" type="button" data-i18n="aboutDonate" onclick="document.getElementById('aboutModal').style.display='none';openDonateModal();return false;e;" data-i18n="aboutDonate">♡ Apoiar com uma doação</button>
       </div>
     </div>
   </div>
