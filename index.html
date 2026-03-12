@@ -335,11 +335,8 @@ main {
   transition: transform .2s;
 }
 #uploadZone:hover .upload-icon { transform: translateY(-2px); }
-/* Children must not intercept drag events — zone handles everything */
-#uploadZone .upload-icon,
-#uploadZone h3,
-#uploadZone p,
-#uploadZone #selectFileBtn { pointer-events: none; }
+/* All children non-interactive — zone handles clicks and drag */
+#uploadZone * { pointer-events: none; }
 
 #uploadZone h3 {
   font-family: 'DM Serif Display', serif;
@@ -722,35 +719,28 @@ main {
 .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
 
 /* ── Footer ── */
-footer {
+/* ── Footer ── */
+footer { position: relative; z-index: 1; }
+.footer-bar {
   border-top: 1px solid var(--border);
-  position: relative;
-  z-index: 1;
+  padding: 1.5rem 2rem;
+  text-align: center;
 }
-.footer-inner {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: .75rem 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  color: var(--text-dim);
-  font-size: .78rem;
-}
-.footer-badge {
+.footer-bar-counter {
   display: inline-flex;
-  align-items: center;
+  align-items: baseline;
   gap: .4rem;
-  font-size: .72rem;
-  font-weight: 500;
-  letter-spacing: .05em;
-  color: var(--accent);
-  background: var(--accent-dim);
-  border: 1px solid rgba(201,133,90,.2);
-  padding: .3rem .75rem;
-  border-radius: 100px;
+  font-size: .8rem;
+  color: var(--text-dim);
 }
+.footer-bar-counter span:first-child {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.35rem;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.footer-inner { display: none; }
 
 /* ── Modal ── */
 .modal-overlay {
@@ -1066,8 +1056,10 @@ footer {
   .modal-cta { flex-direction: column; }
 
   /* Footer */
-  .footer-inner { flex-direction: column; gap: .6rem; text-align: center; padding: 1.25rem 1rem; }
+
 }
+
+/* Hero counter */
 
 /* About modal */
 .about-steps { display: flex; flex-direction: column; gap: 1.25rem; }
@@ -1084,9 +1076,16 @@ footer {
 <header>
   <div class="logo">E<em>pub</em>ly</div>
   <div class="header-right">
-  <button class="btn-change-key" id="aboutBtn" type="button" onclick="document.getElementById('aboutModal').style.display='flex';return false;" data-i18n="about">Sobre</button>
-  <a class="btn-change-key" href="https://github.com/pdvrx/epubly" target="_blank" rel="noopener" title="Repositório no GitHub"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.341-3.369-1.341-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg></a>
-  <button class="btn-donate" id="donateBtn" type="button" onclick="openDonateModal();return false;" data-i18n="donate">♡ Apoie-nos</button>
+    <button class="btn-donate" id="donateBtn" type="button" data-i18n="donate">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-bottom:1px;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      Apoie-nos
+    </button>
+    <button class="btn-change-key" id="aboutBtn" type="button" data-i18n="about">Sobre</button>
+    <a class="btn-change-key" href="https://github.com/pdvrx/epubly" target="_blank" rel="noopener" title="Repositório no GitHub">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.341-3.369-1.341-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+      GitHub
+    </a>
+  </div>
 </header>
 
 <main>
@@ -1097,9 +1096,11 @@ footer {
     <p data-i18n="heroSub">Envie um PDF escaneado: torto, manchado, antigo e em página dupla. A IA extrai o texto e entrega ele limpo para o seu e-reader.</p>
   </div>
 
-  <!-- Upload — em destaque -->
+  <!-- Upload -->
   <div id="uploadZone">
-    <div class="upload-icon">📖</div>
+    <div class="upload-icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg>
+    </div>
     <h3 data-i18n="dropTitle">Arraste seu PDF aqui</h3>
     <p data-i18n="dropSub">Suporte a PDFs escaneados, páginas duplas e baixa qualidade</p>
     <button class="btn-ghost" id="selectFileBtn" data-i18n="selectFile">Selecionar arquivo</button>
@@ -1108,7 +1109,9 @@ footer {
 
   <!-- File info -->
   <div class="file-info" id="fileInfo">
-    <div class="file-icon">📄</div>
+    <div class="file-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:.7"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    </div>
     <div class="file-meta">
       <strong id="fileName"></strong>
       <span id="fileDetails"></span>
@@ -1116,18 +1119,8 @@ footer {
   </div>
   <div class="estimate-strip" id="estimateStrip" style="display:none;">
     <div class="estimate-item">
-      <span class="estimate-icon">⏱</span>
+      <span class="estimate-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
       <span class="estimate-label" id="estTime">—</span>
-    </div>
-    <div class="estimate-sep"></div>
-    <div class="estimate-item">
-      <span class="estimate-icon">🔗</span>
-      <span class="estimate-label" id="estCalls">—</span>
-    </div>
-    <div class="estimate-sep"></div>
-    <div class="estimate-item">
-      <span class="estimate-icon">📊</span>
-      <span class="estimate-label" id="estQuota">—</span>
     </div>
   </div>
 
@@ -1214,11 +1207,10 @@ footer {
 
 
 <footer>
-  <div class="footer-inner">
-    <span data-i18n="footerText">Epubly · Kindle, Kobo, Apple Books</span>
-    <span class="footer-badge">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:.6"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-      Powered by Qwen Vision
+  <div class="footer-bar">
+    <span class="footer-bar-counter">
+      <span id="footerCounterNum">—</span>
+      <span data-i18n="booksRescued">livros resgatados</span>
     </span>
   </div>
 </footer>
@@ -1229,7 +1221,8 @@ footer {
 var I18N = {
   pt: {
     changeKey:    'Trocar chave',
-    donate:       '♡ Apoie-nos',
+    donate:       'Apoie-nos',
+    booksRescued: 'livros resgatados',
     donateTag:    'Apoie o projeto',
     donateTitle:  'Apoie o Epubly ♡',
     donateIntro:  'O Epubly é gratuito e de código aberto. Se ele foi útil para você, considere uma contribuição para manter o projeto vivo.',
@@ -1280,11 +1273,12 @@ var I18N = {
     aboutS3:      'Todo o código está disponível no <a href="https://github.com/pdvrx/epubly" target="_blank">GitHub</a>. Você pode hospedar sua própria instância, contribuir com melhorias ou auditar o que acontece com seus dados.',
     aboutS4t:     'Por que as doações são fundamentais',
     aboutS4:      'O Epubly é gratuito para quem usa, mas cada conversão tem um custo real de processamento de IA. Sem doações, o projeto não consegue pagar as contas. Uma contribuição de qualquer valor mantém o serviço aberto para todos — especialmente para quem não poderia pagar.',
-    aboutDonate:  '♡ Apoiar com uma doação',
+    aboutDonate:  'Apoiar com uma doação',
   },
   en: {
     changeKey:    'Change key',
-    donate:       '♡ Support us',
+    donate:       'Support us',
+    booksRescued: 'books rescued',
     donateTag:    'Support the project',
     donateTitle:  'Support Epubly ♡',
     donateIntro:  'Epubly is free and open source. If it was useful to you, consider a contribution to keep the project alive.',
@@ -1335,11 +1329,12 @@ var I18N = {
     aboutS3:      'All code is available on <a href="https://github.com/pdvrx/epubly" target="_blank">GitHub</a>. You can host your own instance, contribute improvements, or audit what happens to your data.',
     aboutS4t:     'Why donations are essential',
     aboutS4:      'Epubly is free to use, but every conversion has a real AI processing cost. Without donations the project cannot pay its bills. Any contribution keeps the service open and accessible to everyone — especially those who could not afford to pay.',
-    aboutDonate:  '♡ Support with a donation',
+    aboutDonate:  'Support with a donation',
   },
   es: {
     changeKey:    'Cambiar clave',
-    donate:       '♡ Apóyanos',
+    donate:       'Apóyanos',
+    booksRescued: 'libros rescatados',
     donateTag:    'Apoya el proyecto',
     donateTitle:  'Apoya Epubly ♡',
     donateIntro:  'Epubly es gratuito y de código abierto. Si te fue útil, considera una contribución para mantener el proyecto vivo.',
@@ -1390,7 +1385,7 @@ var I18N = {
     aboutS3:      'Todo el código está disponible en <a href="https://github.com/pdvrx/epubly" target="_blank">GitHub</a>. Puedes alojar tu propia instancia, contribuir con mejoras o auditar qué ocurre con tus datos.',
     aboutS4t:     'Por qué las donaciones son fundamentales',
     aboutS4:      'Epubly es gratuito para quien lo usa, pero cada conversión tiene un coste real de procesamiento de IA. Sin donaciones, el proyecto no puede pagar sus facturas. Cualquier contribución mantiene el servicio abierto para todos — especialmente para quienes no podrían pagarlo.',
-    aboutDonate:  '♡ Apoyar con una donación',
+    aboutDonate:  'Apoyar con una donación',
   }
 };
 
@@ -1420,6 +1415,8 @@ document.addEventListener('DOMContentLoaded', applyI18n);
 // API key — managed by Cloudflare Worker proxy (not needed client-side)
 var apiKey = ''; // unused, kept for compatibility
 
+function $(id) { return document.getElementById(id); }
+
 (function () {
 'use strict';
 
@@ -1430,8 +1427,6 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 var pdfFile  = null;
 var pdfDoc   = null;
 var epubBlob = null;
-
-function $(id) { return document.getElementById(id); }
 
 
 // ── File input ────────────────────────────────────────────────────────────────
@@ -1453,18 +1448,26 @@ $('uploadZone').addEventListener('click', function (e) {
 window.addEventListener('dragover', function (e) { e.preventDefault(); });
 window.addEventListener('drop',     function (e) { e.preventDefault(); });
 
+var _dragCounter = 0;
 $('uploadZone').addEventListener('dragenter', function (e) {
   e.preventDefault();
+  _dragCounter++;
   $('uploadZone').classList.add('drag-over');
 });
-$('uploadZone').addEventListener('dragleave', function () {
-  $('uploadZone').classList.remove('drag-over');
+$('uploadZone').addEventListener('dragleave', function (e) {
+  e.preventDefault();
+  _dragCounter--;
+  if (_dragCounter <= 0) {
+    _dragCounter = 0;
+    $('uploadZone').classList.remove('drag-over');
+  }
 });
 $('uploadZone').addEventListener('dragover', function (e) {
   e.preventDefault();
 });
 $('uploadZone').addEventListener('drop', function (e) {
   e.preventDefault();
+  _dragCounter = 0;
   $('uploadZone').classList.remove('drag-over');
   var f = e.dataTransfer.files[0];
   if (!f) return;
@@ -1511,16 +1514,11 @@ async function handleFile(file) {
 
 function updateEstimate(pageCount) {
   var batches = Math.ceil(pageCount / 3);
-  var totalCalls = batches + 1; // +1 for chapter detection
-  var batches2 = Math.ceil(pageCount / 3);
-  var totalSec = batches2 * 12 + (batches2 - 1) * 3;
+  var totalSec = batches * 12;
   var mins = Math.floor(totalSec / 60);
   var secs = totalSec % 60;
   var timeStr = mins > 0 ? '~' + mins + 'min' + (secs > 0 ? ' ' + secs + 's' : '') : '~' + secs + 's';
-  var quotaPct = ((totalCalls / 1500) * 100).toFixed(1);
   $('estTime').textContent = timeStr;
-  $('estCalls').textContent = totalCalls + ' chamadas';
-  $('estQuota').textContent = quotaPct + '% da cota';
   $('estimateStrip').style.display = 'flex';
 }
 
@@ -1696,12 +1694,28 @@ $('processBtn').addEventListener('click', async function () {
       $('processBtn').disabled = false;
       return;
     }
-    var pageImages = await extractPages(pdfDoc, splitDouble, selectedPages, function (i, t) {
-      setProgress(2 + (i / t) * 28, T.extracting + ' ' + i + '/' + t + '...');
-    });
-    addLog(pageImages.length + ' ' + T.pagesSelected);
-    setProgress(30, T.readingBatch + '...');
+    // ── Detect if PDF has selectable text (skip OCR if yes) ──────
+    var isDigital = await detectDigitalPDF(pdfDoc, selectedPages);
+    var pageImages, results;
 
+    if (isDigital) {
+      addLog('PDF digital detectado — extraindo texto direto (sem OCR)', 'ok');
+      track('pdf_digital_detected');
+      setProgress(10, 'Extraindo texto do PDF...');
+      results = await extractDigitalText(pdfDoc, splitDouble, selectedPages, function(i, t) {
+        setProgress(10 + (i / t) * 78, 'Extraindo página ' + i + '/' + t + '...');
+      });
+      pageImages = [];
+      addLog(results.length + ' páginas extraídas', 'ok');
+    } else {
+      pageImages = await extractPages(pdfDoc, splitDouble, selectedPages, function (i, t) {
+        setProgress(2 + (i / t) * 28, T.extracting + ' ' + i + '/' + t + '...');
+      });
+      addLog(pageImages.length + ' ' + T.pagesSelected);
+      setProgress(30, T.readingBatch + '...');
+    }
+
+    if (!isDigital) {
     // Parallel OCR — waves of 3 concurrent batches, results kept in order
     var BATCH = 3;
     var CONCURRENCY = 3;
@@ -1736,7 +1750,7 @@ $('processBtn').addEventListener('click', async function () {
               }
             }).catch(async function(batchErr) {
               // ── Retry each page individually on batch failure ──────────
-              addLog('⚠ lote falhou, retentando página a página…', 'warn');
+              addLog('Lote falhou, retentando página a página…', 'warn');
               for (var j = 0; j < batch.length; j++) {
                 try {
                   var singleTexts = await geminiOCRBatch([batch[j]], lang, cleanText);
@@ -1746,7 +1760,7 @@ $('processBtn').addEventListener('click', async function () {
                     side: batch[j].side,
                     dataUrl: batch[j].dataUrl
                   };
-                  addLog('✓ p.' + batch[j].originalPage + ' recuperada', 'ok');
+                  addLog('p.' + batch[j].originalPage + ' recuperada', 'ok');
                 } catch(singleErr) {
                   results[batchStart + j] = {
                     text: '[erro na transcrição desta página]',
@@ -1754,7 +1768,7 @@ $('processBtn').addEventListener('click', async function () {
                     side: batch[j].side,
                     dataUrl: batch[j].dataUrl
                   };
-                  addLog('✗ p.' + batch[j].originalPage + ' falhou: ' + singleErr.message, 'err');
+                  addLog('p.' + batch[j].originalPage + ' falhou: ' + singleErr.message, 'err');
                 }
                 completedPages++;
                 setProgress(
@@ -1769,6 +1783,7 @@ $('processBtn').addEventListener('click', async function () {
       await Promise.all(wavePromises);
     }
     results = results.filter(Boolean);
+    } // end if(!isDigital)
 
     // ── Post-processing ───────────────────────────────────────────────
     setProgress(86, 'Limpando cabeçalhos e rodapés repetidos…');
@@ -1777,10 +1792,11 @@ $('processBtn').addEventListener('click', async function () {
 
     setProgress(88, T.building);
     addLog(T.building);
-    var coverDataUrl = pageImages.length > 0 ? pageImages[0].dataUrl : null;
+    var coverDataUrl = (!isDigital && pageImages.length > 0) ? pageImages[0].dataUrl : null;
     var chapterMap = await detectChapters(results, lang, title);
     epubBlob = buildEPUB(results, title, author, lang, chapterMap, coverDataUrl);
     setProgress(100, T.done);
+    incrementCounter();
     track('conversion_completed', {
       pages: results.length,
       words: results.reduce(function(s,p){ return s + p.text.split(/\s+/).filter(function(w){return w.length>2;}).length; },0),
@@ -1790,9 +1806,9 @@ $('processBtn').addEventListener('click', async function () {
     var words = results.reduce(function (s, p) {
       return s + p.text.split(/\s+/).filter(function (w) { return w.length > 2; }).length;
     }, 0);
-    addLog('✓ ' + results.length + ' ' + T.pages + ' · ~' + words.toLocaleString() + ' ' + T.words, 'ok');
+    addLog(results.length + ' ' + T.pages + ' · ~' + words.toLocaleString() + ' ' + T.words, 'ok');
 
-    $('resultStats').textContent = '✓ ' + T.epubReady + ' — ' + results.length + ' ' + T.pages + ' · ~' + words.toLocaleString() + ' ' + T.words;
+    $('resultStats').textContent = T.epubReady + ' — ' + results.length + ' ' + T.pages + ' · ~' + words.toLocaleString() + ' ' + T.words;
     $('resultSection').style.display = 'flex';
 
     $('downloadBtn').onclick = function () {
@@ -1878,7 +1894,7 @@ function isBlankImage(canvas) {
 
 async function sleepWithCountdown(sec) {
   for (var i = sec; i > 0; i--) {
-    addLog('⏳ Aguardando ' + i + 's para continuar...', 'warn');
+    addLog('Aguardando ' + i + 's para continuar...', 'warn');
     await sleep(1000);
   }
 }
@@ -1950,6 +1966,103 @@ async function extractPages(doc, splitDouble, selectedPages, onProgress) {
   return pages;
 }
 
+// ── Digital PDF detection ────────────────────────────────────────────────────
+async function detectDigitalPDF(doc, selectedPages) {
+  // Sample up to 5 pages; if average chars/page > 100 it's digital
+  var total = doc.numPages;
+  var sampled = 0, totalChars = 0;
+  for (var i = 1; i <= total && sampled < 5; i++) {
+    if (selectedPages && !selectedPages.has(i)) continue;
+    var page = await doc.getPage(i);
+    var tc = await page.getTextContent();
+    var text = tc.items.map(function(it){ return it.str; }).join('');
+    totalChars += text.replace(/\s/g, '').length;
+    sampled++;
+  }
+  return sampled > 0 && (totalChars / sampled) > 100;
+}
+
+async function extractDigitalText(doc, splitDouble, selectedPages, onProgress) {
+  var results = [];
+  var total = doc.numPages;
+  var selected = [];
+  for (var i = 1; i <= total; i++) {
+    if (!selectedPages || selectedPages.has(i)) selected.push(i);
+  }
+  for (var idx = 0; idx < selected.length; idx++) {
+    onProgress(idx + 1, selected.length);
+    var pageNum = selected[idx];
+    var page = await doc.getPage(pageNum);
+    var tc   = await page.getTextContent();
+    var vp   = page.getViewport({ scale: 1 });
+
+    // Reconstruct paragraphs by grouping items by Y position
+    var lines = {};
+    tc.items.forEach(function(item) {
+      if (!item.str.trim()) return;
+      var y = Math.round(item.transform[5]);
+      if (!lines[y]) lines[y] = [];
+      lines[y].push(item);
+    });
+
+    var sortedYs = Object.keys(lines).map(Number).sort(function(a,b){ return b - a; });
+    var paraGroups = [], prevY = null;
+    sortedYs.forEach(function(y) {
+      var lineText = lines[y]
+        .sort(function(a,b){ return a.transform[4] - b.transform[4]; })
+        .map(function(it){
+          var text = it.str;
+          var bold   = it.fontName && /Bold/i.test(it.fontName);
+          var italic = it.fontName && /Italic|Oblique/i.test(it.fontName);
+          if (bold && italic) return '***' + text + '***';
+          if (bold)   return '**' + text + '**';
+          if (italic) return '*' + text + '*';
+          return text;
+        }).join('');
+      if (prevY !== null && (prevY - y) > 18) {
+        paraGroups.push('');  // blank line = paragraph break
+      }
+      paraGroups.push(lineText);
+      prevY = y;
+    });
+    var text = paraGroups.join('\n').trim();
+
+    // Handle double pages: split by half width if needed
+    var ratio = vp.width / vp.height;
+    if (splitDouble && ratio > 1.2) {
+      var midX = vp.width / 2;
+      var leftLines = {}, rightLines = {};
+      tc.items.forEach(function(item) {
+        if (!item.str.trim()) return;
+        var y = Math.round(item.transform[5]);
+        var x = item.transform[4];
+        var target = x < midX ? leftLines : rightLines;
+        if (!target[y]) target[y] = [];
+        target[y].push(item);
+      });
+      function linesToText(linesObj) {
+        var ys = Object.keys(linesObj).map(Number).sort(function(a,b){ return b-a; });
+        var parts = []; var prevY2 = null;
+        ys.forEach(function(y) {
+          var lt = linesObj[y].sort(function(a,b){ return a.transform[4]-b.transform[4]; })
+            .map(function(it){ return it.str; }).join('');
+          if (prevY2 !== null && (prevY2 - y) > 18) parts.push('');
+          parts.push(lt);
+          prevY2 = y;
+        });
+        return parts.join('\n').trim();
+      }
+      var lText = linesToText(leftLines);
+      var rText = linesToText(rightLines);
+      if (lText) results.push({ text: lText, pageNum: pageNum, side: 'L', dataUrl: null });
+      if (rText) results.push({ text: rText, pageNum: pageNum, side: 'R', dataUrl: null });
+    } else {
+      results.push({ text: text, pageNum: pageNum, side: null, dataUrl: null });
+    }
+  }
+  return results;
+}
+
 // ── Gemini OCR (batch) ────────────────────────────────────────────────────────
 // Sends up to 3 pages per API call. Prompt uses page markers so the model
 // returns sections clearly delimited for splitting.
@@ -1979,6 +2092,8 @@ async function geminiOCRBatch(pages, lang, clean) {
     '  exemplo: [FIGURA: gravura mostrando o porto do Rio de Janeiro]\n' +
     '  se houver legenda impressa, inclua-a na mesma linha após o marcador\n' +
     '  NÃO escreva o texto da página que está por trás da figura\n' +
+    '- Texto em negrito: envolva com **duplo asterisco** (ex: **palavra**)\n' +
+    '- Texto em itálico: envolva com *asterisco simples* (ex: *palavra*)\n' +
     '- Somente conteúdo transcrito — sem comentários, sem explicações\n' +
     '- Página em branco ou ilegível: escreva apenas [em branco]';
 
@@ -2063,7 +2178,7 @@ function removeRepeatedHeadersFooters(pages) {
   Object.keys(lastLines).forEach(function(l){  if (lastLines[l]  >= threshold) badLines.add(l); });
 
   if (badLines.size === 0) return pages;
-  addLog('⟳ ' + badLines.size + ' cabeçalho/rodapé repetido(s) removido(s)', 'ok');
+  addLog(badLines.size + ' cabeçalho/rodapé repetido(s) removido(s)', 'ok');
 
   return pages.map(function(p) {
     var lines = p.text.split('\n');
@@ -2174,12 +2289,41 @@ function pageToHtml(p) {
   return html;
 }
 
+function parseInlineMarkup(text) {
+  // Convert **bold** and *italic* to <strong>/<em>, safely escaping rest
+  // Split by markers, process each chunk
+  var result = '';
+  var remaining = text;
+  var boldRe   = /\*\*([^*]+)\*\*/;
+  var italicRe = /\*([^*]+)\*/;
+  while (remaining.length > 0) {
+    var bm = boldRe.exec(remaining);
+    var im = italicRe.exec(remaining);
+    var nb = bm ? bm.index : Infinity;
+    var ni = im ? im.index : Infinity;
+    if (nb === Infinity && ni === Infinity) {
+      result += esc(remaining);
+      break;
+    }
+    if (nb <= ni) {
+      result += esc(remaining.slice(0, nb));
+      result += '<strong>' + esc(bm[1]) + '</strong>';
+      remaining = remaining.slice(nb + bm[0].length);
+    } else {
+      result += esc(remaining.slice(0, ni));
+      result += '<em>' + esc(im[1]) + '</em>';
+      remaining = remaining.slice(ni + im[0].length);
+    }
+  }
+  return result;
+}
+
 function plainTextToHtml(text) {
   return text.split(/\n\n+/).map(function(para) {
     para = para.trim();
     if (!para) return '';
-    // Single newlines inside paragraph → space
-    return '<p>' + esc(para.replace(/\n/g, ' ')) + '</p>';
+    var line = para.replace(/\n/g, ' ');
+    return '<p>' + parseInlineMarkup(line) + '</p>';
   }).filter(Boolean).join('\n');
 }
 
@@ -2226,7 +2370,7 @@ function pageToHTML(text, dataUrl, imgId, footnotes, pageNum) {
         html += '<p class="figura-placeholder">[Figura: ' + esc(desc) + (caption ? ' — ' + esc(caption) : '') + ']</p>\n';
       }
     } else {
-      html += '<p>' + esc(para) + '</p>\n';
+      html += '<p>' + parseInlineMarkup(para) + '</p>\n';
     }
   }
 
@@ -2292,8 +2436,9 @@ function buildEPUB(pages, title, author, lang, chapterMap, coverDataUrl) {
   var chapters = [];
 
   function buildChapterHTML(slice) {
-    return slice.map(function(p) {
-      return pageToHTML(p.text, p.dataUrl, p.imgId, p.footnotes, p.pageNum);
+    return slice.map(function(p, idx) {
+      var anchor = p.pageNum ? '<a id="page-' + p.pageNum + '"></a>\n' : '';
+      return anchor + pageToHTML(p.text, p.dataUrl, p.imgId, p.footnotes, p.pageNum);
     }).join('\n');
   }
 
@@ -2301,9 +2446,11 @@ function buildEPUB(pages, title, author, lang, chapterMap, coverDataUrl) {
     for (var ci = 0; ci < chapterMap.length; ci++) {
       var startIdx = chapterMap[ci].page - 1;
       var endIdx   = ci + 1 < chapterMap.length ? chapterMap[ci + 1].page - 1 : valid.length;
+      var firstPg  = valid[startIdx] ? valid[startIdx].pageNum : null;
       chapters.push({
         num: ci + 1,
         title: chapterMap[ci].title,
+        firstPageNum: firstPg,
         html: buildChapterHTML(valid.slice(startIdx, endIdx))
       });
     }
@@ -2311,7 +2458,8 @@ function buildEPUB(pages, title, author, lang, chapterMap, coverDataUrl) {
     var chunkSize = 10;
     for (var i = 0; i < valid.length; i += chunkSize) {
       var num = Math.floor(i / chunkSize) + 1;
-      chapters.push({ num: num, title: null, html: buildChapterHTML(valid.slice(i, i + chunkSize)) });
+      var firstPg2 = valid[i] ? valid[i].pageNum : null;
+      chapters.push({ num: num, title: null, firstPageNum: firstPg2, html: buildChapterHTML(valid.slice(i, i + chunkSize)) });
     }
   }
 
@@ -2364,7 +2512,10 @@ function buildEPUB(pages, title, author, lang, chapterMap, coverDataUrl) {
       '</metadata><manifest><item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>' + manifestItems.join('') + '</manifest><spine toc="ncx">' + spine + '</spine></package>';
 
   var navPts = chapters.map(function (c, i) {
-    return '<navPoint id="n' + c.num + '" playOrder="' + (i + 1) + '"><navLabel><text>' + esc(c.title || (lang === 'en' ? 'Chapter ' : 'Capítulo ') + c.num) + '</text></navLabel><content src="c' + c.num + '.xhtml"/></navPoint>';
+    var anchor = c.firstPageNum ? '#page-' + c.firstPageNum : '';
+    var label  = c.title || (lang === 'en' ? 'Chapter ' : 'Capítulo ') + c.num;
+    if (c.firstPageNum) label += ' (p. ' + c.firstPageNum + ')';
+    return '<navPoint id="n' + c.num + '" playOrder="' + (i + 1) + '"><navLabel><text>' + esc(label) + '</text></navLabel><content src="c' + c.num + '.xhtml' + anchor + '"/></navPoint>';
   }).join('');
   files['OEBPS/toc.ncx'] = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE ncx PUBLIC "-//NISO//DTD ncx 2005-1//EN" "http://www.daisy.org/z3986/2005/ncx-2005-1.dtd"><ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1"><head><meta name="dtb:uid" content="epubly-' + Date.now() + '"/></head><docTitle><text>' + esc(title) + '</text></docTitle><navMap>' + navPts + '</navMap></ncx>';
 
@@ -2476,6 +2627,57 @@ function crc32(data) {
 
 })();
 
+// ── Book counter ──────────────────────────────────────────────────────────────
+var COUNTER_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:8787/counter'
+  : 'https://epubly-worker.pedro06bf.workers.dev/counter';
+
+function animateCounter(target) {
+  var els = [$('heroCounterNum'), $('footerCounterNum')];
+  var start = parseInt((els[0] && els[0].textContent.replace(/\D/g,'')) || '0') || 0;
+  var duration = 1400;
+  var startTime = null;
+  function step(ts) {
+    if (!startTime) startTime = ts;
+    var progress = Math.min((ts - startTime) / duration, 1);
+    var ease = 1 - Math.pow(1 - progress, 3);
+    var val = Math.round(start + (target - start) * ease).toLocaleString('pt-BR');
+    els.forEach(function(el) { if (el) el.textContent = val; });
+    if (progress < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+async function fetchCounter() {
+  try {
+    var res = await fetch(COUNTER_URL);
+    if (!res.ok) return;
+    var data = await res.json();
+    if (data.count != null) {
+      animateCounter(data.count);
+    }
+  } catch(e) {
+    // counter unavailable — show placeholder
+    var fc = $('footerCounterNum');
+    if (fc) fc.textContent = '—';
+  }
+}
+
+async function incrementCounter() {
+  try {
+    await fetch(COUNTER_URL, { method: 'POST' });
+    var res = await fetch(COUNTER_URL);
+    if (res.ok) {
+      var data = await res.json();
+      if (data.count != null) {
+          animateCounter(data.count);
+      }
+    }
+  } catch(e) {}
+}
+
+document.addEventListener('DOMContentLoaded', fetchCounter);
+
 var IS_MOBILE = ('ontouchstart' in window) || (navigator.maxTouchPoints > 1);
 
 function switchDonateTab(tab) {
@@ -2570,16 +2772,13 @@ function copyPixKey() {
           <p data-i18n="donateScan" style="font-size:.78rem;color:var(--text-muted);margin-bottom:.75rem;">Escaneie com o app do seu banco</p>
         </div>
         <!-- Mobile: copy key button (shown instead of QR on touch devices) -->
-        <div id="pix-mobile" style="display:none;">
-          <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:.85rem;line-height:1.5;">Copie a chave PIX abaixo e cole no app do seu banco:</p>
-          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.7rem 1rem;margin-bottom:.75rem;display:flex;align-items:center;gap:.6rem;justify-content:space-between;">
-            <span id="pixKeyDisplay" style="font-size:.72rem;color:var(--text-muted);word-break:break-all;text-align:left;flex:1;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1f6f7a7b6d702f297d795f78727e7673317c7072">[email&#160;protected]</a></span>
-            <button type="button" id="copyPixBtn" onclick="copyPixKey()"
-              style="flex-shrink:0;background:var(--accent);color:#fff;border:none;border-radius:7px;padding:.4rem .75rem;font-size:.78rem;font-family:inherit;cursor:pointer;font-weight:500;">
-              Copiar
-            </button>
-          </div>
-          <p id="pixCopied" style="font-size:.75rem;color:var(--green);display:none;margin-bottom:.5rem;">✓ Chave copiada!</p>
+        <div id="pix-mobile" style="display:none;text-align:center;padding:.25rem 0 .5rem;">
+          <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.5;">Copie a chave PIX e cole no app do seu banco.</p>
+          <button type="button" id="copyPixBtn" onclick="copyPixKey()"
+            style="background:var(--accent);color:#fff;border:none;border-radius:100px;padding:.65rem 1.75rem;font-size:.88rem;font-family:inherit;cursor:pointer;font-weight:500;letter-spacing:.02em;">
+            Copiar chave PIX
+          </button>
+          <p id="pixCopied" style="font-size:.78rem;color:var(--green);display:none;margin-top:.85rem;">Chave copiada!</p>
         </div>
       </div>
 
@@ -2663,11 +2862,27 @@ function copyPixKey() {
       <div class="modal-divider" style="margin-top:1.5rem;"></div>
 
       <div style="text-align:center;padding-top:1rem;">
-        <button class="btn-primary" type="button" data-i18n="aboutDonate" onclick="document.getElementById('aboutModal').style.display='none';openDonateModal();return false;e;" data-i18n="aboutDonate">♡ Apoiar com uma doação</button>
+        <button class="btn-primary" id="aboutDonateBtn" type="button" data-i18n="aboutDonate">Apoiar com uma doação</button>
       </div>
     </div>
   </div>
 </div>
 
+<script>
+// ── Button bindings — runs after all HTML is parsed ───────────────────────────
+(function() {
+  function bindBtn(id, fn) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('click', function(e) { e.preventDefault(); fn(); });
+  }
+  bindBtn('donateBtn',       function() { openDonateModal(); });
+  bindBtn('aboutBtn',        function() { document.getElementById('aboutModal').style.display = 'flex'; });
+  bindBtn('aboutDonateBtn',  function() {
+    document.getElementById('aboutModal').style.display = 'none';
+    openDonateModal();
+  });
+
+})();
+</script>
 </body>
 </html>
