@@ -2895,7 +2895,9 @@ function copyPixKey() {
 }
 
 // ── Dropbox PKCE OAuth + Upload ───────────────────────────────────────────────
-var DBX_REDIRECT = 'https://pdvrx.github.io/epubly/'';
+var DBX_REDIRECT = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? 'http://localhost:8000/'
+  : 'https://pdvrx.github.io/epubly/';
 
 function dbxAppKey() {
   return localStorage.getItem('dbx_app_key') || '';
