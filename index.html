@@ -723,103 +723,6 @@ main {
 }
 .btn-download:hover { opacity: .88; }
 
-/* KOReader panel */
-.koreader-panel {
-  width: 100%;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
-  font-size: .82rem;
-}
-.koreader-header {
-  display: flex;
-  align-items: center;
-  gap: .5rem;
-  padding: .7rem 1rem;
-  color: var(--text-muted);
-  font-weight: 500;
-  letter-spacing: .02em;
-}
-.koreader-header span { flex: 1; }
-.koreader-toggle {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--text-muted);
-  padding: .15rem;
-  display: flex;
-  align-items: center;
-  transition: color .15s;
-}
-.koreader-toggle:hover { color: var(--text); }
-#koreaderChevron { transition: transform .2s ease; }
-.koreader-body {
-  border-top: 1px solid var(--border);
-  padding: 1rem;
-}
-.koreader-steps {
-  padding-left: 1.1rem;
-  color: var(--text-muted);
-  line-height: 1.75;
-  margin-bottom: .9rem;
-}
-.koreader-steps li { margin-bottom: .2rem; }
-.koreader-steps strong { color: var(--text); font-weight: 500; }
-.koreader-steps code {
-  font-family: 'Courier New', monospace;
-  font-size: .78rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 1px 5px;
-  color: var(--accent);
-}
-.koreader-ip-row {
-  display: flex;
-  flex-direction: column;
-  gap: .4rem;
-}
-.koreader-ip-row label {
-  font-size: .75rem;
-  color: var(--text-dim);
-  letter-spacing: .03em;
-}
-.koreader-ip-input-wrap {
-  display: flex;
-  gap: .5rem;
-}
-.koreader-ip-input-wrap input {
-  flex: 1;
-  background: var(--surface);
-  border: 1px solid var(--border-lit);
-  border-radius: 8px;
-  padding: .45rem .75rem;
-  font-family: 'Courier New', monospace;
-  font-size: .82rem;
-  color: var(--text);
-  outline: none;
-  transition: border-color .15s;
-}
-.koreader-ip-input-wrap input:focus { border-color: var(--accent); }
-.koreader-ip-input-wrap button {
-  display: inline-flex;
-  align-items: center;
-  gap: .4rem;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: .45rem .9rem;
-  font-size: .8rem;
-  font-family: inherit;
-  font-weight: 500;
-  cursor: pointer;
-  transition: opacity .15s;
-  white-space: nowrap;
-}
-.koreader-ip-input-wrap button:hover { opacity: .88; }
-
 .btn-secondary {
   display: inline-flex;
   align-items: center;
@@ -1194,10 +1097,6 @@ footer { position: relative; z-index: 1; }
       <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-bottom:1px;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
       Apoie-nos
     </button>
-    <button class="btn-change-key" id="sendSettingsBtn" type="button" title="Configurar envio para e-reader">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      E-reader
-    </button>
     <button class="btn-change-key" id="aboutBtn" type="button" data-i18n="about">Sobre</button>
     <a class="btn-change-key" href="https://github.com/pdvrx/epubly" target="_blank" rel="noopener" title="Repositório no GitHub">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.341-3.369-1.341-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
@@ -1313,22 +1212,10 @@ footer { position: relative; z-index: 1; }
       <div class="log-errors" id="logErrors"></div>
       <div class="result-inline" id="resultSection" style="display:none;">
         <p class="result-ok-text" id="resultStats"></p>
-
-        <!-- Download button -->
         <button class="btn-download" id="downloadBtn">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           <span data-i18n="download">Baixar EPUB</span>
         </button>
-
-        <!-- Quick send row (shown only if Dropbox is connected) -->
-        <div id="quickSendRow" style="display:none;width:100%;gap:.5rem;flex-direction:column;align-items:stretch;">
-          <button type="button" id="dropboxSendBtn" style="display:inline-flex;align-items:center;justify-content:center;gap:.5rem;background:var(--surface2);border:1px solid var(--border-lit);color:var(--text-muted);border-radius:10px;padding:.6rem 1.25rem;font-size:.82rem;font-family:inherit;font-weight:500;cursor:pointer;transition:border-color .15s,color .15s;width:100%;">
-            <svg width="14" height="14" viewBox="0 0 32 32" fill="currentColor" style="color:#0061ff;flex-shrink:0;"><path d="M8 2L0 7.5 8 13l8-5.5L8 2zm16 0l-8 5.5 8 5.5 8-5.5L24 2zM0 18.5L8 24l8-5.5-8-5.5-8 5.5zm24-5.5l-8 5.5 8 5.5 8-5.5-8-5.5zM8 25.5L16 31l8-5.5-8-5.5-8 5.5z"/></svg>
-            Enviar para Dropbox
-          </button>
-          <p id="dropboxStatus" style="font-size:.75rem;text-align:center;display:none;margin:0;"></p>
-        </div>
-
       </div>
     </div>
   </div>
@@ -1547,16 +1434,16 @@ var apiKey = ''; // unused, kept for compatibility
 
 function $(id) { return document.getElementById(id); }
 
-// ── Global state (accessible from all scripts) ───────────────────────────────
-var pdfFile  = null;
-var pdfDoc   = null;
-var epubBlob = null;
-
 (function () {
 'use strict';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+
+// ── State ─────────────────────────────────────────────────────────────────────
+var pdfFile  = null;
+var pdfDoc   = null;
+var epubBlob = null;
 
 
 // ── File input ────────────────────────────────────────────────────────────────
@@ -1916,9 +1803,7 @@ $('processBtn').addEventListener('click', async function () {
     } // end if(!isDigital)
 
     // ── Post-processing ───────────────────────────────────────────────
-    setProgress(86, 'Limpando e normalizando texto…');
-    results = fixStickyWords(results);
-    results = removeInlinePageNumbers(results);
+    setProgress(86, 'Limpando cabeçalhos e rodapés repetidos…');
     results = removeRepeatedHeadersFooters(results);
     results = extractFootnotes(results);
 
@@ -2216,11 +2101,8 @@ async function geminiOCRBatch(pages, lang, clean) {
     'REGRAS DE TRANSCRIÇÃO:\n' +
     '- Idioma: ' + (langMap[lang] || 'português') + '\n' +
     (clean ? '- Una hifenizações de fim de linha (ex: "ca-\\nsa" → "casa")\n' : '') +
-    '- Parágrafos de texto: separe com UMA linha em branco entre eles\n' +
-    '- Dentro de cada parágrafo: NÃO quebre linhas — escreva o parágrafo inteiro numa única linha contínua\n' +
-    '- Certifique-se de que há espaço entre todas as palavras, nunca as junte sem espaço\n' +
-    '- Números de página impressos no texto (ex: (328), [329]): IGNORE-OS completamente\n' +
-    '- Notas de rodapé com formato (* ...) ou (N ...) ao final da página: coloque-as no final, separadas por linha em branco, mantendo o marcador\n' +
+    '- Parágrafos de texto: separe com linha em branco\n' +
+    '- Notas de rodapé: inclua ao final, separadas por linha em branco\n' +
     '- Tabelas: converta para HTML válido <table><thead><tr><th>...</th></tr></thead><tbody><tr><td>...</td></tr></tbody></table>\n' +
     '- Figuras, ilustrações, fotografias, gravuras, mapas, gráficos:\n' +
     '  substitua pelo marcador numa linha própria: [FIGURA: descrição]\n' +
@@ -2291,25 +2173,6 @@ async function geminiOCRBatch(pages, lang, clean) {
   throw new Error('Não foi possível processar esta página. Tente novamente.');
 }
 
-// ── Post-processing: remove inline page numbers like (328) or [329] ────────────
-function removeInlinePageNumbers(pages) {
-  // Matches isolated page numbers like (328) [329] at word boundaries
-  // Only removes if the number is 3-4 digits (book page range)
-  var re = /\s*[\(\[]\s*\d{2,4}\s*[\)\]]\s*/g;
-  return pages.map(function(p) {
-    return Object.assign({}, p, { text: p.text.replace(re, ' ').trim() });
-  });
-}
-
-// ── Post-processing: fix words stuck together from bad line breaks ─────────────
-function fixStickyWords(pages) {
-  // Ensure single newline between word chars becomes a space.
-  return pages.map(function(p) {
-    var fixed = p.text.replace(/(\w)\n(\w)/g, '$1 $2');
-    return Object.assign({}, p, { text: fixed });
-  });
-}
-
 // ── Post-processing: remove repeated headers/footers ─────────────────────────
 function removeRepeatedHeadersFooters(pages) {
   if (pages.length < 4) return pages;
@@ -2346,14 +2209,14 @@ function removeRepeatedHeadersFooters(pages) {
 
 // ── Post-processing: extract footnotes to page.footnotes ──────────────────────
 function extractFootnotes(pages) {
-  // Matches footnotes at end of page after a blank line.
-  // Supports: [N], 1., *, ¹²³, (* ...) style (Schumpeter/old books)
-  var fnRe = /(\n\n)((?:(?:\(?\s*[\*\u00b9\u00b2\u00b3]|\[?\d+\]?|\d+\.)\s*\(?.+(?:\n(?!\n)[^\n]+)*(?:\n|$))+)$/m;
+  // Footnotes are separated from body by a blank line and start with
+  // a superscript digit, [N], * or ¹²³ etc.
+  var fnRe = /^(\s*\n){1,2}((?:[\*¹²³⁴⁵⁶⁷⁸⁹]|\[\d+\]|\d+\.)[ \t].+(?:\n(?![\n])[^\n]+)*(?:\n|$))+/m;
 
   return pages.map(function(p) {
     var m = fnRe.exec(p.text);
     if (!m) return p;
-    var fnText = m[2].trim();
+    var fnText = m[0].trim();
     var body   = p.text.slice(0, m.index).trimEnd();
     return Object.assign({}, p, { text: body, footnotes: fnText });
   });
@@ -2476,10 +2339,7 @@ function plainTextToHtml(text) {
   return text.split(/\n\n+/).map(function(para) {
     para = para.trim();
     if (!para) return '';
-    // Join lines with space, ensuring words don't stick together
-    var line = para.replace(/([\w\u00C0-\u024F,;:])\n([\w\u00C0-\u024F])/g, '$1 $2')
-                   .replace(/\n/g, ' ')
-                   .replace(/  +/g, ' ');
+    var line = para.replace(/\n/g, ' ');
     return '<p>' + parseInlineMarkup(line) + '</p>';
   }).filter(Boolean).join('\n');
 }
@@ -2893,258 +2753,7 @@ function copyPixKey() {
     setTimeout(function(){ el.style.display='none'; btn.textContent='Copiar'; }, 2500);
   }
 }
-
-// ── Dropbox PKCE OAuth + Upload ───────────────────────────────────────────────
-var DBX_REDIRECT = 'https://pdvrx.github.io/epubly/'';
-
-function dbxAppKey() {
-  return localStorage.getItem('dbx_app_key') || '';
-}
-
-function dbxIsConnected() {
-  return !!(localStorage.getItem('dbx_refresh') && dbxAppKey());
-}
-
-// Generate code_verifier (random base64url string)
-function dbxVerifier() {
-  var arr = new Uint8Array(32);
-  crypto.getRandomValues(arr);
-  return btoa(String.fromCharCode.apply(null, arr))
-    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-}
-
-// SHA-256 → base64url for code_challenge
-async function dbxChallenge(verifier) {
-  var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier));
-  return btoa(String.fromCharCode.apply(null, new Uint8Array(buf)))
-    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-}
-
-async function dbxConnect(appKey) {
-  localStorage.setItem('dbx_app_key', appKey);
-  var v = dbxVerifier();
-  localStorage.setItem('dbx_verifier', v);
-  var c = await dbxChallenge(v);
-  window.location.href =
-    'https://www.dropbox.com/oauth2/authorize' +
-    '?client_id=' + appKey +
-    '&response_type=code' +
-    '&redirect_uri=' + encodeURIComponent(DBX_REDIRECT) +
-    '&code_challenge=' + c +
-    '&code_challenge_method=S256' +
-    '&token_access_type=offline';
-}
-
-async function dbxSafeJson(res) {
-  var text = await res.text();
-  try { return JSON.parse(text); }
-  catch(e) { throw new Error('Dropbox respondeu: ' + text.slice(0, 120)); }
-}
-
-async function dbxFinishAuth(code) {
-  var v = localStorage.getItem('dbx_verifier');
-  var appKey = dbxAppKey();
-  if (!v) throw new Error('Sessão expirada. Clique em Conectar novamente.');
-  var res = await fetch('https://api.dropbox.com/oauth2/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: 'code=' + encodeURIComponent(code) +
-          '&grant_type=authorization_code' +
-          '&client_id=' + encodeURIComponent(appKey) +
-          '&redirect_uri=' + encodeURIComponent(DBX_REDIRECT) +
-          '&code_verifier=' + encodeURIComponent(v)
-  });
-  var data = await dbxSafeJson(res);
-  if (!data.refresh_token) {
-    var msg = data.error_description || data.error || JSON.stringify(data);
-    throw new Error('Autenticação falhou: ' + msg + '. Verifique o App key e o Redirect URI.');
-  }
-  localStorage.setItem('dbx_refresh', data.refresh_token);
-  localStorage.setItem('dbx_access', data.access_token);
-  localStorage.setItem('dbx_access_exp', String(Date.now() + data.expires_in * 1000));
-  localStorage.removeItem('dbx_verifier');
-}
-
-async function dbxGetToken() {
-  var exp = parseInt(localStorage.getItem('dbx_access_exp') || '0');
-  if (Date.now() < exp - 60000) return localStorage.getItem('dbx_access');
-  var res = await fetch('https://api.dropbox.com/oauth2/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: 'grant_type=refresh_token' +
-          '&refresh_token=' + encodeURIComponent(localStorage.getItem('dbx_refresh')) +
-          '&client_id=' + encodeURIComponent(dbxAppKey())
-  });
-  var data = await dbxSafeJson(res);
-  if (!data.access_token) throw new Error('Sessão Dropbox expirada — clique em Desconectar e conecte novamente.');
-  localStorage.setItem('dbx_access', data.access_token);
-  localStorage.setItem('dbx_access_exp', String(Date.now() + data.expires_in * 1000));
-  return data.access_token;
-}
-
-async function dbxUpload(blob, filename) {
-  var token = await dbxGetToken();
-  var res = await fetch('https://content.dropboxapi.com/2/files/upload', {
-    method: 'POST',
-    headers: {
-      'Authorization': 'Bearer ' + token,
-      'Dropbox-API-Arg': JSON.stringify({
-        path: '/KOReader/' + filename,
-        mode: 'overwrite',
-        autorename: true,
-        mute: false
-      }),
-      'Content-Type': 'application/octet-stream'
-    },
-    body: blob
-  });
-  var data = await dbxSafeJson(res);
-  if (data.error) throw new Error(data.error_summary || data.error || 'Erro no upload');
-  return data;
-}
-
-async function dbxGetAccount() {
-  var token = await dbxGetToken();
-  var res = await fetch('https://api.dropboxapi.com/2/users/get_current_account', {
-    method: 'POST',
-    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-    body: 'null'
-  });
-  return res.json();
-}
-
-function dbxDisconnect() {
-  localStorage.removeItem('dbx_refresh');
-  localStorage.removeItem('dbx_access');
-  localStorage.removeItem('dbx_access_exp');
-  localStorage.removeItem('dbx_app_key');
-  localStorage.removeItem('dbx_verifier');
-}
-
-// Handle OAuth callback on page load
-(async function() {
-  var params = new URLSearchParams(window.location.search);
-  var code = params.get('code');
-  if (code && localStorage.getItem('dbx_verifier')) {
-    try {
-      await dbxFinishAuth(code);
-      // Clean URL
-      window.history.replaceState({}, '', window.location.pathname);
-      dbxUpdateUI();
-      // Try to show account name
-      var acct = await dbxGetAccount();
-      var label = document.getElementById('dropboxAccountLabel');
-      if (label && acct.name) {
-        label.textContent = 'Conectado como ' + acct.name.display_name + ' — os EPUBs serão salvos em /KOReader/';
-      }
-    } catch(e) {
-      console.error('Dropbox auth error:', e);
-      // Show error in setup panel if visible
-      var setup = document.getElementById('dropboxSetup');
-      if (setup) {
-        var errP = document.createElement('p');
-        errP.style.cssText = 'font-size:.78rem;color:var(--red);margin-top:.5rem;';
-        errP.textContent = e.message;
-        setup.appendChild(errP);
-      }
-    }
-  }
-})();
-
-function dbxUpdateUI() {
-  var setup     = document.getElementById('dropboxSetup');
-  var connected = document.getElementById('dropboxConnected');
-  var badge     = document.getElementById('dropboxBadge');
-  var quickRow  = document.getElementById('quickSendRow');
-  if (!setup || !connected) return;
-  var ok = dbxIsConnected();
-  setup.style.display          = ok ? 'none'  : 'block';
-  connected.style.display      = ok ? 'block' : 'none';
-  if (badge)    badge.style.display    = ok ? 'inline' : 'none';
-  if (quickRow) quickRow.style.display = ok ? 'flex'   : 'none';
-}
 </script>
-
-<!-- Send Settings Modal -->
-<div class="modal-overlay" id="sendSettingsModal" style="display:none;">
-  <div class="modal" style="max-width:520px;">
-    <button class="modal-close" type="button" onclick="document.getElementById('sendSettingsModal').style.display='none';return false;">✕</button>
-
-    <div class="modal-header">
-      <div class="modal-tag">Enviar para e-reader</div>
-      <h2>Configurar envio</h2>
-      <p style="font-size:.85rem;color:var(--text-muted);margin-top:.5rem;line-height:1.6;">Conecte o Dropbox para enviar EPUBs automaticamente, ou configure o Calibre para envio via rede local.</p>
-    </div>
-
-    <div class="modal-body">
-      <div class="modal-divider"></div>
-
-      <!-- Dropbox section -->
-      <div style="margin-bottom:1.5rem;">
-        <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.85rem;">
-          <svg width="16" height="16" viewBox="0 0 32 32" fill="currentColor" style="color:#0061ff;flex-shrink:0;"><path d="M8 2L0 7.5 8 13l8-5.5L8 2zm16 0l-8 5.5 8 5.5 8-5.5L24 2zM0 18.5L8 24l8-5.5-8-5.5-8 5.5zm24-5.5l-8 5.5 8 5.5 8-5.5-8-5.5zM8 25.5L16 31l8-5.5-8-5.5-8 5.5z"/></svg>
-          <strong style="font-size:.88rem;">Dropbox</strong>
-          <span id="dropboxBadge" style="display:none;font-size:.7rem;background:rgba(90,158,111,.15);color:var(--green);border:1px solid rgba(90,158,111,.3);border-radius:100px;padding:.1rem .55rem;font-weight:600;">conectado</span>
-        </div>
-
-        <div id="dropboxSetup">
-          <ol class="koreader-steps" style="margin-bottom:.85rem;">
-            <li>Acesse <a href="https://www.dropbox.com/developers/apps/create" target="_blank" style="color:var(--accent);">dropbox.com/developers/apps/create</a></li>
-            <li>Escolha <strong>Scoped access → Full Dropbox</strong> → dê qualquer nome → <strong>Create app</strong></li>
-            <li>Na aba <strong>Settings → OAuth 2 → Redirect URIs</strong> adicione:<br><code>https://pdvrx.github.io/epubly/</code> → clique <strong>Add</strong></li>
-            <li>Copie o <strong>App key</strong> e cole abaixo</li>
-          </ol>
-          <div class="koreader-ip-row">
-            <label for="dropboxAppKey">App key</label>
-            <div class="koreader-ip-input-wrap">
-              <input id="dropboxAppKey" type="text" placeholder="xxxxxxxxxxxx" spellcheck="false" autocomplete="off">
-              <button type="button" id="dropboxConnectBtn">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-                Conectar
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div id="dropboxConnected" style="display:none;">
-          <p id="dropboxAccountLabel" style="font-size:.8rem;color:var(--text-muted);margin-bottom:.75rem;"></p>
-          <button type="button" id="dropboxDisconnectBtn" style="background:none;border:1px solid var(--border);border-radius:8px;padding:.4rem .85rem;font-size:.75rem;color:var(--text-dim);cursor:pointer;font-family:inherit;">
-            Desconectar
-          </button>
-        </div>
-      </div>
-
-      <div class="modal-divider"></div>
-
-      <!-- Calibre section -->
-      <div style="margin-top:1.5rem;">
-        <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.85rem;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          <strong style="font-size:.88rem;">Calibre (rede local via OPDS)</strong>
-        </div>
-        <ol class="koreader-steps" style="margin-bottom:.9rem;">
-          <li>No Calibre: <strong>Preferências → Compartilhamento → Compartilhar pela rede</strong></li>
-          <li>Marque <strong>"Iniciar servidor de conteúdo ao iniciar o Calibre"</strong> → <strong>Aplicar</strong></li>
-          <li>Anote o IP e porta (ex: <code>192.168.1.10:8080</code>)</li>
-          <li>Adicione o EPUB gerado à biblioteca do Calibre</li>
-          <li>No KOReader: <strong>Busca de livros → Catálogos OPDS → +</strong><br>
-              URL: <code>http://IP:8080/opds</code></li>
-        </ol>
-        <div class="koreader-ip-row">
-          <label for="calibreIp">IP do Calibre</label>
-          <div class="koreader-ip-input-wrap">
-            <input id="calibreIp" type="text" placeholder="192.168.1.10:8080" spellcheck="false" autocomplete="off">
-            <button type="button" id="calibreOpenBtn">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-              Abrir catálogo
-            </button>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</div>
 
 <!-- Donate Modal -->
 <div class="modal-overlay" id="donateModal" style="display:none;">
@@ -3290,86 +2899,6 @@ function dbxUpdateUI() {
     openDonateModal();
   });
 
-  // Send Settings modal
-  bindBtn('sendSettingsBtn', function() {
-    document.getElementById('sendSettingsModal').style.display = 'flex';
-    dbxUpdateUI();
-  });
-
-  // Connect button
-  var dbxConnBtn = document.getElementById('dropboxConnectBtn');
-  if (dbxConnBtn) {
-    dbxConnBtn.addEventListener('click', function() {
-      var key = document.getElementById('dropboxAppKey').value.trim();
-      if (!key) { document.getElementById('dropboxAppKey').focus(); return; }
-      dbxConnect(key);
-    });
-  }
-
-  // Disconnect
-  var dbxDisBtn = document.getElementById('dropboxDisconnectBtn');
-  if (dbxDisBtn) {
-    dbxDisBtn.addEventListener('click', function() {
-      dbxDisconnect();
-      dbxUpdateUI();
-    });
-  }
-
-  // Send to Dropbox
-  var dbxSendBtn = document.getElementById('dropboxSendBtn');
-  if (dbxSendBtn) {
-    dbxSendBtn.addEventListener('click', async function() {
-      if (!epubBlob) return;
-      var status = document.getElementById('dropboxStatus');
-      dbxSendBtn.disabled = true;
-      dbxSendBtn.textContent = 'Enviando...';
-      status.style.display = 'none';
-      try {
-        var title = (document.getElementById('bookTitle').value || 'livro').replace(/\s+/g, '_');
-        await dbxUpload(epubBlob, title + '.epub');
-        status.textContent = 'Salvo em /KOReader/' + title + '.epub';
-        status.style.color = 'var(--green)';
-        status.style.display = 'block';
-        track('dropbox_upload_success');
-      } catch(e) {
-        status.textContent = e.message;
-        status.style.color = 'var(--red)';
-        status.style.display = 'block';
-        track('dropbox_upload_error');
-      }
-      dbxSendBtn.disabled = false;
-      dbxSendBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Enviar para Dropbox';
-    });
-  }
-
-  // Calibre open button
-  var calOpenBtn = document.getElementById('calibreOpenBtn');
-  if (calOpenBtn) {
-    calOpenBtn.addEventListener('click', function() {
-      var ip = document.getElementById('calibreIp').value.trim().replace(/^https?:\/\//, '');
-      if (!ip) { document.getElementById('calibreIp').focus(); return; }
-      window.open('http://' + ip + '/opds', '_blank');
-    });
-    document.getElementById('calibreIp').addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') calOpenBtn.click();
-    });
-  }
-
-  // KOReader open button
-  var koOpenBtn = document.getElementById('koreaderOpenBtn');
-  if (koOpenBtn) {
-    koOpenBtn.addEventListener('click', function() {
-      var ip = document.getElementById('koreaderIp').value.trim();
-      if (!ip) { document.getElementById('koreaderIp').focus(); return; }
-      // strip protocol if user typed it
-      ip = ip.replace(/^https?:\/\//, '');
-      window.open('http://' + ip + ':8080', '_blank');
-    });
-    // also open on Enter in input
-    document.getElementById('koreaderIp').addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') koOpenBtn.click();
-    });
-  }
 })();
 </script>
 </body>
