@@ -1362,10 +1362,13 @@ footer { position: relative; z-index: 1; }
                 Conecte sua conta Dropbox uma vez. O KOReader sincroniza automaticamente a pasta <code>/KOReader</code>.
               </p>
               <ol class="koreader-steps" style="margin-bottom:.85rem;">
-                <li>Acesse <a href="https://www.dropbox.com/developers/apps/create" target="_blank" style="color:var(--accent);">dropbox.com/developers/apps</a></li>
-                <li>Crie um app: <strong>Scoped access → Full Dropbox</strong> → nome qualquer</li>
-                <li>Em <strong>Settings → OAuth 2 → Redirect URIs</strong>, adicione:<br><code>https://pdvrx.github.io/epubly/</code></li>
-                <li>Copie o <strong>App key</strong> e cole abaixo</li>
+                <li>Acesse <a href="https://www.dropbox.com/developers/apps/create" target="_blank" style="color:var(--accent);">dropbox.com/developers/apps/create</a> (precisa de conta Dropbox)</li>
+                <li>Em <strong>"Choose an API"</strong> selecione <strong>Scoped access</strong></li>
+                <li>Em <strong>"Choose the type of access"</strong> selecione <strong>Full Dropbox</strong></li>
+                <li>Dê qualquer nome ao app e clique em <strong>Create app</strong></li>
+                <li>Na aba <strong>Settings</strong>, role até <strong>OAuth 2 → Redirect URIs</strong><br>
+                    Adicione: <code>https://pdvrx.github.io/epubly/</code> e clique em <strong>Add</strong></li>
+                <li>Copie o valor de <strong>App key</strong> (campo logo acima) e cole abaixo</li>
               </ol>
               <div class="koreader-ip-row">
                 <label for="dropboxAppKey">App key do Dropbox</label>
@@ -1383,7 +1386,7 @@ footer { position: relative; z-index: 1; }
             <div id="dropboxConnected" style="display:none;">
               <p id="dropboxAccountLabel" style="font-size:.8rem;color:var(--text-muted);margin-bottom:.85rem;"></p>
               <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-                <button type="button" id="dropboxSendBtn" class="koreader-ip-input-wrap" style="flex:1;">
+                <button type="button" id="dropboxSendBtn" style="flex:1;display:inline-flex;align-items:center;gap:.4rem;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:.5rem 1rem;font-size:.82rem;font-family:inherit;font-weight:500;cursor:pointer;justify-content:center;">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                   Enviar para Dropbox
                 </button>
@@ -1615,16 +1618,16 @@ var apiKey = ''; // unused, kept for compatibility
 
 function $(id) { return document.getElementById(id); }
 
+// ── Global state (accessible from all scripts) ───────────────────────────────
+var pdfFile  = null;
+var pdfDoc   = null;
+var epubBlob = null;
+
 (function () {
 'use strict';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
-
-// ── State ─────────────────────────────────────────────────────────────────────
-var pdfFile  = null;
-var pdfDoc   = null;
-var epubBlob = null;
 
 
 // ── File input ────────────────────────────────────────────────────────────────
