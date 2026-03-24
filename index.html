@@ -723,6 +723,103 @@ main {
 }
 .btn-download:hover { opacity: .88; }
 
+/* KOReader panel */
+.koreader-panel {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  font-size: .82rem;
+}
+.koreader-header {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .7rem 1rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  letter-spacing: .02em;
+}
+.koreader-header span { flex: 1; }
+.koreader-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: .15rem;
+  display: flex;
+  align-items: center;
+  transition: color .15s;
+}
+.koreader-toggle:hover { color: var(--text); }
+#koreaderChevron { transition: transform .2s ease; }
+.koreader-body {
+  border-top: 1px solid var(--border);
+  padding: 1rem;
+}
+.koreader-steps {
+  padding-left: 1.1rem;
+  color: var(--text-muted);
+  line-height: 1.75;
+  margin-bottom: .9rem;
+}
+.koreader-steps li { margin-bottom: .2rem; }
+.koreader-steps strong { color: var(--text); font-weight: 500; }
+.koreader-steps code {
+  font-family: 'Courier New', monospace;
+  font-size: .78rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: var(--accent);
+}
+.koreader-ip-row {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+}
+.koreader-ip-row label {
+  font-size: .75rem;
+  color: var(--text-dim);
+  letter-spacing: .03em;
+}
+.koreader-ip-input-wrap {
+  display: flex;
+  gap: .5rem;
+}
+.koreader-ip-input-wrap input {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border-lit);
+  border-radius: 8px;
+  padding: .45rem .75rem;
+  font-family: 'Courier New', monospace;
+  font-size: .82rem;
+  color: var(--text);
+  outline: none;
+  transition: border-color .15s;
+}
+.koreader-ip-input-wrap input:focus { border-color: var(--accent); }
+.koreader-ip-input-wrap button {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: .45rem .9rem;
+  font-size: .8rem;
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity .15s;
+  white-space: nowrap;
+}
+.koreader-ip-input-wrap button:hover { opacity: .88; }
+
 .btn-secondary {
   display: inline-flex;
   align-items: center;
@@ -1212,10 +1309,94 @@ footer { position: relative; z-index: 1; }
       <div class="log-errors" id="logErrors"></div>
       <div class="result-inline" id="resultSection" style="display:none;">
         <p class="result-ok-text" id="resultStats"></p>
+
+        <!-- Download button -->
         <button class="btn-download" id="downloadBtn">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           <span data-i18n="download">Baixar EPUB</span>
         </button>
+
+        <!-- KOReader wireless instructions -->
+        <div class="koreader-panel">
+          <div class="koreader-header">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+            <span>Enviar para KOReader via WiFi</span>
+            <button class="koreader-toggle" id="koreaderToggle" type="button" aria-expanded="false">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="koreaderChevron"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+          </div>
+          <div class="koreader-body" id="koreaderBody" style="display:none;">
+            <ol class="koreader-steps">
+              <li>No KOReader, abra o menu <strong>Ferramentas → Servidor wireless</strong> e anote o IP (ex: <code>192.168.1.42</code>)</li>
+              <li>Baixe o EPUB acima</li>
+              <li>No computador, abra uma nova aba e acesse <code>http://<strong>IP</strong>:8080</code></li>
+              <li>Arraste o arquivo EPUB para a página ou use o botão de upload</li>
+            </ol>
+            <div class="koreader-ip-row">
+              <label for="koreaderIp">IP do KOReader</label>
+              <div class="koreader-ip-input-wrap">
+                <input id="koreaderIp" type="text" placeholder="192.168.1.42" spellcheck="false" autocomplete="off">
+                <button type="button" id="koreaderOpenBtn">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  Abrir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dropbox panel -->
+        <div class="koreader-panel" id="dropboxPanel">
+          <div class="koreader-header">
+            <svg width="14" height="14" viewBox="0 0 32 32" fill="currentColor" style="color:#0061ff"><path d="M8 2L0 7.5 8 13l8-5.5L8 2zm16 0l-8 5.5 8 5.5 8-5.5L24 2zM0 18.5L8 24l8-5.5-8-5.5-8 5.5zm24-5.5l-8 5.5 8 5.5 8-5.5-8-5.5zM8 25.5L16 31l8-5.5-8-5.5-8 5.5z"/></svg>
+            <span id="dropboxPanelLabel">Salvar no Dropbox</span>
+            <button class="koreader-toggle" id="dropboxToggle" type="button" aria-expanded="false">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="dropboxChevron"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+          </div>
+          <div class="koreader-body" id="dropboxBody" style="display:none;">
+
+            <!-- Setup (shown when not connected) -->
+            <div id="dropboxSetup">
+              <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:.85rem;line-height:1.6;">
+                Conecte sua conta Dropbox uma vez. O KOReader sincroniza automaticamente a pasta <code>/KOReader</code>.
+              </p>
+              <ol class="koreader-steps" style="margin-bottom:.85rem;">
+                <li>Acesse <a href="https://www.dropbox.com/developers/apps/create" target="_blank" style="color:var(--accent);">dropbox.com/developers/apps</a></li>
+                <li>Crie um app: <strong>Scoped access → Full Dropbox</strong> → nome qualquer</li>
+                <li>Em <strong>Settings → OAuth 2 → Redirect URIs</strong>, adicione:<br><code>https://pdvrx.github.io/epubly/</code></li>
+                <li>Copie o <strong>App key</strong> e cole abaixo</li>
+              </ol>
+              <div class="koreader-ip-row">
+                <label for="dropboxAppKey">App key do Dropbox</label>
+                <div class="koreader-ip-input-wrap">
+                  <input id="dropboxAppKey" type="text" placeholder="xxxxxxxxxxxx" spellcheck="false" autocomplete="off">
+                  <button type="button" id="dropboxConnectBtn">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                    Conectar
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Connected (shown after auth) -->
+            <div id="dropboxConnected" style="display:none;">
+              <p id="dropboxAccountLabel" style="font-size:.8rem;color:var(--text-muted);margin-bottom:.85rem;"></p>
+              <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+                <button type="button" id="dropboxSendBtn" class="koreader-ip-input-wrap" style="flex:1;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Enviar para Dropbox
+                </button>
+                <button type="button" id="dropboxDisconnectBtn" style="background:none;border:1px solid var(--border);border-radius:8px;padding:.45rem .75rem;font-size:.75rem;color:var(--text-dim);cursor:pointer;font-family:inherit;">
+                  Desconectar
+                </button>
+              </div>
+              <p id="dropboxStatus" style="font-size:.75rem;margin-top:.6rem;display:none;"></p>
+            </div>
+
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -2753,6 +2934,156 @@ function copyPixKey() {
     setTimeout(function(){ el.style.display='none'; btn.textContent='Copiar'; }, 2500);
   }
 }
+
+// ── Dropbox PKCE OAuth + Upload ───────────────────────────────────────────────
+var DBX_REDIRECT = 'https://pdvrx.github.io/epubly/';
+
+function dbxAppKey() {
+  return localStorage.getItem('dbx_app_key') || '';
+}
+
+function dbxIsConnected() {
+  return !!(localStorage.getItem('dbx_refresh') && dbxAppKey());
+}
+
+// Generate code_verifier (random base64url string)
+function dbxVerifier() {
+  var arr = new Uint8Array(32);
+  crypto.getRandomValues(arr);
+  return btoa(String.fromCharCode.apply(null, arr))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+
+// SHA-256 → base64url for code_challenge
+async function dbxChallenge(verifier) {
+  var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier));
+  return btoa(String.fromCharCode.apply(null, new Uint8Array(buf)))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+
+async function dbxConnect(appKey) {
+  localStorage.setItem('dbx_app_key', appKey);
+  var v = dbxVerifier();
+  localStorage.setItem('dbx_verifier', v);
+  var c = await dbxChallenge(v);
+  window.location.href =
+    'https://www.dropbox.com/oauth2/authorize' +
+    '?client_id=' + appKey +
+    '&response_type=code' +
+    '&redirect_uri=' + encodeURIComponent(DBX_REDIRECT) +
+    '&code_challenge=' + c +
+    '&code_challenge_method=S256' +
+    '&token_access_type=offline';
+}
+
+async function dbxFinishAuth(code) {
+  var v = localStorage.getItem('dbx_verifier');
+  var appKey = dbxAppKey();
+  var res = await fetch('https://api.dropbox.com/oauth2/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'code=' + encodeURIComponent(code) +
+          '&grant_type=authorization_code' +
+          '&client_id=' + encodeURIComponent(appKey) +
+          '&redirect_uri=' + encodeURIComponent(DBX_REDIRECT) +
+          '&code_verifier=' + encodeURIComponent(v)
+  });
+  var data = await res.json();
+  if (!data.refresh_token) throw new Error(data.error_description || 'Falha na autenticação');
+  localStorage.setItem('dbx_refresh', data.refresh_token);
+  localStorage.setItem('dbx_access', data.access_token);
+  localStorage.setItem('dbx_access_exp', String(Date.now() + data.expires_in * 1000));
+  localStorage.removeItem('dbx_verifier');
+}
+
+async function dbxGetToken() {
+  var exp = parseInt(localStorage.getItem('dbx_access_exp') || '0');
+  if (Date.now() < exp - 60000) return localStorage.getItem('dbx_access');
+  var res = await fetch('https://api.dropbox.com/oauth2/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'grant_type=refresh_token' +
+          '&refresh_token=' + encodeURIComponent(localStorage.getItem('dbx_refresh')) +
+          '&client_id=' + encodeURIComponent(dbxAppKey())
+  });
+  var data = await res.json();
+  if (!data.access_token) throw new Error('Sessão Dropbox expirada, reconecte.');
+  localStorage.setItem('dbx_access', data.access_token);
+  localStorage.setItem('dbx_access_exp', String(Date.now() + data.expires_in * 1000));
+  return data.access_token;
+}
+
+async function dbxUpload(blob, filename) {
+  var token = await dbxGetToken();
+  var res = await fetch('https://content.dropboxapi.com/2/files/upload', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + token,
+      'Dropbox-API-Arg': JSON.stringify({
+        path: '/KOReader/' + filename,
+        mode: 'overwrite',
+        autorename: true,
+        mute: false
+      }),
+      'Content-Type': 'application/octet-stream'
+    },
+    body: blob
+  });
+  var data = await res.json();
+  if (data.error) throw new Error(data.error_summary || 'Erro no upload');
+  return data;
+}
+
+async function dbxGetAccount() {
+  var token = await dbxGetToken();
+  var res = await fetch('https://api.dropboxapi.com/2/users/get_current_account', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+    body: 'null'
+  });
+  return res.json();
+}
+
+function dbxDisconnect() {
+  localStorage.removeItem('dbx_refresh');
+  localStorage.removeItem('dbx_access');
+  localStorage.removeItem('dbx_access_exp');
+  localStorage.removeItem('dbx_app_key');
+  localStorage.removeItem('dbx_verifier');
+}
+
+// Handle OAuth callback on page load
+(async function() {
+  var params = new URLSearchParams(window.location.search);
+  var code = params.get('code');
+  if (code && localStorage.getItem('dbx_verifier')) {
+    try {
+      await dbxFinishAuth(code);
+      // Clean URL
+      window.history.replaceState({}, '', window.location.pathname);
+      dbxUpdateUI();
+      // Try to show account name
+      var acct = await dbxGetAccount();
+      var label = document.getElementById('dropboxAccountLabel');
+      if (label && acct.name) {
+        label.textContent = 'Conectado como ' + acct.name.display_name + ' — os EPUBs serão salvos em /KOReader/';
+      }
+    } catch(e) {
+      console.error('Dropbox auth error:', e);
+    }
+  }
+})();
+
+function dbxUpdateUI() {
+  var setup     = document.getElementById('dropboxSetup');
+  var connected = document.getElementById('dropboxConnected');
+  var label     = document.getElementById('dropboxPanelLabel');
+  if (!setup || !connected) return;
+  var ok = dbxIsConnected();
+  setup.style.display     = ok ? 'none'  : 'block';
+  connected.style.display = ok ? 'block' : 'none';
+  if (label) label.textContent = ok ? 'Dropbox conectado' : 'Salvar no Dropbox';
+}
 </script>
 
 <!-- Donate Modal -->
@@ -2899,6 +3230,94 @@ function copyPixKey() {
     openDonateModal();
   });
 
+  // Dropbox panel toggle
+  var dbxToggle = document.getElementById('dropboxToggle');
+  var dbxBody   = document.getElementById('dropboxBody');
+  var dbxChev   = document.getElementById('dropboxChevron');
+  if (dbxToggle) {
+    dbxToggle.addEventListener('click', function() {
+      var open = dbxBody.style.display === 'none';
+      dbxBody.style.display = open ? 'block' : 'none';
+      dbxChev.style.transform = open ? 'rotate(180deg)' : '';
+      dbxToggle.setAttribute('aria-expanded', open);
+      if (open) dbxUpdateUI();
+    });
+  }
+
+  // Connect button
+  var dbxConnBtn = document.getElementById('dropboxConnectBtn');
+  if (dbxConnBtn) {
+    dbxConnBtn.addEventListener('click', function() {
+      var key = document.getElementById('dropboxAppKey').value.trim();
+      if (!key) { document.getElementById('dropboxAppKey').focus(); return; }
+      dbxConnect(key);
+    });
+  }
+
+  // Disconnect
+  var dbxDisBtn = document.getElementById('dropboxDisconnectBtn');
+  if (dbxDisBtn) {
+    dbxDisBtn.addEventListener('click', function() {
+      dbxDisconnect();
+      dbxUpdateUI();
+    });
+  }
+
+  // Send to Dropbox
+  var dbxSendBtn = document.getElementById('dropboxSendBtn');
+  if (dbxSendBtn) {
+    dbxSendBtn.addEventListener('click', async function() {
+      if (!epubBlob) return;
+      var status = document.getElementById('dropboxStatus');
+      dbxSendBtn.disabled = true;
+      dbxSendBtn.textContent = 'Enviando...';
+      status.style.display = 'none';
+      try {
+        var title = (document.getElementById('bookTitle').value || 'livro').replace(/\s+/g, '_');
+        await dbxUpload(epubBlob, title + '.epub');
+        status.textContent = 'Salvo em /KOReader/' + title + '.epub';
+        status.style.color = 'var(--green)';
+        status.style.display = 'block';
+        track('dropbox_upload_success');
+      } catch(e) {
+        status.textContent = e.message;
+        status.style.color = 'var(--red)';
+        status.style.display = 'block';
+        track('dropbox_upload_error');
+      }
+      dbxSendBtn.disabled = false;
+      dbxSendBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Enviar para Dropbox';
+    });
+  }
+
+  // KOReader panel toggle
+  var koToggle = document.getElementById('koreaderToggle');
+  var koBody   = document.getElementById('koreaderBody');
+  var koChevron = document.getElementById('koreaderChevron');
+  if (koToggle) {
+    koToggle.addEventListener('click', function() {
+      var open = koBody.style.display === 'none';
+      koBody.style.display = open ? 'block' : 'none';
+      koChevron.style.transform = open ? 'rotate(180deg)' : '';
+      koToggle.setAttribute('aria-expanded', open);
+    });
+  }
+
+  // KOReader open button
+  var koOpenBtn = document.getElementById('koreaderOpenBtn');
+  if (koOpenBtn) {
+    koOpenBtn.addEventListener('click', function() {
+      var ip = document.getElementById('koreaderIp').value.trim();
+      if (!ip) { document.getElementById('koreaderIp').focus(); return; }
+      // strip protocol if user typed it
+      ip = ip.replace(/^https?:\/\//, '');
+      window.open('http://' + ip + ':8080', '_blank');
+    });
+    // also open on Enter in input
+    document.getElementById('koreaderIp').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') koOpenBtn.click();
+    });
+  }
 })();
 </script>
 </body>
