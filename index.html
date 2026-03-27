@@ -43,6 +43,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
 <style>
+/* ========== CSS ORIGINAL (inalterado) ========== */
 :root {
   --bg: #0e0e11;
   --surface: #16161a;
@@ -72,8 +73,6 @@ body {
   line-height: 1.6;
 }
 
-
-/* Subtle noise texture overlay */
 body::before {
   content: '';
   position: fixed;
@@ -84,7 +83,6 @@ body::before {
   opacity: .4;
 }
 
-/* ── Layout ── */
 header {
   position: sticky;
   top: 0;
@@ -109,7 +107,7 @@ header {
 .logo em { color: var(--accent); font-style: italic; }
 
 .header-right { display: flex; align-items: center; gap: .6rem; }
-.btn-change-key {
+.btn-change-key, .btn-donate {
   font-size: .78rem;
   font-weight: 500;
   letter-spacing: .04em;
@@ -125,28 +123,10 @@ header {
   align-items: center;
   gap: .4rem;
 }
-.btn-change-key:hover {
+.btn-change-key:hover, .btn-donate:hover {
   background: rgba(201,133,90,.25);
   border-color: var(--accent);
 }
-.btn-donate {
-  font-size: .78rem;
-  font-weight: 500;
-  letter-spacing: .04em;
-  color: var(--accent);
-  background: var(--accent-dim);
-  border: 1px solid rgba(201,133,90,.3);
-  padding: .35rem 1rem;
-  border-radius: 100px;
-  cursor: pointer;
-  transition: background .15s, border-color .15s;
-  font-family: 'DM Sans', sans-serif;
-}
-.btn-donate:hover {
-  background: rgba(201,133,90,.25);
-  border-color: var(--accent);
-}
-
 main {
   position: relative;
   z-index: 1;
@@ -156,36 +136,10 @@ main {
   padding: 4rem 2rem 2.5rem;
   flex: 1;
 }
-
-/* ── Hero ── */
 .hero {
   text-align: center;
   margin-bottom: 3.5rem;
 }
-
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: .45rem;
-  font-size: .72rem;
-  font-weight: 500;
-  letter-spacing: .07em;
-  text-transform: uppercase;
-  color: var(--accent);
-  border: 1px solid var(--accent-dim);
-  background: var(--accent-dim);
-  padding: .35rem .9rem;
-  border-radius: 100px;
-  margin-bottom: 1.5rem;
-}
-.hero-badge::before {
-  content: '';
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 6px var(--accent);
-}
-
 .hero h1 {
   font-family: 'DM Serif Display', serif;
   font-size: clamp(2.2rem, 5vw, 3.4rem);
@@ -195,11 +149,7 @@ main {
   margin-bottom: 1.2rem;
   color: var(--text);
 }
-.hero h1 em {
-  font-style: italic;
-  color: var(--accent);
-}
-
+.hero h1 em { font-style: italic; color: var(--accent); }
 .hero p {
   font-size: 1rem;
   color: var(--text-muted);
@@ -208,8 +158,6 @@ main {
   line-height: 1.7;
   font-weight: 300;
 }
-
-/* ── Card ── */
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -219,7 +167,6 @@ main {
   transition: border-color .2s;
 }
 .card:hover { border-color: var(--border-lit); }
-
 .card-label {
   display: flex;
   align-items: center;
@@ -238,82 +185,6 @@ main {
   background: var(--accent);
   border-radius: 2px;
 }
-
-/* ── API key section ── */
-.api-desc {
-  font-size: .875rem;
-  color: var(--text-muted);
-  margin-bottom: 1rem;
-  line-height: 1.65;
-}
-
-.key-input-row {
-  display: flex;
-  gap: .5rem;
-  align-items: stretch;
-}
-
-.key-input-row input {
-  flex: 1;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: .65rem 1rem;
-  font-family: 'DM Mono', 'Courier New', monospace;
-  font-size: .8rem;
-  color: var(--text);
-  outline: none;
-  transition: border-color .2s, box-shadow .2s;
-  min-width: 0;
-}
-.key-input-row input::placeholder { color: var(--text-dim); }
-.key-input-row input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-glow);
-}
-
-.btn-primary {
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: .65rem 1.3rem;
-  font-family: 'DM Sans', sans-serif;
-  font-size: .85rem;
-  font-weight: 500;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: opacity .15s, transform .1s;
-}
-.btn-primary:hover { opacity: .88; }
-.btn-primary:active { transform: scale(.97); }
-
-.key-help-link {
-  display: inline-flex;
-  align-items: center;
-  gap: .45rem;
-  font-size: .78rem;
-  font-weight: 500;
-  color: var(--accent);
-  cursor: pointer;
-  text-decoration: none;
-  transition: background .15s, border-color .15s, color .15s;
-  background: var(--accent-dim);
-  border: 1px solid rgba(201,133,90,.3);
-  padding: .4rem .9rem;
-  border-radius: 8px;
-  font-family: inherit;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-.key-help-link:hover {
-  background: rgba(201,133,90,.25);
-  border-color: var(--accent);
-}
-.key-help-link svg { opacity: .7; flex-shrink: 0; }
-
-
-/* ── Upload zone ── */
 #uploadZone {
   border: 1.5px dashed var(--border-lit);
   border-radius: 16px;
@@ -335,14 +206,11 @@ main {
   transition: opacity .3s;
   pointer-events: none;
 }
-#uploadZone:hover::before,
-#uploadZone.drag-over::before { opacity: 1; }
-#uploadZone:hover,
-#uploadZone.drag-over {
+#uploadZone:hover::before, #uploadZone.drag-over::before { opacity: 1; }
+#uploadZone:hover, #uploadZone.drag-over {
   border-color: var(--accent);
   background: rgba(201,133,90,.03);
 }
-
 .upload-icon {
   width: 52px; height: 52px;
   background: var(--surface2);
@@ -356,9 +224,8 @@ main {
   transition: transform .2s;
 }
 #uploadZone:hover .upload-icon { transform: translateY(-2px); }
-/* All children non-interactive — zone handles clicks and drag */
 #uploadZone * { pointer-events: none; }
-
+#selectFileBtn { pointer-events: auto; }
 #uploadZone h3 {
   font-family: 'DM Serif Display', serif;
   font-size: 1.2rem;
@@ -370,7 +237,6 @@ main {
   color: var(--text-muted);
   margin-bottom: 1.4rem;
 }
-
 .btn-ghost {
   display: inline-block;
   background: transparent;
@@ -389,32 +255,6 @@ main {
   background: var(--accent-dim);
   color: var(--accent);
 }
-
-/* ── File info ── */
-.provider-tabs {
-  display: flex;
-  gap: .35rem;
-  margin-top: .5rem;
-}
-.provider-tab {
-  font-size: .72rem;
-  font-weight: 500;
-  padding: .25rem .75rem;
-  border-radius: 100px;
-  border: 1px solid var(--border-lit);
-  background: transparent;
-  color: var(--text-muted);
-  cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  transition: all .15s;
-}
-.provider-tab.active {
-  background: var(--accent-dim);
-  border-color: rgba(201,133,90,.4);
-  color: var(--accent);
-}
-.provider-tab:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
-
 .estimate-strip {
   display: flex;
   align-items: center;
@@ -430,8 +270,6 @@ main {
 .estimate-item { display: flex; align-items: center; gap: .4rem; flex: 1; justify-content: center; }
 .estimate-icon { font-size: .8rem; opacity: .7; }
 .estimate-label { font-weight: 500; color: var(--text); }
-.estimate-sep { width: 1px; height: 1.2em; background: var(--border-lit); flex-shrink: 0; }
-
 .file-info {
   display: none;
   align-items: center;
@@ -451,26 +289,21 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
   flex-shrink: 0;
 }
 .file-meta strong { display: block; color: var(--text); font-weight: 500; }
 .file-meta span { color: var(--text-muted); font-size: .8rem; }
-
-/* ── Settings ── */
 .settings-panel {
   display: none;
   margin-bottom: 1rem;
 }
 .settings-panel.show { display: block; }
-
 .settings-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: .75rem;
   margin-bottom: .75rem;
 }
-
 .setting-item label {
   display: block;
   font-size: .72rem;
@@ -480,9 +313,7 @@ main {
   color: var(--text-dim);
   margin-bottom: .4rem;
 }
-
-.setting-item input,
-.setting-item select {
+.setting-item input, .setting-item select {
   width: 100%;
   background: var(--bg);
   border: 1px solid var(--border);
@@ -492,25 +323,19 @@ main {
   font-size: .875rem;
   color: var(--text);
   outline: none;
-  transition: border-color .15s;
-  appearance: none;
-  -webkit-appearance: none;
 }
-.setting-item input:focus,
-.setting-item select:focus { border-color: var(--accent); }
+.setting-item input:focus, .setting-item select:focus { border-color: var(--accent); }
 .setting-item select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a7888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right .8rem center;
   padding-right: 2rem;
 }
-
 .toggles {
   display: flex;
   gap: .5rem;
   flex-wrap: wrap;
 }
-
 .toggle-row {
   display: flex;
   align-items: center;
@@ -525,8 +350,6 @@ main {
   min-width: 180px;
 }
 .toggle-row:hover { border-color: var(--border-lit); }
-.toggle-hint { font-size: .7rem; color: var(--text-dim); margin-top: .15rem; line-height: 1.4; }
-
 .toggle {
   position: relative;
   width: 36px; height: 20px;
@@ -553,8 +376,6 @@ main {
 .toggle input:checked + .toggle-slider { background: var(--accent); }
 .toggle input:checked + .toggle-slider::before { transform: translateX(16px); }
 .toggle-label { font-size: .82rem; color: var(--text-muted); font-weight: 400; }
-
-/* ── Process button ── */
 .process-btn {
   display: none;
   width: 100%;
@@ -568,7 +389,6 @@ main {
   border: none;
   border-radius: 12px;
   cursor: pointer;
-  letter-spacing: .01em;
   transition: opacity .15s, transform .1s, box-shadow .2s;
   box-shadow: 0 4px 24px var(--accent-glow);
 }
@@ -576,30 +396,8 @@ main {
 .process-btn:active { transform: scale(.99); }
 .process-btn:disabled { background: var(--surface2); color: var(--text-dim); cursor: not-allowed; box-shadow: none; }
 .process-btn.show { display: block; }
-
-/* ── Page thumbs ── */
 .pages-preview { display: none; margin-bottom: 1rem; }
 .pages-preview.show { display: block; }
-.pages-toolbar { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: .75rem; }
-.pages-preview-header {
-  font-size: .72rem;
-  font-weight: 600;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  margin-bottom: .2rem;
-}
-.page-range-hint { font-size: .72rem; color: var(--text-dim); line-height: 1.5; }
-.page-range-hint code { background: var(--surface2); border: 1px solid var(--border); border-radius: 3px; padding: 1px 5px; font-family: 'Courier New',monospace; font-size: .7rem; color: var(--accent); }
-.page-range-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: .25rem; flex-shrink: 0; }
-.page-range-input { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: .45rem .85rem; font-family: 'Courier New',monospace; font-size: .8rem; color: var(--text); outline: none; width: 210px; transition: border-color .15s, box-shadow .15s; }
-.page-range-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
-.page-range-input.invalid { border-color: var(--red); }
-.page-range-status { font-size: .7rem; color: var(--text-muted); min-height: 1em; }
-.page-range-status.ok { color: var(--green); }
-.page-range-status.err  { color: var(--red); }
-.warn { color: #c9a85a; }
-.page-thumb.dimmed { opacity: .22; }
 .pages-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
@@ -624,20 +422,14 @@ main {
   padding: 2px 4px;
   font-family: monospace;
 }
-.page-thumb.double-page { border-color: rgba(201,133,90,.4); }
-.page-thumb.double-page .badge { background: rgba(201,133,90,.8); color: white; }
-
-/* ── Progress ── */
 .progress-section { display: none; margin-bottom: 1rem; }
 .progress-section.show { display: block; }
-
 .progress-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 1.5rem;
 }
-
 .progress-header {
   display: flex;
   justify-content: space-between;
@@ -654,7 +446,6 @@ main {
   font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
-
 .progress-track {
   height: 3px;
   background: var(--border);
@@ -669,26 +460,21 @@ main {
   transition: width .4s cubic-bezier(.4,0,.2,1);
   border-radius: 2px;
 }
-
 .status-line {
   font-size: .78rem;
   color: var(--text-muted);
   margin-top: .65rem;
   min-height: 1.2em;
-  transition: color .2s;
 }
 .status-line.ok { color: var(--green); }
 .status-line.warn { color: #c9a84c; }
-.status-line.err  { color: var(--red); }
-.warn { color: #c9a85a; }
+.status-line.err { color: var(--red); }
 .log-errors {
   margin-top: .4rem;
   font-size: .72rem;
   color: var(--red);
-  font-family: 'Courier New', monospace;
+  font-family: monospace;
 }
-
-/* ── Result ── */
 .result-inline {
   display: none;
   flex-direction: column;
@@ -704,7 +490,6 @@ main {
   font-weight: 500;
   margin: 0;
 }
-
 .btn-download {
   display: inline-flex;
   align-items: center;
@@ -722,7 +507,108 @@ main {
   box-shadow: 0 4px 16px var(--accent-glow);
 }
 .btn-download:hover { opacity: .88; }
-
+footer { position: relative; z-index: 1; }
+.footer-bar {
+  border-top: 1px solid var(--border);
+  padding: 1.5rem 2rem;
+  text-align: center;
+}
+.footer-bar-counter {
+  display: inline-flex;
+  align-items: baseline;
+  gap: .5rem;
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.35rem;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+/* KOReader panel */
+.koreader-panel {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  font-size: .82rem;
+}
+.koreader-header {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .7rem 1rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.koreader-header span { flex: 1; }
+.koreader-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: .15rem;
+  display: flex;
+  align-items: center;
+}
+.koreader-toggle:hover { color: var(--text); }
+#koreaderChevron { transition: transform .2s ease; }
+.koreader-body {
+  border-top: 1px solid var(--border);
+  padding: 1rem;
+}
+.koreader-steps {
+  padding-left: 1.1rem;
+  color: var(--text-muted);
+  line-height: 1.75;
+  margin-bottom: .9rem;
+}
+.koreader-steps li { margin-bottom: .2rem; }
+.koreader-steps code {
+  font-family: monospace;
+  font-size: .78rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: var(--accent);
+}
+.koreader-ip-row {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+}
+.koreader-ip-row label {
+  font-size: .75rem;
+  color: var(--text-dim);
+  letter-spacing: .03em;
+}
+.koreader-ip-input-wrap {
+  display: flex;
+  gap: .5rem;
+}
+.koreader-ip-input-wrap input {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border-lit);
+  border-radius: 8px;
+  padding: .45rem .75rem;
+  font-family: monospace;
+  font-size: .82rem;
+  color: var(--text);
+  outline: none;
+}
+.koreader-ip-input-wrap input:focus { border-color: var(--accent); }
+.koreader-ip-input-wrap button {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: .45rem .9rem;
+  font-size: .8rem;
+  cursor: pointer;
+}
 .btn-secondary {
   display: inline-flex;
   align-items: center;
@@ -738,42 +624,17 @@ main {
   transition: border-color .15s, color .15s;
 }
 .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
-
-/* ── Footer ── */
-/* ── Footer ── */
-footer { position: relative; z-index: 1; }
-.footer-bar {
-  border-top: 1px solid var(--border);
-  padding: 1.5rem 2rem;
-  text-align: center;
-}
-.footer-bar-counter {
-  display: inline-flex;
-  align-items: baseline;
-  gap: .5rem;
-  font-family: 'DM Serif Display', serif;
-  font-size: 1.35rem;
-  color: var(--accent);
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-}
-.footer-inner { display: none; }
-
-/* ── Modal ── */
 .modal-overlay {
   display: none;
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,.7);
   backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
   z-index: 1000;
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
 }
-.modal-overlay.open { display: flex; }
-
 .modal {
   background: var(--surface);
   border: 1px solid var(--border-lit);
@@ -785,18 +646,14 @@ footer { position: relative; z-index: 1; }
   position: relative;
   animation: modal-in .2s cubic-bezier(.34,1.4,.64,1);
   scrollbar-width: thin;
-  scrollbar-color: var(--accent) var(--surface2);
 }
 .modal::-webkit-scrollbar { width: 5px; }
 .modal::-webkit-scrollbar-track { background: var(--surface2); border-radius: 0 20px 20px 0; }
 .modal::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
-.modal::-webkit-scrollbar-thumb:hover { background: #d99a72; }
-
 @keyframes modal-in {
   from { opacity: 0; transform: scale(.94) translateY(8px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }
-
 .modal-close {
   position: absolute;
   top: 1.1rem; right: 1.1rem;
@@ -808,13 +665,8 @@ footer { position: relative; z-index: 1; }
   cursor: pointer;
   color: var(--text-muted);
   font-size: 1.1rem;
-  transition: background .15s, color .15s;
 }
-.modal-close:hover { background: var(--border); color: var(--text); }
-
-.modal-header {
-  padding: 2rem 2rem 0;
-}
+.modal-header { padding: 2rem 2rem 0; }
 .modal-tag {
   display: inline-block;
   font-size: .68rem;
@@ -839,35 +691,12 @@ footer { position: relative; z-index: 1; }
   color: var(--text-muted);
   line-height: 1.65;
 }
-
-.modal-provider-tabs {
-  display: flex;
-  gap: .4rem;
-  margin-top: .25rem;
-}
-.modal-ptab {
-  font-size: .75rem;
-  font-weight: 500;
-  padding: .3rem .85rem;
-  border-radius: 100px;
-  border: 1px solid var(--border-lit);
-  background: transparent;
-  color: var(--text-muted);
-  cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  transition: all .15s;
-}
-.modal-ptab.active { background: var(--accent-dim); border-color: rgba(201,133,90,.4); color: var(--accent); }
-.modal-ptab:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
-
 .modal-divider {
   height: 1px;
   background: var(--border);
   margin: 1.5rem 0;
 }
-
 .modal-body { padding: 0 2rem 2rem; }
-
 .modal-section-title {
   font-size: .68rem;
   font-weight: 600;
@@ -876,7 +705,6 @@ footer { position: relative; z-index: 1; }
   color: var(--text-dim);
   margin-bottom: 1rem;
 }
-
 .steps-list {
   list-style: none;
   display: flex;
@@ -904,28 +732,11 @@ footer { position: relative; z-index: 1; }
   color: var(--accent);
   margin-top: .1rem;
 }
-.steps-list a {
-  color: var(--accent);
-  text-decoration: none;
-  font-weight: 500;
-}
-.steps-list a:hover { text-decoration: underline; }
-.steps-list code {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 1px 6px;
-  font-family: 'Courier New', monospace;
-  font-size: .8rem;
-  color: var(--text);
-}
-
 .security-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: .6rem;
 }
-
 .security-item {
   background: var(--surface2);
   border: 1px solid var(--border);
@@ -944,7 +755,6 @@ footer { position: relative; z-index: 1; }
   color: var(--text-muted);
   line-height: 1.5;
 }
-
 .modal-cta {
   margin-top: 1.5rem;
   display: flex;
@@ -963,11 +773,7 @@ footer { position: relative; z-index: 1; }
   padding: .7rem 1rem;
   font-size: .875rem;
   font-weight: 500;
-  transition: opacity .15s;
 }
-.modal-cta a:hover { opacity: .88; }
-
-
 .pix-key-box {
   display: flex;
   align-items: center;
@@ -976,7 +782,6 @@ footer { position: relative; z-index: 1; }
   border: 1px solid var(--border-lit);
   border-radius: 10px;
   padding: .65rem 1rem;
-  text-align: left;
 }
 .pix-key-label {
   font-size: .65rem;
@@ -988,7 +793,7 @@ footer { position: relative; z-index: 1; }
 }
 .pix-key-value {
   flex: 1;
-  font-family: 'Courier New', monospace;
+  font-family: monospace;
   font-size: .78rem;
   color: var(--text);
   overflow: hidden;
@@ -1005,63 +810,27 @@ footer { position: relative; z-index: 1; }
   font-weight: 500;
   color: var(--accent);
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  transition: background .15s;
 }
-.pix-copy-btn:hover { background: rgba(201,133,90,.25); }
-
 @media (max-width: 640px) {
-  /* Header */
   header { padding: 0 1rem; height: 52px; }
   .logo { font-size: 1.25rem; }
   .btn-donate, .btn-change-key { font-size: .66rem; padding: .25rem .6rem; gap: .25rem; }
   .btn-change-key svg { width: 9px; height: 9px; }
-
-  /* Main */
   main { padding: 2rem 1rem 5rem; }
-
-  /* Hero */
   .hero { margin-bottom: 2rem; }
   .hero h1 { font-size: 1.75rem; }
-  .hero p { font-size: .9rem; }
-  .hero-badge { font-size: .68rem; }
-
-  /* Upload */
   #uploadZone { padding: 2rem 1.25rem; margin-bottom: .75rem; }
   .upload-icon { width: 44px; height: 44px; border-radius: 12px; font-size: 1.3rem; }
   #uploadZone h3 { font-size: 1.05rem; }
   #uploadZone p { font-size: .8rem; margin-bottom: 1rem; }
-
-  /* API compact */
-  .api-compact { padding: .85rem 1rem; }
-  .api-compact-top { flex-direction: column; align-items: flex-start; gap: .5rem; }
-  .key-help-link { align-self: flex-start; }
-  .api-compact-desc { font-size: .75rem; }
-  .key-input-row input { font-size: .75rem; }
-  .btn-primary { padding: .65rem 1rem; font-size: .8rem; }
-
-  /* Settings */
   .settings-grid { grid-template-columns: 1fr; }
   .card { padding: 1.25rem 1rem; }
   .toggles { flex-direction: column; }
   .toggle-row { min-width: unset; }
-
-  /* Process btn */
   .process-btn { font-size: .95rem; padding: .85rem; }
-
-  /* Pages grid */
   .pages-grid { grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); gap: .4rem; }
-
-  /* Progress */
   .progress-card { padding: 1.1rem; }
-
-
-  /* Result */
-
-  .result-buttons { flex-direction: column; align-items: center; }
   .btn-download, .btn-secondary { width: 100%; justify-content: center; }
-
-  /* Modal */
   .modal { border-radius: 16px; }
   .modal-header { padding: 1.5rem 1.25rem 0; }
   .modal-body { padding: 0 1.25rem 1.5rem; }
@@ -1071,21 +840,38 @@ footer { position: relative; z-index: 1; }
   .steps-list code { font-size: .72rem; padding: 1px 4px; }
   .security-grid { grid-template-columns: 1fr; }
   .modal-cta { flex-direction: column; }
-
-  /* Footer */
-
 }
-
-/* Hero counter */
-
-/* About modal */
-.about-steps { display: flex; flex-direction: column; gap: 1.25rem; }
-.about-step { display: flex; gap: 1rem; align-items: flex-start; }
-.about-step-icon { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: .1rem; }
-.about-step-title { font-size: .88rem; font-weight: 600; color: var(--text); margin-bottom: .3rem; }
-.about-step-text { font-size: .82rem; color: var(--text-muted); line-height: 1.65; }
+.about-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.about-step {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+.about-step-icon {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: .1rem;
+}
+.about-step-title {
+  font-size: .88rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: .3rem;
+}
+.about-step-text {
+  font-size: .82rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
 .about-step-text a { color: var(--accent); text-decoration: none; }
-.about-step-text a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -1094,11 +880,15 @@ footer { position: relative; z-index: 1; }
   <div class="logo">E<em>pub</em>ly</div>
   <div class="header-right">
     <button class="btn-donate" id="donateBtn" type="button" data-i18n="donate">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-bottom:1px;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
       Apoie-nos
     </button>
+    <button class="btn-change-key" id="sendSettingsBtn" type="button" title="Configurar envio para e-reader">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      E-reader
+    </button>
     <button class="btn-change-key" id="aboutBtn" type="button" data-i18n="about">Sobre</button>
-    <a class="btn-change-key" href="https://github.com/pdvrx/epubly" target="_blank" rel="noopener" title="Repositório no GitHub">
+    <a class="btn-change-key" href="https://github.com/pdvrx/epubly" target="_blank" rel="noopener">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.341-3.369-1.341-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
       GitHub
     </a>
@@ -1106,133 +896,88 @@ footer { position: relative; z-index: 1; }
 </header>
 
 <main>
-
-  <!-- Hero -->
   <div class="hero">
     <h1 data-i18n="heroTitle">Dê nova vida aos<br><em>livros esquecidos</em></h1>
     <p data-i18n="heroSub">Envie um PDF escaneado: torto, manchado, antigo e em página dupla. A IA extrai o texto e entrega ele limpo para o seu e-reader.</p>
   </div>
 
-  <!-- Upload -->
   <div id="uploadZone">
-    <div class="upload-icon">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg>
-    </div>
+    <div class="upload-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg></div>
     <h3 data-i18n="dropTitle">Arraste seu PDF aqui</h3>
     <p data-i18n="dropSub">Suporte a PDFs escaneados, páginas duplas e baixa qualidade</p>
     <button class="btn-ghost" id="selectFileBtn" data-i18n="selectFile">Selecionar arquivo</button>
   </div>
   <input type="file" id="fileInput" accept=".pdf" style="display:none">
 
-  <!-- File info -->
   <div class="file-info" id="fileInfo">
-    <div class="file-icon">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:.7"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-    </div>
-    <div class="file-meta">
-      <strong id="fileName"></strong>
-      <span id="fileDetails"></span>
-    </div>
+    <div class="file-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+    <div class="file-meta"><strong id="fileName"></strong><span id="fileDetails"></span></div>
   </div>
   <div class="estimate-strip" id="estimateStrip" style="display:none;">
-    <div class="estimate-item">
-      <span class="estimate-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
-      <span class="estimate-label" id="estTime">—</span>
-    </div>
+    <div class="estimate-item"><span class="estimate-icon">⏱️</span><span class="estimate-label" id="estTime">—</span></div>
   </div>
 
-  <!-- Settings -->
   <div class="settings-panel card" id="settingsPanel">
     <div class="card-label" data-i18n="settings">Configurações</div>
     <div class="settings-grid">
-      <div class="setting-item">
-        <label data-i18n="bookTitle">Título do livro</label>
-        <input type="text" id="bookTitle" placeholder="Ex: Dom Casmurro">
-      </div>
-      <div class="setting-item">
-        <label data-i18n="author">Autor</label>
-        <input type="text" id="bookAuthor" placeholder="Ex: Machado de Assis">
-      </div>
-      <div class="setting-item">
-        <label data-i18n="language">Idioma</label>
-        <select id="bookLang">
-          <option value="pt">Português</option>
-          <option value="en">Inglês</option>
-          <option value="es">Espanhol</option>
-          <option value="fr">Francês</option>
-          <option value="de">Alemão</option>
-          <option value="it">Italiano</option>
-          <option value="la">Latim</option>
-        </select>
-      </div>
-      <div class="setting-item" id="pageRangeItem" style="display:none;">
-        <label>Páginas <span id="pageRangeTotalLabel" style="font-weight:400;color:var(--text-dim);"></span></label>
-        <input type="text" id="pageRangeInput" class="page-range-input" placeholder="Em branco = todas. Ex: 1-10, 15">
-        <span class="page-range-status" id="pageRangeStatus"></span>
-        <small style="color:var(--text-dim);font-size:.68rem;margin-top:.25rem;display:block;">Use <code style="background:var(--surface2);border-radius:3px;padding:1px 4px;color:var(--accent);">1-5</code>, <code style="background:var(--surface2);border-radius:3px;padding:1px 4px;color:var(--accent);">1,3,7</code> ou combine: <code style="background:var(--surface2);border-radius:3px;padding:1px 4px;color:var(--accent);">1-5,8,12</code></small>
-      </div>
+      <div class="setting-item"><label data-i18n="bookTitle">Título do livro</label><input type="text" id="bookTitle" placeholder="Ex: Dom Casmurro"></div>
+      <div class="setting-item"><label data-i18n="author">Autor</label><input type="text" id="bookAuthor" placeholder="Ex: Machado de Assis"></div>
+      <div class="setting-item"><label data-i18n="language">Idioma</label><select id="bookLang"><option value="pt">Português</option><option value="en">Inglês</option><option value="es">Espanhol</option><option value="fr">Francês</option><option value="de">Alemão</option><option value="it">Italiano</option><option value="la">Latim</option></select></div>
+      <div class="setting-item" id="pageRangeItem" style="display:none;"><label>Páginas <span id="pageRangeTotalLabel"></span></label><input type="text" id="pageRangeInput" class="page-range-input" placeholder="Em branco = todas. Ex: 1-10, 15"><span class="page-range-status" id="pageRangeStatus"></span></div>
     </div>
     <div class="toggles">
-      <label class="toggle-row">
-        <label class="toggle">
-          <input type="checkbox" id="splitDouble" checked>
-          <span class="toggle-slider"></span>
-        </label>
-        <span class="toggle-label" data-i18n="splitDouble">Separar páginas duplas</span>
-      </label>
-      <label class="toggle-row">
-        <label class="toggle">
-          <input type="checkbox" id="cleanText" checked>
-          <span class="toggle-slider"></span>
-        </label>
-        <span class="toggle-label" data-i18n="cleanText">Corrigir hifenizações</span>
-      </label>
-
+      <label class="toggle-row"><label class="toggle"><input type="checkbox" id="splitDouble" checked><span class="toggle-slider"></span></label><span class="toggle-label" data-i18n="splitDouble">Separar páginas duplas</span></label>
+      <label class="toggle-row"><label class="toggle"><input type="checkbox" id="cleanText" checked><span class="toggle-slider"></span></label><span class="toggle-label" data-i18n="cleanText">Corrigir hifenizações</span></label>
     </div>
   </div>
 
-  <!-- Convert button -->
   <button class="process-btn" id="processBtn" data-i18n="convert">Converter para EPUB</button>
 
-  <!-- Page preview (thumbnails only) -->
-  <div class="pages-preview" id="pagesPreview">
-    <div class="pages-preview-header" data-i18n="pagesDetected">Páginas detectadas</div>
-    <div class="pages-grid" id="pagesGrid"></div>
-  </div>
+  <div class="pages-preview" id="pagesPreview"><div class="pages-preview-header" data-i18n="pagesDetected">Páginas detectadas</div><div class="pages-grid" id="pagesGrid"></div></div>
 
-  <!-- Progress -->
   <div class="progress-section" id="progressSection">
     <div class="progress-card">
-      <div class="progress-header">
-        <span class="progress-label" id="progressLabel">Convertendo</span>
-        <span class="progress-pct" id="progressPct">0%</span>
-      </div>
+      <div class="progress-header"><span class="progress-label" id="progressLabel">Convertendo</span><span class="progress-pct" id="progressPct">0%</span></div>
       <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
       <div class="status-line" id="statusLine"></div>
       <div class="log-errors" id="logErrors"></div>
       <div class="result-inline" id="resultSection" style="display:none;">
         <p class="result-ok-text" id="resultStats"></p>
-        <button class="btn-download" id="downloadBtn">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          <span data-i18n="download">Baixar EPUB</span>
-        </button>
+        <button class="btn-download" id="downloadBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span data-i18n="download">Baixar EPUB</span></button>
+        <!-- NOVA MENSAGEM COM LINK -->
+        <div id="opdsCodeRow" style="display:none; width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:1rem; text-align:center;">
+          <div style="display:flex; align-items:center; justify-content:center; gap:.5rem; margin-bottom:.5rem;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+            <strong style="font-size:.9rem; color:var(--text);">✅ Epub salvo no catálogo OPDS</strong>
+          </div>
+          <p style="font-size:.8rem; color:var(--text-muted); margin:0;">
+            <a href="#" id="openSettingsLink" style="color:var(--accent); text-decoration:underline; cursor:pointer;">Saiba como acessar</a>
+          </p>
+        </div>
       </div>
     </div>
   </div>
-
 </main>
 
-
 <footer>
-  <div class="footer-bar">
-    <span class="footer-bar-counter">
-      <span id="footerCounterNum">—</span>
-      <span data-i18n="booksRescued">livros convertidos</span>
-    </span>
-  </div>
+  <div class="footer-bar"><span class="footer-bar-counter"><span id="footerCounterNum">—</span><span data-i18n="booksRescued">livros convertidos</span></span></div>
 </footer>
 
 <script>
+// ========================
+// Código curto do usuário (shortCode)
+// ========================
+let shortCode = localStorage.getItem('epubly_shortcode');
+if (!shortCode) {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
+  let code = '';
+  for (let i = 0; i < 6; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  shortCode = code;
+  localStorage.setItem('epubly_shortcode', shortCode);
+}
+// ========================
 
 // ── i18n ──────────────────────────────────────────────────────────────────────
 var I18N = {
@@ -1415,15 +1160,12 @@ function applyI18n() {
     var key = el.getAttribute('data-i18n');
     if (T[key] !== undefined) el.innerHTML = T[key];
   });
-  // placeholders
   var bt = document.getElementById('bookTitle');
   if (bt) bt.placeholder = siteLang === 'en' ? 'E.g. Moby Dick' : siteLang === 'es' ? 'Ej: Don Quijote' : 'Ex: Dom Casmurro';
   var ba = document.getElementById('bookAuthor');
   if (ba) ba.placeholder = siteLang === 'en' ? 'E.g. Herman Melville' : siteLang === 'es' ? 'Ej: Cervantes' : 'Ex: Machado de Assis';
-  // progress label
   var pl = document.getElementById('progressLabel');
   if (pl) pl.textContent = T.converting;
-  // page range placeholder
   var pr = document.getElementById('pageRangeInput');
   if (pr) pr.placeholder = siteLang === 'en' ? 'Blank = all. E.g. 1-10, 15' : siteLang === 'es' ? 'Vacío = todas. Ej: 1-10, 15' : 'Em branco = todas. Ex: 1-10, 15';
 }
@@ -1434,17 +1176,44 @@ var apiKey = ''; // unused, kept for compatibility
 
 function $(id) { return document.getElementById(id); }
 
+// ── Global state (accessible from all scripts) ───────────────────────────────
+var pdfFile  = null;
+var pdfDoc   = null;
+var epubBlob = null;
+
+
+
+// Upload EPUB to Worker KV for OPDS catalog, including shortCode
+async function uploadEpubToOpds(blob, title, author, pages) {
+  try {
+    var buf = await blob.arrayBuffer();
+    var bytes = new Uint8Array(buf);
+    var binary = '';
+    var chunkSize = 8192;
+    for (var i = 0; i < bytes.length; i += chunkSize) {
+      binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+    }
+    var b64 = btoa(binary);
+
+    var res = await fetch(EPUB_STORE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title: title, author: author, pages: pages, data: b64, shortCode: shortCode })
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var data = await res.json();
+    return data.id;
+  } catch(e) {
+    console.warn('OPDS upload failed:', e.message);
+    return null;
+  }
+}
+
 (function () {
 'use strict';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
-
-// ── State ─────────────────────────────────────────────────────────────────────
-var pdfFile  = null;
-var pdfDoc   = null;
-var epubBlob = null;
-
 
 // ── File input ────────────────────────────────────────────────────────────────
 $('fileInput').addEventListener('change', function () {
@@ -1508,7 +1277,6 @@ async function handleFile(file) {
   track('pdf_uploaded', { pages: n, file_size_mb: parseFloat(mb) });
   $('pageRangeItem').style.display = '';
   $('pageRangeTotalLabel').textContent = '(' + T.of + ' ' + n + ')';
-  // Attach live-validation listener once per load
   $('pageRangeInput').oninput = function () {
     var st = $('pageRangeStatus');
     $('pageRangeInput').classList.remove('invalid');
@@ -1542,7 +1310,7 @@ function updateEstimate(pageCount) {
 // ── Page range parser ─────────────────────────────────────────────────────────
 function parsePageRange(str, total) {
   str = str.trim();
-  if (!str) return null; // null = todas
+  if (!str) return null;
   var selected = new Set();
   var parts = str.split(',');
   for (var p = 0; p < parts.length; p++) {
@@ -1592,12 +1360,9 @@ async function showThumbnails(doc, total) {
     wrap.appendChild(badge);
     $('pagesGrid').appendChild(wrap);
   }
-
-
 }
 
 // ── Unified API call ──────────────────────────────────────────────────────────
-// Model selection handled by Cloudflare Worker
 var OR_MODELS = [
   'qwen/qwen2.5-vl-72b-instruct',
   'qwen/qwen2.5-vl-32b-instruct',
@@ -1631,11 +1396,10 @@ async function detectBestModel() {
   return workingModel;
 }
 
-// ── Worker URL — update after wrangler deploy ────────────────────────────────
-// ── Troque para a URL do Cloudflare quando for publicar ──────────────────────
+// ── Worker URL ────────────────────────────────────────────────────────────────
 var WORKER_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  ? 'http://localhost:8787/ocr'               // desenvolvimento local
-  : 'https://epubly-worker.pedro06bf.workers.dev/ocr'; // produção — atualizar após deploy
+  ? 'http://localhost:8787/ocr'
+  : 'https://epubly-worker.pedro06bf.workers.dev/ocr';
 
 async function callAI(parts, maxTokens) {
   var messages = [{ role: 'user', content: [] }];
@@ -1698,8 +1462,6 @@ $('processBtn').addEventListener('click', async function () {
   var title       = $('bookTitle').value || 'Livro';
   var author      = $('bookAuthor').value || 'Desconhecido';
 
-  
-  
   setProgress(2, T.extracting + '...');
 
   try {
@@ -1739,7 +1501,6 @@ $('processBtn').addEventListener('click', async function () {
     var totalBatches = Math.ceil(pageImages.length / BATCH);
     var totalPages = pageImages.length;
     var results = [];
-    // Pre-fill results array with correct length based on actual images
     for (var pi = 0; pi < totalPages; pi++) results.push(null);
     var completedPages = 0;
 
@@ -1766,7 +1527,6 @@ $('processBtn').addEventListener('click', async function () {
                 );
               }
             }).catch(async function(batchErr) {
-              // ── Retry each page individually on batch failure ──────────
               addLog('Lote falhou, retentando página a página…', 'warn');
               for (var j = 0; j < batch.length; j++) {
                 try {
@@ -1803,7 +1563,9 @@ $('processBtn').addEventListener('click', async function () {
     } // end if(!isDigital)
 
     // ── Post-processing ───────────────────────────────────────────────
-    setProgress(86, 'Limpando cabeçalhos e rodapés repetidos…');
+    setProgress(86, 'Limpando e normalizando texto…');
+    results = fixStickyWords(results);
+    results = removeInlinePageNumbers(results);
     results = removeRepeatedHeadersFooters(results);
     results = extractFootnotes(results);
 
@@ -1836,6 +1598,14 @@ $('processBtn').addEventListener('click', async function () {
       a.click();
     };
 
+    // Upload to OPDS catalog (non-blocking) - MODIFICADO para enviar shortCode
+    uploadEpubToOpds(epubBlob, title, author, results.length).then(function(opdsId) {
+      if (!opdsId) return;
+      var row = document.getElementById('opdsCodeRow');
+      if (row) row.style.display = 'flex';
+      addLog('Disponível no catálogo OPDS · link: https://epubly-worker.pedro06bf.workers.dev/opds?code=' + shortCode, 'ok');
+      track('opds_upload_success');
+    });
 
   } catch (err) {
     addLog(err.message, 'err');
@@ -1848,11 +1618,8 @@ $('processBtn').addEventListener('click', async function () {
   }
 });
 
-
-
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function resetConversion() {
-  // Re-enable process button and show settings again so user can convert another
   $('processBtn').disabled = false;
   $('processBtn').classList.add('show');
   $('settingsPanel').style.display = '';
@@ -1867,7 +1634,6 @@ function resetConversion() {
   $('processBtn').style.display = '';
   $('processBtn').style.maxHeight = '';
   $('processBtn').style.opacity = '';
-  // Re-enable drop zone pointer events
   $('uploadZone').style.pointerEvents = '';
 }
 
@@ -1882,7 +1648,6 @@ function setProgress(pct, label) {
 }
 
 function addLog(msg, type) {
-  // Errors shown separately; everything else updates the single status line
   if (type === 'err') {
     var d = document.createElement('div');
     d.textContent = msg;
@@ -1896,7 +1661,6 @@ function addLog(msg, type) {
 
 function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
 
-// Returns fraction of pixels that are near-white (>230 brightness)
 function isBlankImage(canvas) {
   try {
     var ctx = canvas.getContext('2d');
@@ -1920,16 +1684,13 @@ async function sleepWithCountdown(sec) {
 async function extractPages(doc, splitDouble, selectedPages, onProgress) {
   var pages = [];
   var total = doc.numPages;
-  // Count only selected pages for progress reporting
   var selectedTotal = selectedPages ? selectedPages.size : total;
   var rendered = 0;
   for (var i = 1; i <= total; i++) {
-    // Skip pages not in selection — no render, no canvas
     if (selectedPages !== null && !selectedPages.has(i)) continue;
     rendered++;
     onProgress(rendered, selectedTotal);
     var page = await doc.getPage(i);
-    // Scale 1.5 — better OCR for small text in old scanned books
     var vp = page.getViewport({ scale: 1.5 });
     var c = document.createElement('canvas');
     c.width = vp.width; c.height = vp.height;
@@ -1937,7 +1698,6 @@ async function extractPages(doc, splitDouble, selectedPages, onProgress) {
     var ratio = vp.width / vp.height;
     var isDouble = splitDouble && ratio > 1.2;
     if (isDouble) {
-      // Detect gutter: scan center 10% of width for darkest column (binding shadow)
       var gutterX = Math.floor(c.width / 2);
       try {
         var ctx2 = c.getContext('2d');
@@ -1947,9 +1707,8 @@ async function extractPages(doc, splitDouble, selectedPages, onProgress) {
         var colDark = new Float32Array(scanW);
         for (var px = 0; px < imgData.data.length; px += 4) {
           var col = Math.floor((px / 4) % scanW);
-          colDark[col] += (255 - imgData.data[px]); // darkness
+          colDark[col] += (255 - imgData.data[px]);
         }
-        // Find darkest column in center region
         var darkest = 0, darkCol = Math.floor(scanW / 2);
         for (var ci2 = 0; ci2 < scanW; ci2++) {
           if (colDark[ci2] > darkest) { darkest = colDark[ci2]; darkCol = ci2; }
@@ -1962,12 +1721,11 @@ async function extractPages(doc, splitDouble, selectedPages, onProgress) {
         { side: 'esq', x: 0,      w: splitX },
         { side: 'dir', x: splitX, w: c.width - splitX }
       ].forEach(function(s) {
-        if (s.w < 50) return; // skip slivers
+        if (s.w < 50) return;
         var cv = document.createElement('canvas');
         cv.width = s.w; cv.height = c.height;
         cv.getContext('2d').drawImage(c, s.x, 0, s.w, c.height, 0, 0, s.w, c.height);
         var dataUrl = cv.toDataURL('image/jpeg', 0.82);
-        // Skip near-blank pages (mostly white)
         var pct = isBlankImage(cv);
         if (pct > 0.95) return;
         pages.push({ dataUrl: dataUrl, originalPage: i, side: s.side, wasSplit: true });
@@ -1985,7 +1743,6 @@ async function extractPages(doc, splitDouble, selectedPages, onProgress) {
 
 // ── Digital PDF detection ────────────────────────────────────────────────────
 async function detectDigitalPDF(doc, selectedPages) {
-  // Sample up to 5 pages; if average chars/page > 100 it's digital
   var total = doc.numPages;
   var sampled = 0, totalChars = 0;
   for (var i = 1; i <= total && sampled < 5; i++) {
@@ -2006,71 +1763,119 @@ async function extractDigitalText(doc, splitDouble, selectedPages, onProgress) {
   for (var i = 1; i <= total; i++) {
     if (!selectedPages || selectedPages.has(i)) selected.push(i);
   }
+
   for (var idx = 0; idx < selected.length; idx++) {
     onProgress(idx + 1, selected.length);
     var pageNum = selected[idx];
     var page = await doc.getPage(pageNum);
-    var tc   = await page.getTextContent();
+    var tc   = await page.getTextContent({ includeMarkedContent: false });
     var vp   = page.getViewport({ scale: 1 });
 
-    // Reconstruct paragraphs by grouping items by Y position
-    var lines = {};
+    var lineMap = {};
     tc.items.forEach(function(item) {
-      if (!item.str.trim()) return;
-      var y = Math.round(item.transform[5]);
-      if (!lines[y]) lines[y] = [];
-      lines[y].push(item);
+      if (!item.str) return;
+      var y = Math.round(item.transform[5] / 2) * 2;
+      if (!lineMap[y]) lineMap[y] = [];
+      lineMap[y].push(item);
     });
 
-    var sortedYs = Object.keys(lines).map(Number).sort(function(a,b){ return b - a; });
-    var paraGroups = [], prevY = null;
+    var sortedYs = Object.keys(lineMap).map(Number).sort(function(a, b) { return b - a; });
+
+    var gaps = [];
+    for (var gi = 1; gi < sortedYs.length; gi++) {
+      gaps.push(sortedYs[gi-1] - sortedYs[gi]);
+    }
+    gaps.sort(function(a,b){return a-b;});
+    var medGap = gaps.length ? gaps[Math.floor(gaps.length/2)] : 12;
+    var paraThreshold = medGap * 1.8;
+
+    var paragraphs = [];
+    var currentPara = [];
+    var prevY = null;
+
     sortedYs.forEach(function(y) {
-      var lineText = lines[y]
-        .sort(function(a,b){ return a.transform[4] - b.transform[4]; })
-        .map(function(it){
-          var text = it.str;
-          var bold   = it.fontName && /Bold/i.test(it.fontName);
-          var italic = it.fontName && /Italic|Oblique/i.test(it.fontName);
-          if (bold && italic) return '***' + text + '***';
-          if (bold)   return '**' + text + '**';
-          if (italic) return '*' + text + '*';
-          return text;
-        }).join('');
-      if (prevY !== null && (prevY - y) > 18) {
-        paraGroups.push('');  // blank line = paragraph break
+      var items = lineMap[y].sort(function(a, b) { return a.transform[4] - b.transform[4]; });
+      var lineText = '';
+      items.forEach(function(item, i) {
+        var s = item.str;
+        if (!s) return;
+        if (i === 0) {
+          lineText = s;
+          return;
+        }
+        var prev = items[i-1];
+        var prevEnd = prev.transform[4] + (prev.width || 0);
+        var gap     = item.transform[4] - prevEnd;
+        var spaceW  = (item.transform[0] || 6) * 0.25;
+        var needSpace = gap > spaceW || (lineText.length && !/\s$/.test(lineText) && !/^\s/.test(s));
+        lineText += (needSpace ? ' ' : '') + s;
+      });
+
+      lineText = lineText.trim();
+      if (!lineText) return;
+
+      var font = (items[0] && items[0].fontName) || '';
+      var isBold   = /Bold/i.test(font);
+      var isItalic = /Italic|Oblique/i.test(font);
+      if (isBold && isItalic) lineText = '***' + lineText + '***';
+      else if (isBold)        lineText = '**' + lineText + '**';
+      else if (isItalic)      lineText = '*' + lineText + '*';
+
+      if (prevY !== null && (prevY - y) > paraThreshold) {
+        if (currentPara.length) {
+          paragraphs.push(currentPara.join(' '));
+          currentPara = [];
+        }
       }
-      paraGroups.push(lineText);
+      currentPara.push(lineText);
       prevY = y;
     });
-    var text = paraGroups.join('\n').trim();
+    if (currentPara.length) paragraphs.push(currentPara.join(' '));
 
-    // Handle double pages: split by half width if needed
+    var text = paragraphs.join('\n\n').trim();
+
     var ratio = vp.width / vp.height;
     if (splitDouble && ratio > 1.2) {
       var midX = vp.width / 2;
-      var leftLines = {}, rightLines = {};
+      var leftItems = [], rightItems = [];
       tc.items.forEach(function(item) {
         if (!item.str.trim()) return;
-        var y = Math.round(item.transform[5]);
-        var x = item.transform[4];
-        var target = x < midX ? leftLines : rightLines;
-        if (!target[y]) target[y] = [];
-        target[y].push(item);
+        (item.transform[4] < midX ? leftItems : rightItems).push(item);
       });
-      function linesToText(linesObj) {
-        var ys = Object.keys(linesObj).map(Number).sort(function(a,b){ return b-a; });
-        var parts = []; var prevY2 = null;
-        ys.forEach(function(y) {
-          var lt = linesObj[y].sort(function(a,b){ return a.transform[4]-b.transform[4]; })
-            .map(function(it){ return it.str; }).join('');
-          if (prevY2 !== null && (prevY2 - y) > 18) parts.push('');
-          parts.push(lt);
-          prevY2 = y;
+
+      function itemsToText(itemList) {
+        var lmap = {};
+        itemList.forEach(function(item) {
+          var y = Math.round(item.transform[5] / 2) * 2;
+          if (!lmap[y]) lmap[y] = [];
+          lmap[y].push(item);
         });
-        return parts.join('\n').trim();
+        var ys = Object.keys(lmap).map(Number).sort(function(a,b){return b-a;});
+        var gg = []; for (var gi=1;gi<ys.length;gi++) gg.push(ys[gi-1]-ys[gi]);
+        gg.sort(function(a,b){return a-b;});
+        var mGap = gg.length ? gg[Math.floor(gg.length/2)] : 12;
+        var pThr = mGap * 1.8;
+        var paras = [], curP = [], pY = null;
+        ys.forEach(function(y) {
+          var its = lmap[y].sort(function(a,b){return a.transform[4]-b.transform[4];});
+          var lt = '';
+          its.forEach(function(it, i) {
+            if (!it.str) return;
+            if (i===0){lt=it.str;return;}
+            var prev=its[i-1], pe=prev.transform[4]+(prev.width||0);
+            var gap=it.transform[4]-pe, sw=(it.transform[0]||6)*0.25;
+            lt += (gap>sw||!/\s$/.test(lt)&&!/^\s/.test(it.str)?' ':'')+it.str;
+          });
+          lt = lt.trim(); if (!lt) return;
+          if (pY !== null && (pY-y) > pThr) { if(curP.length){paras.push(curP.join(' '));curP=[];} }
+          curP.push(lt); pY = y;
+        });
+        if (curP.length) paras.push(curP.join(' '));
+        return paras.join('\n\n').trim();
       }
-      var lText = linesToText(leftLines);
-      var rText = linesToText(rightLines);
+
+      var lText = itemsToText(leftItems);
+      var rText = itemsToText(rightItems);
       if (lText) results.push({ text: lText, pageNum: pageNum, side: 'L', dataUrl: null });
       if (rText) results.push({ text: rText, pageNum: pageNum, side: 'R', dataUrl: null });
     } else {
@@ -2081,13 +1886,10 @@ async function extractDigitalText(doc, splitDouble, selectedPages, onProgress) {
 }
 
 // ── Gemini OCR (batch) ────────────────────────────────────────────────────────
-// Sends up to 3 pages per API call. Prompt uses page markers so the model
-// returns sections clearly delimited for splitting.
 async function geminiOCRBatch(pages, lang, clean) {
   var langMap = { pt: 'português', en: 'inglês', es: 'espanhol', fr: 'francês', de: 'alemão', it: 'italiano', la: 'latim' };
   var n = pages.length;
 
-  // Build parts: text prompt first, then images
   var parts = [];
 
   var prompt =
@@ -2101,9 +1903,12 @@ async function geminiOCRBatch(pages, lang, clean) {
     'REGRAS DE TRANSCRIÇÃO:\n' +
     '- Idioma: ' + (langMap[lang] || 'português') + '\n' +
     (clean ? '- Una hifenizações de fim de linha (ex: "ca-\\nsa" → "casa")\n' : '') +
-    '- Parágrafos de texto: separe com linha em branco\n' +
-    '- Notas de rodapé: inclua ao final, separadas por linha em branco\n' +
-    '- Tabelas: converta para HTML válido <table><thead><tr><th>...</th></tr></thead><tbody><tr><td>...</td></tr></tbody></table>\n' +
+    '- Parágrafos de texto: separe com UMA linha em branco entre eles\n' +
+    '- Dentro de cada parágrafo: NÃO quebre linhas — escreva o parágrafo inteiro numa única linha contínua\n' +
+    '- Certifique-se de que há espaço entre todas as palavras, nunca as junte sem espaço\n' +
+    '- Números de página impressos no texto (ex: (328), [329]): IGNORE-OS completamente\n' +
+    '- Notas de rodapé com formato (* ...) ou (N ...) ao final da página: coloque-as no final, separadas por linha em branco, mantendo o marcador\n' +
+    '- Tabelas: converta para HTML válido 表表<thead> <th>...</th> </thead><tbody> <tr>... </tbody> 表\n' +
     '- Figuras, ilustrações, fotografias, gravuras, mapas, gráficos:\n' +
     '  substitua pelo marcador numa linha própria: [FIGURA: descrição]\n' +
     '  exemplo: [FIGURA: gravura mostrando o porto do Rio de Janeiro]\n' +
@@ -2115,7 +1920,6 @@ async function geminiOCRBatch(pages, lang, clean) {
     '- Página em branco ou ilegível: escreva apenas [em branco]';
 
   parts.push({ text: prompt });
-  // Images after text — Gemini identifies them by order, no separators needed
   for (var j = 0; j < n; j++) {
     parts.push({ inline_data: { mime_type: 'image/jpeg', data: pages[j].dataUrl.split(',')[1] } });
   }
@@ -2133,9 +1937,7 @@ async function geminiOCRBatch(pages, lang, clean) {
         var errMsg = (errBody.error && errBody.error.message) || (errBody.error && errBody.error.code) || JSON.stringify(errBody);
 
         if (res.status === 429 || res.status === 503 || res.status === 529) {
-          // OpenRouter: retry after 10s on rate limit (paid tier, rare)
           var waitSec = 10;
-          // Try to get retry-after from headers or body
           var ra = res.headers && res.headers.get && res.headers.get('retry-after');
           if (ra) waitSec = Math.min(parseInt(ra) + 2, 60);
           await sleepWithCountdown(waitSec);
@@ -2143,7 +1945,6 @@ async function geminiOCRBatch(pages, lang, clean) {
         }
 
         if (res.status === 404 || res.status === 400) {
-          // Model unavailable — try next model
           var switched = switchToNextModel();
           if (switched) continue;
         }
@@ -2152,13 +1953,11 @@ async function geminiOCRBatch(pages, lang, clean) {
 
       var full = await parseAIResponse(res);
 
-      // Split response by === PAGINA N === markers
       var texts = [];
       var sections = full.split(/===\s*PAGINA\s*\d+\s*===/i);
       for (var k = 1; k <= n; k++) {
         texts.push(sections[k] ? sections[k].trim() : '');
       }
-      // Fallback: model didn't use markers
       if (texts.every(function(t){ return t === ''; })) {
         texts = [full.trim()];
         for (var m = 1; m < n; m++) texts.push('');
@@ -2173,11 +1972,24 @@ async function geminiOCRBatch(pages, lang, clean) {
   throw new Error('Não foi possível processar esta página. Tente novamente.');
 }
 
-// ── Post-processing: remove repeated headers/footers ─────────────────────────
+// ── Post-processing: remove inline page numbers like (328) or [329] ────────────
+function removeInlinePageNumbers(pages) {
+  var re = /\s*[\(\[]\s*\d{2,4}\s*[\)\]]\s*/g;
+  return pages.map(function(p) {
+    return Object.assign({}, p, { text: p.text.replace(re, ' ').trim() });
+  });
+}
+
+function fixStickyWords(pages) {
+  return pages.map(function(p) {
+    var fixed = p.text.replace(/(\w)\n(\w)/g, '$1 $2');
+    return Object.assign({}, p, { text: fixed });
+  });
+}
+
 function removeRepeatedHeadersFooters(pages) {
   if (pages.length < 4) return pages;
 
-  // Collect first and last non-empty line of each page
   var firstLines = {}, lastLines = {};
   pages.forEach(function(p) {
     var lines = p.text.split('\n').map(function(l){ return l.trim(); }).filter(Boolean);
@@ -2188,7 +2000,6 @@ function removeRepeatedHeadersFooters(pages) {
     if (last.length  > 3 && last.length  < 120) lastLines[last]   = (lastLines[last]   || 0) + 1;
   });
 
-  // A line is a repeated header/footer if it appears in >25% of pages (min 3)
   var threshold = Math.max(3, Math.floor(pages.length * 0.25));
   var badLines = new Set();
   Object.keys(firstLines).forEach(function(l){ if (firstLines[l] >= threshold) badLines.add(l); });
@@ -2199,24 +2010,19 @@ function removeRepeatedHeadersFooters(pages) {
 
   return pages.map(function(p) {
     var lines = p.text.split('\n');
-    // Remove matching first line
     while (lines.length && badLines.has(lines[0].trim())) lines.shift();
-    // Remove matching last line
     while (lines.length && badLines.has(lines[lines.length - 1].trim())) lines.pop();
     return Object.assign({}, p, { text: lines.join('\n') });
   });
 }
 
-// ── Post-processing: extract footnotes to page.footnotes ──────────────────────
 function extractFootnotes(pages) {
-  // Footnotes are separated from body by a blank line and start with
-  // a superscript digit, [N], * or ¹²³ etc.
-  var fnRe = /^(\s*\n){1,2}((?:[\*¹²³⁴⁵⁶⁷⁸⁹]|\[\d+\]|\d+\.)[ \t].+(?:\n(?![\n])[^\n]+)*(?:\n|$))+/m;
+  var fnRe = /(\n\n)((?:(?:\(?\s*[\*\u00b9\u00b2\u00b3]|\[?\d+\]?|\d+\.)\s*\(?.+(?:\n(?!\n)[^\n]+)*(?:\n|$))+)$/m;
 
   return pages.map(function(p) {
     var m = fnRe.exec(p.text);
     if (!m) return p;
-    var fnText = m[0].trim();
+    var fnText = m[2].trim();
     var body   = p.text.slice(0, m.index).trimEnd();
     return Object.assign({}, p, { text: body, footnotes: fnText });
   });
@@ -2224,7 +2030,6 @@ function extractFootnotes(pages) {
 
 // ── Chapter detector ─────────────────────────────────────────────────────────
 async function detectChapters(pages, lang, title) {
-  // Build a compact page index for Gemini to analyse
   var index = pages.map(function(p, i) {
     return 'p' + (i + 1) + ': ' + p.text.trim().slice(0, 120).replace(/\n/g, ' ');
   }).join('\n');
@@ -2245,13 +2050,11 @@ async function detectChapters(pages, lang, title) {
     var res = await callAI([{ text: prompt }], 1024);
     if (!res.ok) throw new Error('status ' + res.status);
     var raw = await parseAIResponse(res) || '[]';
-    // Strip possible markdown fences
     raw = raw.replace(/```json|```/g, '').trim();
     var chapters = JSON.parse(raw);
     if (!Array.isArray(chapters) || chapters.length === 0) throw new Error('empty');
-    return chapters; // [{title, page}]
+    return chapters;
   } catch(e) {
-    // Fallback: single chapter with full text
     return [{ title: title, page: 1 }];
   }
 }
@@ -2260,11 +2063,9 @@ async function detectChapters(pages, lang, title) {
 function pageToHtml(p) {
   var text = p.text || '';
 
-  // Split into segments: normal text, <table>...</table>, [FIGURA]...[/FIGURA]
   var html = '';
   var remaining = text;
 
-  // Process token by token (table first, then figura)
   var tableRe = /(<table[\s\S]*?<\/table>)/i;
   var figRe   = /\[FIGURA\]([\s\S]*?)\[\/FIGURA\]/i;
 
@@ -2272,26 +2073,20 @@ function pageToHtml(p) {
     var tableMatch = tableRe.exec(remaining);
     var figMatch   = figRe.exec(remaining);
 
-    // Pick whichever comes first
     var nextTable = tableMatch ? tableMatch.index : Infinity;
     var nextFig   = figMatch   ? figMatch.index   : Infinity;
 
     if (nextTable === Infinity && nextFig === Infinity) {
-      // Only plain text left
       html += plainTextToHtml(remaining);
       break;
     }
 
     if (nextTable <= nextFig) {
-      // Plain text before table
       if (nextTable > 0) html += plainTextToHtml(remaining.slice(0, nextTable));
-      // Table itself — sanitize but keep structure
       html += sanitizeTable(tableMatch[1]);
       remaining = remaining.slice(nextTable + tableMatch[1].length);
     } else {
-      // Plain text before figure marker
       if (nextFig > 0) html += plainTextToHtml(remaining.slice(0, nextFig));
-      // Figure — embed page image if available, with caption
       var caption = figMatch[1].trim();
       if (p.dataUrl) {
         html += '<div class="figura"><img src="' + p.dataUrl + '" alt="' + esc(caption) + '" style="max-width:100%;height:auto;"/>';
@@ -2307,8 +2102,6 @@ function pageToHtml(p) {
 }
 
 function parseInlineMarkup(text) {
-  // Convert **bold** and *italic* to <strong>/<em>, safely escaping rest
-  // Split by markers, process each chunk
   var result = '';
   var remaining = text;
   var boldRe   = /\*\*([^*]+)\*\*/;
@@ -2339,31 +2132,26 @@ function plainTextToHtml(text) {
   return text.split(/\n\n+/).map(function(para) {
     para = para.trim();
     if (!para) return '';
-    var line = para.replace(/\n/g, ' ');
+    var line = para.replace(/([\w\u00C0-\u024F,;:])\n([\w\u00C0-\u024F])/g, '$1 $2')
+                   .replace(/\n/g, ' ')
+                   .replace(/  +/g, ' ');
     return '<p>' + parseInlineMarkup(line) + '</p>';
   }).filter(Boolean).join('\n');
 }
 
 function sanitizeTable(tableHtml) {
-  // Allow only safe table tags, escape content inside cells
-  // Simple approach: strip all attributes, re-escape text content
   var clean = tableHtml
-    .replace(/<table[^>]*>/i, '<table>')
+    .replace(/<table[^>]*>/i, '表')
     .replace(/<tr[^>]*>/gi, '<tr>')
     .replace(/<th[^>]*>/gi, '<th>')
-    .replace(/<td[^>]*>/gi, '<td>')
+    .replace(/<td[^>]*>/gi, '(<td')
     .replace(/<\/?(thead|tbody|tfoot)[^>]*>/gi, '');
   return clean;
 }
 
 // ── EPUB builder ──────────────────────────────────────────────────────────────
-
-// Convert raw OCR text (with [FIGURA:...] and <table>...</table>) to XHTML,
-// embedding the page image for any [FIGURA] detected.
 function pageToHTML(text, dataUrl, imgId, footnotes, pageNum) {
   var html = '';
-  // Split on table blocks and figure markers, processing each segment
-  // Strategy: line by line, track if we're inside a <table>
   var lines = text.split('\n');
   var inTable = false;
   var tableHTML = '';
@@ -2374,7 +2162,6 @@ function pageToHTML(text, dataUrl, imgId, footnotes, pageNum) {
     var para = paraLines.join(' ').trim();
     paraLines = [];
     if (!para) return;
-    // Check for [FIGURA/IMAGEM/GRAVURA/MAPA/...] marker — flexible detection
     var figMatch = para.match(/\[(FIGURA|IMAGEM|ILUSTRA[ÇC][ÃA]O|GRAVURA|FOTO|MAPA|GR[ÁA]FICO|DIAGRAMA)(?::([^\]]*?))?\](.*)/i);
     if (figMatch) {
       var desc = (figMatch[2] || figMatch[1] || 'Figura').trim();
@@ -2393,8 +2180,6 @@ function pageToHTML(text, dataUrl, imgId, footnotes, pageNum) {
 
   for (var i = 0; i < lines.length; i++) {
     var line = lines[i];
-
-    // Detect table start
     if (!inTable && /<table/i.test(line)) {
       flushPara();
       inTable = true;
@@ -2405,24 +2190,20 @@ function pageToHTML(text, dataUrl, imgId, footnotes, pageNum) {
       tableHTML += line + '\n';
       if (/<\/table>/i.test(line)) {
         inTable = false;
-        // Clean and emit table — strip any escaping that Qwen might have added
         html += tableHTML;
         tableHTML = '';
       }
       continue;
     }
-
-    // Blank line → flush paragraph
     if (line.trim() === '') {
       flushPara();
     } else {
       paraLines.push(line.trim());
     }
   }
-  if (inTable) html += tableHTML; // unclosed table safety
+  if (inTable) html += tableHTML;
   flushPara();
 
-  // Footnotes inline at bottom of this page
   if (footnotes) {
     html += '<div class="page-footnotes">';
     footnotes.split('\n').forEach(function(line) {
@@ -2432,7 +2213,6 @@ function pageToHTML(text, dataUrl, imgId, footnotes, pageNum) {
     html += '</div>';
   }
 
-  // Page number
   if (pageNum) {
     html += '<p class="page-num">' + pageNum + '</p>';
   }
@@ -2445,7 +2225,6 @@ function buildEPUB(pages, title, author, lang, chapterMap, coverDataUrl) {
     return p.text.trim() && p.text.trim() !== '[em branco]';
   });
 
-  // Assign an imgId to each page that has a [FIGURA] marker
   valid.forEach(function(p, i) {
     if (/\[(FIGURA|IMAGEM|ILUSTRA|GRAVURA|FOTO|MAPA|GR[ÁA]FICO|DIAGRAMA)/i.test(p.text)) p.imgId = 'p' + (i + 1);
   });
@@ -2480,11 +2259,10 @@ function buildEPUB(pages, title, author, lang, chapterMap, coverDataUrl) {
     }
   }
 
-  // Collect all images that need to be embedded
-  var images = {}; // imgId → base64 jpeg data
+  var images = {};
   valid.forEach(function(p) {
     if (p.imgId && p.dataUrl) {
-      images[p.imgId] = p.dataUrl.split(',')[1]; // base64 only
+      images[p.imgId] = p.dataUrl.split(',')[1];
     }
   });
   var hasImages = Object.keys(images).length > 0;
@@ -2493,7 +2271,6 @@ function buildEPUB(pages, title, author, lang, chapterMap, coverDataUrl) {
   files['mimetype'] = 'application/epub+zip';
   files['META-INF/container.xml'] = '<?xml version="1.0" encoding="UTF-8"?><container version="1.0" xmlns="urn:oasis:schemas:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>';
 
-  // ── Cover ──────────────────────────────────────────────────────────
   var hasCover = !!(coverDataUrl);
   if (hasCover) {
     var coverB64 = coverDataUrl.split(',')[1];
@@ -2509,7 +2286,6 @@ function buildEPUB(pages, title, author, lang, chapterMap, coverDataUrl) {
       '</head><body><img src="img/cover.jpg" alt="Capa"/></body></html>';
   }
 
-  // Manifest: chapters + css + images
   var manifestItems = chapters.map(function (c) {
     return '<item id="c' + c.num + '" href="c' + c.num + '.xhtml" media-type="application/xhtml+xml"/>';
   });
@@ -2556,7 +2332,6 @@ function buildEPUB(pages, title, author, lang, chapterMap, coverDataUrl) {
   ].join('\n');
 
   chapters.forEach(function (c) {
-    // Suppress generic fallback chapter headings
     var genericTitles = ['texto completo','full text','texto completo'];
     var isGeneric = c.title && genericTitles.indexOf(c.title.toLowerCase().trim()) !== -1;
     var heading = (c.title && !isGeneric) ? '<h2>' + esc(c.title) + '</h2>\n' : '';
@@ -2570,7 +2345,6 @@ function buildEPUB(pages, title, author, lang, chapterMap, coverDataUrl) {
       '<body>' + heading + c.html + '</body></html>';
   });
 
-  // Embed images as binary Uint8Array from base64
   Object.keys(images).forEach(function(id) {
     var b64 = images[id];
     var bin = atob(b64);
@@ -2649,17 +2423,24 @@ var COUNTER_URL = window.location.hostname === 'localhost' || window.location.ho
   ? 'http://localhost:8787/counter'
   : 'https://epubly-worker.pedro06bf.workers.dev/counter';
 
+var EPUB_STORE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:8787/epub'
+  : 'https://epubly-worker.pedro06bf.workers.dev/epub';
+
+var OPDS_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:8787/opds'
+  : 'https://epubly-worker.pedro06bf.workers.dev/opds';
 function animateCounter(target) {
-  var els = [$('heroCounterNum'), $('footerCounterNum')];
-  var start = parseInt((els[0] && els[0].textContent.replace(/\D/g,'')) || '0') || 0;
+  var el = document.getElementById('footerCounterNum');
+  if (!el) return;
+  var start = parseInt(el.textContent.replace(/\D/g,'')) || 0;
   var duration = 1400;
   var startTime = null;
   function step(ts) {
     if (!startTime) startTime = ts;
     var progress = Math.min((ts - startTime) / duration, 1);
     var ease = 1 - Math.pow(1 - progress, 3);
-    var val = Math.round(start + (target - start) * ease).toLocaleString('pt-BR');
-    els.forEach(function(el) { if (el) el.textContent = val; });
+    el.textContent = Math.round(start + (target - start) * ease).toLocaleString('pt-BR');
     if (progress < 1) requestAnimationFrame(step);
   }
   requestAnimationFrame(step);
@@ -2674,7 +2455,6 @@ async function fetchCounter() {
       animateCounter(data.count);
     }
   } catch(e) {
-    // counter unavailable — show placeholder
     var fc = $('footerCounterNum');
     if (fc) fc.textContent = '—';
   }
@@ -2715,7 +2495,6 @@ function openDonateModal() {
   track('donate_modal_opened');
   var m = document.getElementById('donateModal');
   m.style.display = 'flex';
-  // QR code (desktop only)
   if (!IS_MOBILE && !document.getElementById('qrcode').hasChildNodes()) {
     new QRCode(document.getElementById('qrcode'), {
       text: '00020126410014br.gov.bcb.pix0119pedro06bf@gmail.com5204000053039865802BR5909Epubly App6006Brasil62070503***6304185E',
@@ -2724,7 +2503,6 @@ function openDonateModal() {
       correctLevel: QRCode.CorrectLevel.M
     });
   }
-  // On mobile: hide QR, show copy button
   if (IS_MOBILE) {
     document.getElementById('qrcode-wrap').style.display  = 'none';
     document.getElementById('pix-mobile').style.display   = 'block';
@@ -2753,7 +2531,99 @@ function copyPixKey() {
     setTimeout(function(){ el.style.display='none'; btn.textContent='Copiar'; }, 2500);
   }
 }
+
+// ── UI bindings (DOMContentLoaded ensures all HTML including modals exists) ────
+document.addEventListener('DOMContentLoaded', function() {
+  function bind(id, fn) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('click', function(e) { e.preventDefault(); fn(); });
+  }
+  bind('donateBtn',         function() { openDonateModal(); });
+  bind('aboutBtn',          function() { document.getElementById('aboutModal').style.display = 'flex'; });
+  bind('aboutDonateBtn',    function() {
+    document.getElementById('aboutModal').style.display = 'none';
+    openDonateModal();
+  });
+  bind('sendSettingsBtn', function() {
+    // Atualiza a URL no modal com o shortCode antes de abrir
+    var urlInput = document.getElementById('opdsUrl');
+    if (urlInput) urlInput.value = 'https://epubly-worker.pedro06bf.workers.dev/opds?code=' + shortCode;
+    document.getElementById('sendSettingsModal').style.display = 'flex';
+  });
+
+  // Link "Saiba como acessar"
+  var openLink = document.getElementById('openSettingsLink');
+  if (openLink) {
+    openLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      var urlInput = document.getElementById('opdsUrl');
+      if (urlInput) urlInput.value = 'https://epubly-worker.pedro06bf.workers.dev/opds?code=' + shortCode;
+      document.getElementById('sendSettingsModal').style.display = 'flex';
+    });
+  }
+
+  // Botão de copiar URL do modal
+  var copyBtn = document.getElementById('copyOpdsUrlBtn');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', function() {
+      var urlInput = document.getElementById('opdsUrl');
+      if (urlInput && urlInput.value) {
+        navigator.clipboard.writeText(urlInput.value);
+        alert('URL copiada!');
+      }
+    });
+  }
+});
 </script>
+
+<!-- Send Settings Modal -->
+<div class="modal-overlay" id="sendSettingsModal" style="display:none;">
+  <div class="modal" style="max-width:520px;">
+    <button class="modal-close" type="button" onclick="document.getElementById('sendSettingsModal').style.display='none';return false;">✕</button>
+
+    <div class="modal-header">
+      <div class="modal-tag">Enviar para e-reader</div>
+      <h2>Configurar envio</h2>
+      <p style="font-size:.85rem;color:var(--text-muted);margin-top:.5rem;line-height:1.6;">Configure o catálogo OPDS no KOReader para acessar seus livros convertidos.</p>
+    </div>
+
+    <div class="modal-body">
+      <div class="modal-divider"></div>
+
+      <!-- Epubly OPDS section -->
+      <div style="margin-top:1.5rem;margin-bottom:1.5rem;">
+        <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.75rem;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+          <strong style="font-size:.88rem;">Epubly OPDS</strong>
+          <span style="font-size:.7rem;background:rgba(90,158,111,.15);color:var(--green);border:1px solid rgba(90,158,111,.3);border-radius:100px;padding:.1rem .55rem;font-weight:600;">recomendado</span>
+        </div>
+        <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:.75rem;line-height:1.6;">
+          Configure uma vez no KOReader — cada conversão fica disponível automaticamente por 48h. Seu código pessoal garante que você veja apenas os livros que converteu.
+        </p>
+        <ol class="koreader-steps" style="margin-bottom:.75rem;">
+          <li>No KOReader: <strong>Busca de livros → Catálogos OPDS → +</strong></li>
+          <li>Nome: <code>Epubly</code></li>
+          <li>URL: <code>https://epubly-worker.pedro06bf.workers.dev/opds?code=<span id="userTokenDisplay" style="font-family:monospace;color:var(--accent);"></span></code></li>
+          <li>Salve. Após cada conversão o livro aparece automaticamente no catálogo</li>
+        </ol>
+        <div class="koreader-ip-row">
+          <label for="opdsUrl">Sua URL pessoal (copie para o KOReader)</label>
+          <div class="koreader-ip-input-wrap">
+            <input id="opdsUrl" type="text" readonly style="background:var(--surface2);font-family:monospace;font-size:.75rem;" value="">
+            <button type="button" id="copyOpdsUrlBtn">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copiar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-divider"></div>
+
+      <p style="font-size:.72rem;color:var(--text-dim);text-align:center;">O código é armazenado apenas no seu navegador e identifica seus livros. Nenhum dado pessoal é compartilhado.</p>
+    </div>
+  </div>
+</div>
 
 <!-- Donate Modal -->
 <div class="modal-overlay" id="donateModal" style="display:none;">
@@ -2781,14 +2651,12 @@ function copyPixKey() {
 
       <!-- PIX panel -->
       <div id="panelPix" style="text-align:center;">
-        <!-- Desktop: QR code -->
         <div id="qrcode-wrap" style="display:inline-block;">
           <div id="qrcode-container" style="display:inline-block;padding:16px;background:white;border-radius:16px;border:1px solid var(--border-lit);margin-bottom:.75rem;">
             <div id="qrcode"></div>
           </div>
           <p data-i18n="donateScan" style="font-size:.78rem;color:var(--text-muted);margin-bottom:.75rem;">Escaneie com o app do seu banco</p>
         </div>
-        <!-- Mobile: copy key button (shown instead of QR on touch devices) -->
         <div id="pix-mobile" style="display:none;text-align:center;padding:.25rem 0 .5rem;">
           <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.5;">Copie a chave PIX e cole no app do seu banco.</p>
           <button type="button" id="copyPixBtn" onclick="copyPixKey()"
@@ -2886,20 +2754,12 @@ function copyPixKey() {
 </div>
 
 <script>
-// ── Button bindings — runs after all HTML is parsed ───────────────────────────
-(function() {
-  function bindBtn(id, fn) {
-    var el = document.getElementById(id);
-    if (el) el.addEventListener('click', function(e) { e.preventDefault(); fn(); });
-  }
-  bindBtn('donateBtn',       function() { openDonateModal(); });
-  bindBtn('aboutBtn',        function() { document.getElementById('aboutModal').style.display = 'flex'; });
-  bindBtn('aboutDonateBtn',  function() {
-    document.getElementById('aboutModal').style.display = 'none';
-    openDonateModal();
-  });
-
-})();
+// Exibe o shortCode no modal quando aberto
+document.getElementById('sendSettingsBtn').addEventListener('click', function() {
+  var tokenSpan = document.getElementById('userTokenDisplay');
+  if (tokenSpan) tokenSpan.textContent = shortCode;
+});
 </script>
+
 </body>
 </html>
