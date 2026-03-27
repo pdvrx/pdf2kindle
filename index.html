@@ -883,9 +883,9 @@ footer { position: relative; z-index: 1; }
       <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
       Apoie-nos
     </button>
-    <button class="btn-change-key" id="sendSettingsBtn" type="button" title="Configurar envio para e-reader">
+    <button class="btn-change-key" id="sendSettingsBtn" type="button" title="Configurar envio para KOReader">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      E-reader
+      KOReader
     </button>
     <button class="btn-change-key" id="aboutBtn" type="button" data-i18n="about">Sobre</button>
     <a class="btn-change-key" href="https://github.com/pdvrx/epubly" target="_blank" rel="noopener">
@@ -945,14 +945,12 @@ footer { position: relative; z-index: 1; }
         <p class="result-ok-text" id="resultStats"></p>
         <button class="btn-download" id="downloadBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span data-i18n="download">Baixar EPUB</span></button>
         <!-- NOVA MENSAGEM COM LINK -->
-        <div id="opdsCodeRow" style="display:none; width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:1rem; text-align:center;">
-          <div style="display:flex; align-items:center; justify-content:center; gap:.5rem; margin-bottom:.5rem;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
-            <strong style="font-size:.9rem; color:var(--text);">✅ Epub salvo no catálogo OPDS</strong>
-          </div>
-          <p style="font-size:.8rem; color:var(--text-muted); margin:0;">
-            <a href="#" id="openSettingsLink" style="color:var(--accent); text-decoration:underline; cursor:pointer;">Saiba como acessar</a>
-          </p>
+        <div id="opdsCodeRow" id="opdsCodeRow_inner" style="display:none;width:100%;align-items:center;justify-content:space-between;gap:.6rem;padding:.5rem .75rem;border-top:1px solid var(--border);margin-top:.25rem;">
+          <span style="font-size:.75rem;color:var(--text-dim);display:flex;align-items:center;gap:.4rem;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+            Salvo no catálogo OPDS
+          </span>
+          <button id="openSettingsLink" type="button" style="background:none;border:none;padding:0;font-size:.75rem;color:var(--accent);cursor:pointer;font-family:inherit;text-decoration:none;">Como acessar</button>
         </div>
       </div>
     </div>
@@ -1264,6 +1262,13 @@ $('uploadZone').addEventListener('drop', function (e) {
 // ── Load PDF ──────────────────────────────────────────────────────────────────
 async function handleFile(file) {
   pdfFile = file;
+  // Reset any previous conversion state
+  $('progressSection').classList.remove('show');
+  $('resultSection').style.display = 'none';
+  var opdsRow = document.getElementById('opdsCodeRow');
+  if (opdsRow) opdsRow.style.display = 'none';
+  $('logErrors').innerHTML = '';
+  $('statusLine').textContent = '';
   var mb = (file.size / 1048576).toFixed(2);
   var buf = await file.arrayBuffer();
   pdfDoc = await pdfjsLib.getDocument({ data: buf }).promise;
@@ -1603,7 +1608,10 @@ $('processBtn').addEventListener('click', async function () {
       if (!opdsId) return;
       var row = document.getElementById('opdsCodeRow');
       if (row) row.style.display = 'flex';
-      addLog('Disponível no catálogo OPDS · link: https://epubly-worker.pedro06bf.workers.dev/opds?code=' + shortCode, 'ok');
+      var opdsLink = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+        ? 'http://localhost:8787/opds?code=' + shortCode
+        : 'https://epubly-worker.pedro06bf.workers.dev/opds?code=' + shortCode;
+      addLog('Disponível no catálogo OPDS · ' + opdsLink, 'ok');
       track('opds_upload_success');
     });
 
@@ -2545,9 +2553,12 @@ document.addEventListener('DOMContentLoaded', function() {
     openDonateModal();
   });
   bind('sendSettingsBtn', function() {
-    // Atualiza a URL no modal com o shortCode antes de abrir
     var urlInput = document.getElementById('opdsUrl');
-    if (urlInput) urlInput.value = 'https://epubly-worker.pedro06bf.workers.dev/opds?code=' + shortCode;
+    var _base = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+      ? 'http://localhost:8787/opds' : 'https://epubly-worker.pedro06bf.workers.dev/opds';
+    if (urlInput) urlInput.value = _base + '?code=' + shortCode;
+    var tokenSpan = document.getElementById('userTokenDisplay');
+    if (tokenSpan) tokenSpan.textContent = shortCode;
     document.getElementById('sendSettingsModal').style.display = 'flex';
   });
 
@@ -2557,7 +2568,8 @@ document.addEventListener('DOMContentLoaded', function() {
     openLink.addEventListener('click', function(e) {
       e.preventDefault();
       var urlInput = document.getElementById('opdsUrl');
-      if (urlInput) urlInput.value = 'https://epubly-worker.pedro06bf.workers.dev/opds?code=' + shortCode;
+      var _bo = (window.location.hostname==='localhost'||window.location.hostname==='127.0.0.1') ? 'http://localhost:8787/opds' : 'https://epubly-worker.pedro06bf.workers.dev/opds';
+      if (urlInput) urlInput.value = _bo + '?code=' + shortCode;
       document.getElementById('sendSettingsModal').style.display = 'flex';
     });
   }
