@@ -1269,6 +1269,16 @@ async function handleFile(file) {
   if (opdsRow) opdsRow.style.display = 'none';
   $('logErrors').innerHTML = '';
   $('statusLine').textContent = '';
+  // Clear inline styles set by the conversion hide-animation so .show class works again
+  ['settingsPanel','pagesPreview','processBtn'].forEach(function(id) {
+    var el = $(id);
+    el.style.display = '';
+    el.style.maxHeight = '';
+    el.style.opacity = '';
+    el.style.marginBottom = '';
+    el.style.overflow = '';
+    el.style.transition = '';
+  });
   var mb = (file.size / 1048576).toFixed(2);
   var buf = await file.arrayBuffer();
   pdfDoc = await pdfjsLib.getDocument({ data: buf }).promise;
