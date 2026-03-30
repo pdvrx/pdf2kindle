@@ -816,6 +816,10 @@ footer { position: relative; z-index: 1; }
   .logo { font-size: 1.25rem; }
   .btn-donate, .btn-change-key { font-size: .66rem; padding: .25rem .6rem; gap: .25rem; }
   .btn-change-key svg { width: 9px; height: 9px; }
+  .btn-label { display: none; }
+  .header-right { gap: .35rem; }
+  .btn-donate svg, .btn-change-key svg { width: 14px !important; height: 14px !important; }
+  .btn-donate, .btn-change-key { padding: .35rem .55rem; }
   main { padding: 2rem 1rem 5rem; }
   .hero { margin-bottom: 2rem; }
   .hero h1 { font-size: 1.75rem; }
@@ -881,16 +885,19 @@ footer { position: relative; z-index: 1; }
   <div class="header-right">
     <button class="btn-donate" id="donateBtn" type="button" data-i18n="donate">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-      Apoie-nos
+      <span class="btn-label">Apoie-nos</span>
     </button>
-    <button class="btn-change-key" id="sendSettingsBtn" type="button" title="Configurar envio para KOReader">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      KOReader
+    <button class="btn-change-key" id="sendSettingsBtn" type="button" title="KOReader">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+      <span class="btn-label">KOReader</span>
     </button>
-    <button class="btn-change-key" id="aboutBtn" type="button" data-i18n="about">Sobre</button>
-    <a class="btn-change-key" href="https://github.com/pdvrx/epubly" target="_blank" rel="noopener">
+    <button class="btn-change-key" id="aboutBtn" type="button" data-i18n="about" title="Sobre">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span class="btn-label">Sobre</span>
+    </button>
+    <a class="btn-change-key" href="https://github.com/pdvrx/epubly" target="_blank" rel="noopener" title="GitHub">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.341-3.369-1.341-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
-      GitHub
+      <span class="btn-label">GitHub</span>
     </a>
   </div>
 </header>
@@ -921,7 +928,7 @@ footer { position: relative; z-index: 1; }
     <div class="card-label" data-i18n="settings">Configurações</div>
     <div class="settings-grid">
       <div class="setting-item"><label data-i18n="bookTitle">Título do livro</label><input type="text" id="bookTitle" placeholder="Ex: Dom Casmurro"></div>
-      <div class="setting-item"><label data-i18n="author">Autor</label><input type="text" id="bookAuthor" placeholder="Ex: Machado de Assis"></div>
+      <div class="setting-item"><label data-i18n="author">Autor</label><input type="text" id="bookAuthor" placeholder="Autor/a"></div>
       <div class="setting-item"><label data-i18n="language">Idioma</label><select id="bookLang"><option value="pt">Português</option><option value="en">Inglês</option><option value="es">Espanhol</option><option value="fr">Francês</option><option value="de">Alemão</option><option value="it">Italiano</option><option value="la">Latim</option></select></div>
       <div class="setting-item" id="pageRangeItem" style="display:none;"><label>Páginas <span id="pageRangeTotalLabel"></span></label><input type="text" id="pageRangeInput" class="page-range-input" placeholder="Em branco = todas. Ex: 1-10, 15"><span class="page-range-status" id="pageRangeStatus"></span></div>
     </div>
@@ -1161,7 +1168,7 @@ function applyI18n() {
   var bt = document.getElementById('bookTitle');
   if (bt) bt.placeholder = siteLang === 'en' ? 'E.g. Moby Dick' : siteLang === 'es' ? 'Ej: Don Quijote' : 'Ex: Dom Casmurro';
   var ba = document.getElementById('bookAuthor');
-  if (ba) ba.placeholder = siteLang === 'en' ? 'E.g. Herman Melville' : siteLang === 'es' ? 'Ej: Cervantes' : 'Ex: Machado de Assis';
+  if (ba) ba.placeholder = siteLang === 'en' ? 'Author' : siteLang === 'es' ? 'Autor/a' : 'Autor/a';
   var pl = document.getElementById('progressLabel');
   if (pl) pl.textContent = T.converting;
   var pr = document.getElementById('pageRangeInput');
@@ -1279,6 +1286,9 @@ async function handleFile(file) {
     el.style.overflow = '';
     el.style.transition = '';
   });
+  // Re-enable drag-drop (may have been locked during conversion)
+  $('uploadZone').style.pointerEvents = '';
+  _dragCounter = 0;
   var mb = (file.size / 1048576).toFixed(2);
   var buf = await file.arrayBuffer();
   pdfDoc = await pdfjsLib.getDocument({ data: buf }).promise;
@@ -1288,7 +1298,17 @@ async function handleFile(file) {
   $('fileInfo').classList.add('show');
   $('settingsPanel').classList.add('show');
   $('processBtn').classList.add('show');
-  $('bookTitle').value = file.name.replace(/\.pdf$/i, '').replace(/[_-]/g, ' ');
+  // Try to read PDF metadata for title/author
+  try {
+    var meta = await pdfDoc.getMetadata();
+    var info = (meta && meta.info) ? meta.info : {};
+    var pdfTitle  = (info.Title  || '').trim();
+    var pdfAuthor = (info.Author || '').trim();
+    $('bookTitle').value = pdfTitle  || file.name.replace(/\.pdf$/i, '').replace(/[_-]/g, ' ');
+    if (pdfAuthor) $('bookAuthor').value = pdfAuthor;
+  } catch(e) {
+    $('bookTitle').value = file.name.replace(/\.pdf$/i, '').replace(/[_-]/g, ' ');
+  }
   track('pdf_uploaded', { pages: n, file_size_mb: parseFloat(mb) });
   $('pageRangeItem').style.display = '';
   $('pageRangeTotalLabel').textContent = '(' + T.of + ' ' + n + ')';
@@ -1932,6 +1952,8 @@ async function geminiOCRBatch(pages, lang, clean) {
     '  exemplo: [FIGURA: gravura mostrando o porto do Rio de Janeiro]\n' +
     '  se houver legenda impressa, inclua-a na mesma linha após o marcador\n' +
     '  NÃO escreva o texto da página que está por trás da figura\n' +
+    '- Listas com marcadores (bullets): use - no início de cada item, uma por linha\n' +
+    '- Listas numeradas: use 1. 2. 3. no início de cada item, uma por linha\n' +
     '- Texto em negrito: envolva com **duplo asterisco** (ex: **palavra**)\n' +
     '- Texto em itálico: envolva com *asterisco simples* (ex: *palavra*)\n' +
     '- Somente conteúdo transcrito — sem comentários, sem explicações\n' +
@@ -2146,10 +2168,42 @@ function parseInlineMarkup(text) {
   return result;
 }
 
+function detectList(para) {
+  // Split into lines, check if majority start with list markers
+  var lines = para.split('\n').map(function(l){ return l.trim(); }).filter(Boolean);
+  if (lines.length < 2) return null;
+  // Bullet markers: -, *, •, –, —, ·
+  var bulletRe = /^[-*•–—·]\s+/;
+  // Numbered: 1. 1) (1) a. a)
+  var numberedRe = /^(?:\d+[.)\s]|[a-z][.)\s]|\([^)]+\))\s+/i;
+  var bulletCount  = lines.filter(function(l){ return bulletRe.test(l); }).length;
+  var numberedCount = lines.filter(function(l){ return numberedRe.test(l); }).length;
+  var ratio = lines.length;
+  if (bulletCount / ratio >= 0.6) return { type: 'ul', marker: bulletRe };
+  if (numberedCount / ratio >= 0.6) return { type: 'ol', marker: numberedRe };
+  return null;
+}
+
 function plainTextToHtml(text) {
   return text.split(/\n\n+/).map(function(para) {
     para = para.trim();
     if (!para) return '';
+
+    // Check if this paragraph is a list
+    var listInfo = detectList(para);
+    if (listInfo) {
+      var items = para.split('\n').map(function(l){ return l.trim(); }).filter(Boolean);
+      var tag = listInfo.type;
+      var html = '<' + tag + '>\n';
+      items.forEach(function(item) {
+        // Strip the leading marker
+        var clean = item.replace(listInfo.marker, '').trim();
+        html += '<li>' + parseInlineMarkup(clean) + '</li>\n';
+      });
+      html += '</' + tag + '>';
+      return html;
+    }
+
     var line = para.replace(/([\w\u00C0-\u024F,;:])\n([\w\u00C0-\u024F])/g, '$1 $2')
                    .replace(/\n/g, ' ')
                    .replace(/  +/g, ' ');
@@ -2159,10 +2213,10 @@ function plainTextToHtml(text) {
 
 function sanitizeTable(tableHtml) {
   var clean = tableHtml
-    .replace(/<table[^>]*>/i, '表')
+    .replace(/<table[^>]*>/i, '<table>')
     .replace(/<tr[^>]*>/gi, '<tr>')
     .replace(/<th[^>]*>/gi, '<th>')
-    .replace(/<td[^>]*>/gi, '(<td')
+    .replace(/<td[^>]*>/gi, '<td>')
     .replace(/<\/?(thead|tbody|tfoot)[^>]*>/gi, '');
   return clean;
 }
@@ -2333,6 +2387,8 @@ function buildEPUB(pages, title, author, lang, chapterMap, coverDataUrl) {
   files['OEBPS/style.css'] = [
     'body{font-family:Georgia,serif;font-size:1em;line-height:1.75;margin:1em 1.5em;color:#1a1410}',
     'p{margin:0 0 .8em;text-indent:1.5em}',
+    'ul,ol{margin:.6em 0 .8em 1.8em;padding-left:.5em;line-height:1.7}',
+    'li{margin-bottom:.25em;text-indent:0}',
     'p:first-child{text-indent:0}',
     'h2{font-family:Georgia,serif;font-size:1.4em;font-weight:normal;margin:1.5em 0 1em;color:#1a1410;page-break-before:always}',
     'hr{border:none;border-top:1px solid #ccc;margin:2em auto;width:40%}',
